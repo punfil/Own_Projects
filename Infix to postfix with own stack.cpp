@@ -37,7 +37,7 @@ public:
 		this->whole_stack.next = ptr;
 		this->size++;
 	}
-	char top() {
+	X top() {
 		return this->whole_stack.next->character;
 	}
 	
