@@ -15,7 +15,7 @@ public:
 		this->size = 0;
 		this->whole_stack.next = nullptr;
 	}
-	bool empty() {
+	bool empty() const {
 		return this->size <= 0;
 	}
 	void pop() {
@@ -37,7 +37,7 @@ public:
 		this->whole_stack.next = ptr;
 		this->size++;
 	}
-	X top() {
+	X top() const {
 		return this->whole_stack.next->character;
 	}
 	
