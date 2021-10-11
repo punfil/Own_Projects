@@ -1,40 +1,29 @@
 -- Zadanie 16
 module Main where
-  
-intSqrt :: Int -> Int 
-intSqrt n = floor (sqrt (fromIntegral n))
 
-sumOfDividorsCounter :: Int -> Int -> Int
-sumOfDividorsCounter 0 n = 0
-sumOfDividorsCounter d n =
-  if n `mod` d == 0 then d + sumOfDividorsCounter (d-1) n else sumOfDividorsCounter (d-1) n
+byHalf :: Int -> Int
+byHalf n = quot n 2
 
--- Zwraca sume, jego pomocnicza to sumOfDividorsCounter
-sumOfDividors :: Int -> Int
-sumOfDividors n = sumOfDividorsCounter (n-1) n
+ --Zwraca sume dzielnikow liczby
+sumOfDivisors :: Int -> Int
+sumOfDivisors n =  sum [x | x <- [1..byHalf n ], n `mod` x == 0]
 
 -- Sprawdzenie, czy liczba jest obfita
 isAbundant :: Int->Bool
-isAbundant n = n >= 12 && sumOfDividors n > n
+isAbundant n = n >= 12 && sumOfDivisors n > n
 
-canBeSumofAbundantChecker :: Int -> Int -> Bool
-canBeSumofAbundantChecker beginning end
-  | isAbundant beginning && isAbundant end && beginning <= end = True
-  | beginning <= end = canBeSumofAbundantChecker (beginning+1) (end-1)
-  | otherwise = False
+listAbundantNumbers :: Int -> [Int]
+listAbundantNumbers n = [x | x <- [12 .. n], isAbundant x ]
 
---Sprawdza, czy dana liczba moze byc zapisana jako suma dwoch liczb obfitych
-canBeSumofAbundant :: Int -> Bool
-canBeSumofAbundant n
-  | n < 24 = False
-  | canBeSumofAbundantChecker 12 (n-12) = True
-  | otherwise = False
-
+canBeSumofAbundant :: Int -> [Int] -> Bool
+canBeSumofAbundant n v= any (\x -> any (\y -> x + y == n) v) v
 
 -- Sprawdzenie danej liczby a pozniej nizej
-lowestAbundantSum :: Int->Int
-lowestAbundantSum n = if not(canBeSumofAbundant n) then n else lowestAbundantSum (n-1)
+lowestAbundantSumHelper :: Int -> [Int] -> Int
+lowestAbundantSumHelper n v = if not(canBeSumofAbundant n v) then n else lowestAbundantSumHelper (n-1) v
 
+lowestAbundantSum :: Int -> Int 
+lowestAbundantSum n = lowestAbundantSumHelper n (listAbundantNumbers n)
 
 main :: IO()
 main = do
@@ -43,7 +32,7 @@ main = do
     print(lowestAbundantSum(x :: Int))
 
 
-
+--0m27s
 
 
 
