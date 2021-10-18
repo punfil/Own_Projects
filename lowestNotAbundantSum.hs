@@ -22,8 +22,10 @@ canBeSumofAbundant n v= any (\x -> any (\y -> x + y == n) v) v
 lowestAbundantSumHelper :: Int -> [Int] -> Int
 lowestAbundantSumHelper n v = if not(canBeSumofAbundant n v) then n else lowestAbundantSumHelper (n-1) v
 
-lowestAbundantSum :: Int -> Int 
-lowestAbundantSum n = lowestAbundantSumHelper n (listAbundantNumbers n)
+lowestAbundantSum :: Int -> Int
+lowestAbundantSum n  
+    | n >= 20161 = 20161
+    | otherwise = lowestAbundantSumHelper n (listAbundantNumbers n)
 
 main :: IO()
 main = do
