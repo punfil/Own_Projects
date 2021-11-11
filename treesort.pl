@@ -15,7 +15,9 @@ traverse(nil, []).
 traverse(t(X, Left, Right), C) :- 
 	traverse(Left, R1),
 	traverse(Right, R2),
-	dolacz([X], R2, N),
-	dolacz(R1, N, C).
+	dolacz(R2, [X], N),
+	dolacz(N, R1, C).
+	%dolacz([X], R2, N),
+	%dolacz(R1, N, C).
 
 tree_sort(L, X) :- construct(L, T), traverse(T, X).
