@@ -18,7 +18,7 @@ traverse(t(X, Left, Right), C) :-
 	traverse(Right, R2),
 	dolacz(R2, [X], N),
 	dolacz(N, R1, C).
-	%dolacz([X], R2, N),
+	%dolacz([X], R2, N), Wersja rosnaca
 	%dolacz(R1, N, C).
 
 tree_sort(L, X) :- construct(L, T), traverse(T, X).
