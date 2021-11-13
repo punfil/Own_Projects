@@ -88,7 +88,7 @@ minimalizuj_najmniejszym([H|T], W) :-  tree_sort([H|T],[H1|T1]) , ostatni_z_list
     zmniejsz_n_ele_o_1(O,C,K), wytnij_zera(K, W), czy_lista_nie_ma_ujemnej(W).
 
 %Sprawdza czy suma stopni wierzcholkow jest wieksza od liczba_wierzcholkow-1
-czy_potencjalnie_spojny(L) :- suma_ele(L, S), dlugosc_listy(L, D), S >= D-1.
+czy_potencjalnie_spojny(L) :- suma_ele(L, S), dlugosc_listy(L, D), S >= 2*(D-1).
 
 czy_spojny(L) :- 
 	czy_minimalny(L),!; %Sprawdzi, czy lista jest pusta
