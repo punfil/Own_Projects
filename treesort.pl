@@ -24,6 +24,7 @@ traverse(t(X, Left, Right), C) :-
 tree_sort(L, X) :- construct(L, T), traverse(T, X).
 
 %Zadanie 2 - Czy ciag jest graficzny @Łukasz Smolinski
+%Algorytm - https://en.wikipedia.org/wiki/Havel%E2%80%93Hakimi_algorithm
 %-	Ciag jest graficzny jesli jego podciag jest graficzny
 %-	Podciągiem jest ciąg z wykluczeniem największego wierzchołka n i z odjeciem od pierwych
 % n wierzołków po nim liczby 1
@@ -62,6 +63,8 @@ czy_graficzny(L,X) :- czy_graficzny(L) ,!, X = "Ciag jest graficzny";
     X = "Ciag nie jest graficzny".
 
 %Zadanie 3 - Czy graf jest spójny @Wojciech Panfil
+%Algorytm zaczerpniety stad: http://szhorvat.net/pelican/hh-connected-graphs.html#connected
+%Smallest-First Havel_Hakimi Algorithm
 %Algorytm bazuje na algorytmie @Lukasz Smolinski, jednak do redukcji zawsze wybiera najmniejszy element.
 
 %Zwraca ostatni element listy
