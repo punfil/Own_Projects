@@ -175,15 +175,16 @@ LRESULT CALLBACK WndProc(HWND okno, UINT kod_meldunku, WPARAM wParam, LPARAM lPa
 		kontekst = BeginPaint(okno, &paint);
 
 		// MIEJSCE NA KOD GDI
+
 		//Pierwsza czesc kola, lewa
-		HPEN pioro = CreatePen(PS_SOLID, 10, RGB(255, 0, 0));
+		HPEN pioro = CreatePen(PS_SOLID, 1, RGB(255, 0, 0));
 		SelectObject(kontekst, pioro);
 		HBRUSH brush = CreateSolidBrush(RGB(255, 255, 0));
 		SelectObject(kontekst, brush);
 		Pie(kontekst, 150, 120, 390, 360, 270, 120, 270, 360);
 
 		//Druga czesc kola, prawa
-		pioro = CreatePen(PS_SOLID, 10, RGB(0, 255, 0));
+		pioro = CreatePen(PS_SOLID, 1, RGB(0, 255, 0));
 		SelectObject(kontekst, pioro);
 		brush = CreateSolidBrush(RGB(0, 255, 0));
 		SelectObject(kontekst, brush);
@@ -191,7 +192,7 @@ LRESULT CALLBACK WndProc(HWND okno, UINT kod_meldunku, WPARAM wParam, LPARAM lPa
 
 		//Zewnetrzna czesc litery P
 		POINT punkty_zewnetrzne[] = { {270, 350}, {270, 130}, {320, 130}, {330, 150}, {320, 170}, {280, 170}, {280, 350} };
-		pioro = CreatePen(PS_SOLID, 10, RGB(0, 0, 255));
+		pioro = CreatePen(PS_SOLID, 1, RGB(0, 0, 255));
 		SelectObject(kontekst, pioro);
 		brush = CreateSolidBrush(RGB(0, 0, 255));
 		SelectObject(kontekst, brush);
@@ -199,21 +200,18 @@ LRESULT CALLBACK WndProc(HWND okno, UINT kod_meldunku, WPARAM wParam, LPARAM lPa
 
 		//Wewnetrzna czesc litery P
 		POINT punkty_wewnetrzne[] = { {280, 140}, {310, 140}, {320, 150}, {310, 160}, {280, 160} };
-		pioro = CreatePen(PS_SOLID, 10, RGB(255,0,0));
+		pioro = CreatePen(PS_SOLID, 1, RGB(255, 0, 0));
 		SelectObject(kontekst, pioro);
-		brush = CreateSolidBrush(RGB(255,0,0));
+		brush = CreateSolidBrush(RGB(255, 0, 0));
 		SelectObject(kontekst, brush);
 		Polygon(kontekst, punkty_wewnetrzne, 5);
-		
-
-
 
 		pioro = CreatePen(PS_SOLID, 1, RGB(255, 0, 0));
 		brush = CreateSolidBrush(RGB(255, 0, 0));
 		SelectObject(kontekst, pioro);
 		SelectObject(kontekst, brush);
 		PolyBezier(kontekst, heart, 13);
-		
+
 		for (int i = 0; i < 13; i++)
 		{
 			Ellipse(kontekst, heart[i].x - 3, heart[i].y - 3, heart[i].x + 5, heart[i].y + 5);
