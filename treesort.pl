@@ -1,3 +1,6 @@
+%Task for Prolog programming classes. It implements a Tree Sort, graph consistency checking alghoritm and a game.
+
+
 %Zadanie 1 - Tree sort
 dolacz( [],L,L ).
 dolacz( [H|T],L,[H|X] ) :- dolacz( T,L,X ).
