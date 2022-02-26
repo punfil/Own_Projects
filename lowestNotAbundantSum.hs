@@ -1,3 +1,6 @@
+--Implementations of some math problem solving algorithms for Programming Languages Classes.
+
+
 -- Zadanie 16 Dla danej liczby n podaj najwieksza mniejsza rowna podanej, ktora nie moze zostac zapisana za pomoca sumy dwoch liczb obfitych
 module Main where
 
