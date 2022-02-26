@@ -1,3 +1,5 @@
+//Solving backpack problem using greedy algorithm
+
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <cstdlib> //malloc realloc
