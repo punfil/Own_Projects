@@ -1,3 +1,5 @@
+//Changes infix notation to ONP (postfix) notation. Uses stack created with templates.
+
 #include <iostream>
 
 template <typename T>
