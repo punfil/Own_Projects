@@ -45,7 +45,7 @@ def Sell(balance_before, money_after, exchangerate):
 # Data loading
 file = open('data.csv')
 csvreader = csv.reader(file)
-next(csvreader) #We ignore titles of columns
+next(csvreader)  # We ignore titles of columns
 closing_values = []
 dates = []
 # We load all the data in one list. Each element consist of: Date, Opening, Min, Max, Closing, Volume.
@@ -69,23 +69,26 @@ for i in range(N):
 x_values = [datetime.strptime(d, "%Y-%m-%d").date() for d in dates]
 
 # Plot showing closing rate in last 1000 days
+plt.figure(figsize=(12, 5))
 plt.plot(x_values, closing_values)
 plt.xlabel('Date of reading')
 plt.ylabel('Closing rate')
 plt.savefig("closing_rate.png", bbox_inches='tight', dpi=1200)
 plt.close()
 # MACD + SIGNAL plot
+plt.figure(figsize=(12, 5))
 plt.plot(x_values, MACD_Save)
 plt.plot(x_values, SIGNAL_Save)
 plt.savefig("macd+signal.png", bbox_inches='tight', dpi=1200)
 
 # Adding closing rate
+plt.figure(figsize=(12, 5))
 plt.plot(x_values, closing_values)
 # Vertical lines showing where SIGNAL and MACD have a cross-point
 for i in range(N - 1):
     if (MACD_Save[i] < SIGNAL_Save[i] and MACD_Save[i + 1] > SIGNAL_Save[i + 1]) or (
             MACD_Save[i] > SIGNAL_Save[i] and MACD_Save[i + 1] < SIGNAL_Save[i + 1]):
-        plt.axvline(x_values[i])
+        plt.axvline(x_values[i], color="orange")
 plt.savefig("macd+signal_closing_rate.png", bbox_inches='tight', dpi=1200)
 plt.close()
 
@@ -100,4 +103,4 @@ for i in range(N - 1):
         balance, money = Sell(balance, money, closing_values[i])
 if balance == 0:
     balance, money = Buy(balance, money, closing_values[len(closing_values) - 1])
-print("Beginning balance was 1000. Now you have", balance)
+print("Only MACD + SIGNAL crossings. Beginning balance was 1000. Now you have", balance)
