@@ -80,4 +80,38 @@
     \end{center}
 \end{frame}
 
+\begin{frame}{Graf spójny}
+    \begin{itemize}
+        \item Graf spójny (lub graf spójny) to graf, w którym istnieje ścieżka między każdą parą wierzchołków.
+        \item Oznacza to, że w grafie spójnym można przejść od dowolnego wierzchołka do dowolnego innego wierzchołka, przechodząc po krawędziach.
+        \item Grafy spójne są jednym spójnym "kawałkiem" bez izolowanych wierzchołków lub podgrafów, które nie są ze sobą połączone.
+    \end{itemize}
+    \begin{center}
+        \begin{tikzpicture}
+            \node[draw, circle] (A) at (0,0) {A};
+            \node[draw, circle] (B) at (2,0) {B};
+            \node[draw, circle] (C) at (4,0) {C};
+            \node[draw, circle] (D) at (6,0) {D};
+            \node[draw, circle] (E) at (8,0) {E};
+        
+            \draw (A) -- (B);
+            \draw (B) -- (C);
+            \draw (C) -- (D);
+            \draw (D) -- (E);
+        \end{tikzpicture}
+
+        \begin{tikzpicture}
+            \node[draw, circle] (A) at (0,0) {A};
+            \node[draw, circle] (B) at (1,0) {B};
+            \node[draw, circle] (C) at (2,0) {C};
+            \draw (A) -- (B);
+            \draw (B) -- (C);
+
+            \node[draw, circle] (D) at (4,0) {D};
+            \node[draw, circle] (E) at (5,0) {E};
+            \draw (D) -- (E);
+          \end{tikzpicture}
+    \end{center}
+\end{frame}
+
 \end{document}
