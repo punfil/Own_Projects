@@ -80,6 +80,27 @@
     \end{center}
 \end{frame}
 
+\begin{frame}{Ścieżka w grafie}
+    \begin{itemize}
+        \item Ścieżka w grafie to sekwencja wierzchołków, w której każda para sąsiadujących wierzchołków jest połączona krawędzią.
+        \item Ścieżka może być używana do reprezentowania trasy lub połączeń między wierzchołkami w grafie.
+    \end{itemize}  
+    \begin{center}
+        \begin{tikzpicture}
+            \node[draw, circle] (A) at (0,0) {A};
+            \node[draw, circle] (B) at (2,0) {B};
+            \node[draw, circle] (C) at (4,0) {C};
+            \node[draw, circle] (D) at (6,0) {D};
+        
+            \draw (A) -- (B);
+            \draw (B) -- (C);
+            \draw (C) -- (D);
+
+            \draw[red, thick] (A) -- (B) -- (C);
+        \end{tikzpicture}
+    \end{center}
+\end{frame}
+
 \begin{frame}{Graf spójny}
     \begin{itemize}
         \item Graf spójny (lub graf spójny) to graf, w którym istnieje ścieżka między każdą parą wierzchołków.
@@ -99,7 +120,6 @@
             \draw (C) -- (D);
             \draw (D) -- (E);
         \end{tikzpicture}
-
         \begin{tikzpicture}
             \node[draw, circle] (A) at (0,0) {A};
             \node[draw, circle] (B) at (1,0) {B};
