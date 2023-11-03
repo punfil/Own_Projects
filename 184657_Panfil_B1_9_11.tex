@@ -20,7 +20,6 @@ Graf - matematyczna struktura danych składająca się z wierzchołków oraz kra
 \begin{itemize}
     \item Wierzchołki (węzły) reprezentowane są jako punkty i należą do zbioru $V$.
     \item Krawędzie (łuki) łączą wierzchołki i należą do zbioru $E$.
-    \item Grafy mogą być skierowane (kierowane) lub nieskierowane (niekierowane).
 \end{itemize}
 
 \begin{center}
@@ -50,5 +49,29 @@ Graf - matematyczna struktura danych składająca się z wierzchołków oraz kra
 
 \end{frame}
 
+\begin{frame}{Graf Skierowany Digraf}
+
+\begin{itemize}
+  \item Graf skierowany, nazywany również digrafem, to rodzaj grafu, w którym krawędzie mają określony kierunek.
+  \item W digrafie każda krawędź ma źródło (początkowy wierzchołek) i cel (końcowy wierzchołek).
+  \item Krawędzie w digrafie są reprezentowane jako strzałki, które wskazują kierunek od źródła do celu.
+  \item Digrafy są używane do modelowania relacji, w których kierunek ma znaczenie, na przykład w sieciach telekomunikacyjnych czy ścieżkach przesyłu danych.
+\end{itemize}
+
+\begin{center}
+    \begin{tikzpicture}
+        \node[draw, circle] (v1) at (0,2) {v1};
+        \node[draw, circle] (v2) at (2,2) {v2};
+        \node[draw, circle] (v3) at (0,0) {v3};
+        \node[draw, circle] (v4) at (2,0) {v4};
+        
+
+        \draw[->] (v1) -- (v2);
+        \draw[->] (v2) -- (v4);
+        \draw[->] (v4) -- (v3);
+        \draw[->] (v3) -- (v1);
+      \end{tikzpicture}
+\end{center}
+\end{frame}
 
 \end{document}
