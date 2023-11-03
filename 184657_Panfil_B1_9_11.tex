@@ -101,6 +101,29 @@
     \end{center}
 \end{frame}
 
+\begin{frame}{Cykl w grafie}
+    \begin{itemize}
+        \item Cykl w grafie to ścieżka, która rozpoczyna się i kończy w tym samym wierzchołku, przechodząc przez różne wierzchołki i krawędzie.
+        \item Cykl może być krótki (zawierający tylko jeden wierzchołek i krawędź) lub długi.
+        \item Cykle są ważnymi strukturami w teorii grafów i są używane w różnych zastosowaniach, takich jak analiza obwodów elektronicznych lub planowanie tras.
+    \end{itemize}  
+    \begin{center}
+        \begin{tikzpicture}
+            \node[draw, circle] (A) at (0,0) {A};
+            \node[draw, circle] (B) at (2,0) {B};
+            \node[draw, circle] (C) at (4,0) {C};
+            \node[draw, circle] (D) at (6,0) {D};
+
+            \draw (A) -- (B);
+            \draw (B) -- (C);
+            \draw (C) -- (D);
+        
+            \draw[red, thick] (A) -- (B) -- (C) -- (D);
+            \draw[red, thick] (D) to [bend left] (A);
+        \end{tikzpicture}
+    \end{center}
+\end{frame}
+
 \begin{frame}{Graf spójny}
     \begin{itemize}
         \item Graf spójny (lub graf spójny) to graf, w którym istnieje ścieżka między każdą parą wierzchołków.
@@ -134,4 +157,7 @@
     \end{center}
 \end{frame}
 
+\begin{frame}{}
+
+\end{frame}
 \end{document}
