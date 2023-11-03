@@ -217,4 +217,218 @@
     \end{itemize}
 \end{frame}
 
+\begin{frame}{Algorytm Fleury'ego}
+    \begin{itemize}
+      \item Algorytm Fleury'ego to metoda rozwiązywania Problemu Chińskiego Listonosza w grafach nieskierowanych.
+      \item Celem algorytmu jest znalezienie zamkniętej ścieżki (cyklu), która przechodzi przez każdą krawędź grafu dokładnie raz.
+      \item Algorytm ten został nazwany na cześć szwajcarskiego matematyka Gustava Fleury'ego, który opublikował go w 1883 roku.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Działanie Algorytmu Fleury'ego (Kroki)}
+    \begin{enumerate}
+        \item Rozpocznij od dowolnego wierzchołka grafu.
+        \item Wybierz dowolną krawędź wychodzącą z bieżącego wierzchołka (o ile nie jest to most).
+        \item Dodaj wybraną krawędź do ścieżki i usuń ją z grafu.
+        \item Przejdź do wierzchołka, do którego prowadzi wybrana krawędź.
+        \item Powtarzaj kroki 2-4, aż nie będzie już dostępnych krawędzi wychodzących z bieżącego wierzchołka.
+        \item Jeśli istnieją niespójne składowe w grafie, wybierz wierzchołek w jednej z tych składowych i rozpocznij od niego nową ścieżkę.
+        \item Algorytm kończy się, gdy wszystkie krawędzie zostaną odwiedzone i dodane do ścieżki, tworząc zamknięty cykl.
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}{Algorytm Fleury'ego: Przykład}
+    \begin{itemize}
+          \item Rozważmy poniższy graf, który jest grafem nieskierowanym.
+    \end{itemize}
+    \begin{center}
+        \begin{tikzpicture}
+            \node[draw, circle] (A) at (0,0) {A};
+            \node[draw, circle] (B) at (-2,-2) {B};
+            \node[draw, circle] (C) at (0,-4) {C};
+            \node[draw, circle] (D) at (2,-2) {D};
+            \node[draw, circle] (E) at (2,-4) {E};
+
+            \draw (A) -- (B);
+            \draw (B) -- (C);
+            \draw (C) -- (D);
+            \draw (A) -- (C);
+            \draw (D) -- (E);
+            \draw (C) -- (E);
+        \end{tikzpicture}
+    \end{center}
+\end{frame}
+    
+\begin{frame}{Algorytm Fleury'ego: Przykład (cd.)}
+    \begin{itemize}
+        \item Rozpocznij od wybranego wierzchołka, na przykład wierzchołka A. Wpisz go na stos
+        \item Wybierz krawędź wychodzącą z wierzchołka A, która nie jest mostem, na przykład krawędź do B.
+        \item Wpisz wierzchołek B na stos.
+        \item Usuń tę krawędź z grafu.
+    \end{itemize}
+    \begin{center}
+        \begin{tikzpicture}
+            \node[draw, circle] (A) at (0,0) {A};
+            \node[draw, circle] (B) at (-2,-2) {B};
+            \node[draw, circle] (C) at (0,-4) {C};
+            \node[draw, circle] (D) at (2,-2) {D};
+            \node[draw, circle] (E) at (2,-4) {E};
+
+            \draw[red] (A) -- (B);
+            \draw (B) -- (C);
+            \draw (C) -- (D);
+            \draw (A) -- (C);
+            \draw (D) -- (E);
+            \draw (C) -- (E);
+        \end{tikzpicture}
+    \end{center}
+\end{frame}
+    
+\begin{frame}{Algorytm Fleury'ego: Przykład (cd.)}
+    \begin{itemize}
+        \item Przejdź do wierzchołka, do którego prowadzi wybrana krawędź, czyli do B.
+        \item Wybierz dowolną krawędź wychodzącą z wierzchołka B, która nie jest mostem, na przykład krawędź do C.
+        \item Wpisz wierzchołek C na stos.
+        \item Usuń tę krawędź z grafu.
+    \end{itemize}
+    \begin{center}
+        \begin{tikzpicture}
+            \node[draw, circle] (A) at (0,0) {A};
+            \node[draw, circle] (B) at (-2,-2) {B};
+            \node[draw, circle] (C) at (0,-4) {C};
+            \node[draw, circle] (D) at (2,-2) {D};
+            \node[draw, circle] (E) at (2,-4) {E};
+
+            \draw[red] (A) -- (B);
+            \draw[red] (B) -- (C);
+            \draw (C) -- (D);
+            \draw (A) -- (C);
+            \draw (D) -- (E);
+            \draw (C) -- (E);
+        \end{tikzpicture}
+    \end{center}
+\end{frame}
+
+\begin{frame}{Algorytm Fleury'ego: Przykład (cd.)}
+    \begin{itemize}
+      \item Przejdź do wierzchołka, do którego prowadzi wybrana krawędź, czyli do C.
+      \item Krawędź do A jest mostem.
+      \item Wybierz krawędź wychodzącą z wierzchołka C, która nie jest mostem, czyli np. krawędź do D.
+      \item Dodajemy wierzchołek D na stos.
+      \item Usuń tę krawędź z grafu.
+    \end{itemize}
+    \begin{center}
+        \begin{tikzpicture}
+            \node[draw, circle] (A) at (0,0) {A};
+            \node[draw, circle] (B) at (-2,-2) {B};
+            \node[draw, circle] (C) at (0,-4) {C};
+            \node[draw, circle] (D) at (2,-2) {D};
+            \node[draw, circle] (E) at (2,-4) {E};
+
+            \draw[red] (A) -- (B);
+            \draw[red] (B) -- (C);
+            \draw[red] (C) -- (D);
+            \draw (A) -- (C);
+            \draw (D) -- (E);
+            \draw (C) -- (E);
+        \end{tikzpicture}
+    \end{center}
+
+\end{frame}
+
+\begin{frame}{Algorytm Fleury'ego: Przykład (cd.)}
+    \begin{itemize}
+          \item Przejdź do wierzchołka, do którego prowadzi wybrana krawędź, czyli do D.
+        \item Wybierz jedyną krawędź wychodzącą z wierzchołka D, czyli krawędź do E.
+        \item Usuń tę krawędź z grafu, a wierzchołek E dodaj na stos.
+    \end{itemize}
+    \begin{center}
+        \begin{tikzpicture}
+            \node[draw, circle] (A) at (0,0) {A};
+            \node[draw, circle] (B) at (-2,-2) {B};
+            \node[draw, circle] (C) at (0,-4) {C};
+            \node[draw, circle] (D) at (2,-2) {D};
+            \node[draw, circle] (E) at (2,-4) {E};
+
+            \draw[red] (A) -- (B);
+            \draw[red] (B) -- (C);
+            \draw[red] (C) -- (D);
+            \draw (A) -- (C);
+            \draw[red] (D) -- (E);
+            \draw (C) -- (E);
+        \end{tikzpicture}
+    \end{center}
+\end{frame}
+
+\begin{frame}{Algorytm Fleury'ego: Przykład (cd.)}
+    \begin{itemize}
+        \item Przejdź do wierzchołka, do którego prowadzi wybrana krawędź, czyli do E.
+        \item Wybierz jedyną krawędź wychodzącą z wierzchołka E, czyli krawędź do C.
+        \item Usuń tę krawędź z grafu, a wierzchołek E dodaj na stos.
+    \end{itemize}
+    \begin{center}
+        \begin{tikzpicture}
+            \node[draw, circle] (A) at (0,0) {A};
+            \node[draw, circle] (B) at (-2,-2) {B};
+            \node[draw, circle] (C) at (0,-4) {C};
+            \node[draw, circle] (D) at (2,-2) {D};
+            \node[draw, circle] (E) at (2,-4) {E};
+
+            \draw[red] (A) -- (B);
+            \draw[red] (B) -- (C);
+            \draw[red] (C) -- (D);
+            \draw (A) -- (C);
+            \draw[red] (D) -- (E);
+            \draw[red] (C) -- (E);
+        \end{tikzpicture}
+    \end{center}
+\end{frame}
+
+\begin{frame}{Algorytm Fleury'ego: Przykład (cd.)}
+    \begin{itemize}
+        \item Przejdź do wierzchołka, do którego prowadzi wybrana krawędź, czyli do C.
+        \item Wybierz jedyną krawędź wychodzącą z wierzchołka C, czyli krawędź do A.
+        \item Usuń tę krawędź z grafu, a wierzchołek A dodaj na stos.
+    \end{itemize}
+    \begin{center}
+        \begin{tikzpicture}
+            \node[draw, circle] (A) at (0,0) {A};
+            \node[draw, circle] (B) at (-2,-2) {B};
+            \node[draw, circle] (C) at (0,-4) {C};
+            \node[draw, circle] (D) at (2,-2) {D};
+            \node[draw, circle] (E) at (2,-4) {E};
+
+            \draw[red] (A) -- (B);
+            \draw[red] (B) -- (C);
+            \draw[red] (C) -- (D);
+            \draw[red] (A) -- (C);
+            \draw[red] (D) -- (E);
+            \draw[red] (C) -- (E);
+        \end{tikzpicture}
+    \end{center}
+\end{frame}
+
+\begin{frame}{Algorytm Fleury'ego: Przykład (cd.)}
+    \begin{itemize}
+        \item W wyniku działania algorytmu Fleury'ego znaleziona została zamknięta ścieżka przechodząca przez każdą krawędź dokładnie raz.
+        \item Znaleziony cykl jest zapisany na stosie w odwrotnej kolejności: A - C - E - D - C - B - A
+    \end{itemize}
+    \begin{center}
+        \begin{tikzpicture}
+            \node[draw, circle] (A) at (0,0) {A};
+            \node[draw, circle] (B) at (-2,-2) {B};
+            \node[draw, circle] (C) at (0,-4) {C};
+            \node[draw, circle] (D) at (2,-2) {D};
+            \node[draw, circle] (E) at (2,-4) {E};
+
+            \draw[red] (A) -- (B);
+            \draw[red] (B) -- (C);
+            \draw[red] (C) -- (D);
+            \draw[red] (A) -- (C);
+            \draw[red] (D) -- (E);
+            \draw[red] (C) -- (E);
+        \end{tikzpicture}
+    \end{center}
+\end{frame}
+
 \end{document}
