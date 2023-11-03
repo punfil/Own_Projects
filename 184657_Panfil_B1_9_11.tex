@@ -61,5 +61,23 @@
     \end{center}
 \end{frame}
 
+\begin{frame}{Graf ważony}
+    \begin{itemize}
+        \item Graf ważony to rodzaj grafu, w którym każda krawędź ma przypisaną wagę lub koszt.
+        \item Wagi krawędzi mogą reprezentować różne parametry, takie jak odległość, koszt, czas, lub dowolną inną miarę.
+        \item Wagi krawędzi są często reprezentowane na krawędziach lub przy użyciu etykiet.
+        \item Grafy ważone używane są w różnych dziedzinach, takich jak planowanie tras, sieci komunikacyjne, i analiza danych.
+    \end{itemize}
+    \begin{center}
+        \begin{tikzpicture}
+            \node[draw, circle] (A) at (0,0) {A};
+            \node[draw, circle] (B) at (2,0) {B};
+            \node[draw, circle] (C) at (4,0) {C};
+
+            \draw[->] (A) -- (B) node[midway, below] {5};
+            \draw[->] (B) -- (C) node[midway, below] {3};
+        \end{tikzpicture}
+    \end{center}
+\end{frame}
 
 \end{document}
