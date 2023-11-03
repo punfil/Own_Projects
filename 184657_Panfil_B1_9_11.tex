@@ -80,7 +80,7 @@
     \end{center}
 \end{frame}
 
-\begin{frame}{Ścieżka w grafie}
+\begin{frame}{Ścieżka/Trasa w grafie}
     \begin{itemize}
         \item Ścieżka w grafie to sekwencja wierzchołków, w której każda para sąsiadujących wierzchołków jest połączona krawędzią.
         \item Ścieżka może być używana do reprezentowania trasy lub połączeń między wierzchołkami w grafie.
@@ -157,7 +157,24 @@
     \end{center}
 \end{frame}
 
-\begin{frame}{}
+\begin{frame}{Graf eulerowski}
+    \begin{itemize}
+        \item Graf eulerowski to graf, który ma ścieżkę (trasę) wzdłuż krawędzi, która przechodzi przez każdą krawędź dokładnie raz i wraca do wierzchołka początkowego.
+        \item Graf eulerowski jest nazwany na cześć matematyka Leonarda Eulera, który opracował teorię grafów.
+        \item W grafie eulerowskim nie musi istnieć cykl eulerowski (ścieżka może być zamknięta lub otwarta).
+    \end{itemize}
+    \begin{center}
+        \begin{tikzpicture}
+            \node[draw, circle] (A) at (0,0) {A};
+            \node[draw, circle] (B) at (2,0) {B};
+            \node[draw, circle] (C) at (4,0) {C};
+            \node[draw, circle] (D) at (6,0) {D};
 
+            \draw (A) -- (B);
+            \draw (B) -- (C);
+            \draw (C) -- (D);
+            \draw (D) to [bend left] (A);
+        \end{tikzpicture}
+    \end{center}
 \end{frame}
 \end{document}
