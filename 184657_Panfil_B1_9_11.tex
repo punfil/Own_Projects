@@ -177,4 +177,24 @@
         \end{tikzpicture}
     \end{center}
 \end{frame}
+
+\begin{frame}{Graf półeulerowski}
+    \begin{itemize}
+        \item Graf półeulerowski (półeulerowski) to graf, w którym istnieje ścieżka (trasa) przechodząca przez każdą krawędź dokładnie raz, ale nie musi wracać do wierzchołka początkowego.
+        \item Graf półeulerowski różni się od grafu eulerowskiego tym, że nie musi tworzyć cyklu, ale nadal zawiera trasę, która pokrywa wszystkie krawędzie.
+        \item Przykładem grafu półeulerowskiego jest drzewo lub las, gdzie istnieje dokładnie jedna para wierzchołków stopnia nieparzystego.
+    \end{itemize}
+    \begin{center}
+        \begin{tikzpicture}
+            \node[draw, circle] (A) at (0,0) {A};
+            \node[draw, circle] (B) at (2,0) {B};
+            \node[draw, circle] (C) at (4,0) {C};
+            \node[draw, circle] (D) at (6,0) {D};
+
+            \draw (A) -- (B);
+            \draw (B) -- (C);
+            \draw (C) -- (D);
+        \end{tikzpicture}
+    \end{center}
+\end{frame}
 \end{document}
