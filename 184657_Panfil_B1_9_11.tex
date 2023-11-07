@@ -12,11 +12,13 @@
 \frame{\titlepage}
 
 \begin{frame}{Graf}
-    Graf - matematyczna struktura danych składająca się z wierzchołków oraz krawędzi.
-    \begin{itemize}
-        \item Wierzchołki (węzły) reprezentowane są jako punkty i należą do zbioru $V$.
-        \item Krawędzie (łuki) łączą wierzchołki i należą do zbioru $E$.
-    \end{itemize}
+    \begin{block}{Graf}
+        matematyczna struktura danych składająca się z wierzchołków oraz krawędzi.
+        \begin{itemize}
+            \item Wierzchołki (węzły) reprezentowane są jako punkty i należą do zbioru $V$.
+            \item Krawędzie (łuki) łączą wierzchołki i należą do zbioru $E$.
+        \end{itemize}
+    \end{block}
     \begin{center}
         \begin{tikzpicture}
             \node[draw, circle] (v1) at (0,0) {v\textsubscript{1}};
@@ -39,12 +41,14 @@
 \end{frame}
 
 \begin{frame}{Graf skierowany (digraf)}
-    \begin{itemize}
-    \item Graf skierowany, nazywany również digrafem, to rodzaj grafu, w którym krawędzie mają określony kierunek.
-    \item W digrafie każda krawędź ma źródło (początkowy wierzchołek) i cel (końcowy wierzchołek).
-    \item Krawędzie w digrafie są reprezentowane jako strzałki, które wskazują kierunek od źródła do celu.
-    \item Digrafy są używane do modelowania relacji, w których kierunek ma znaczenie, na przykład w sieciach telekomunikacyjnych czy ścieżkach przesyłu danych.
-    \end{itemize}
+    \begin{block}{Graf skierowany - digraf}
+        Graf, w którym krawędzie mają określony kierunek.
+        \begin{itemize}
+        \item W digrafie każda krawędź ma źródło (początkowy wierzchołek) i cel (końcowy wierzchołek).
+        \item Krawędzie w digrafie są reprezentowane jako strzałki, które wskazują kierunek od źródła do celu.
+        \item Digrafy są używane do modelowania relacji, w których kierunek ma znaczenie, na przykład w sieciach telekomunikacyjnych czy ścieżkach przesyłu danych.
+        \end{itemize}
+    \end{block}
 
     \begin{center}
         \begin{tikzpicture}
@@ -62,12 +66,14 @@
 \end{frame}
 
 \begin{frame}{Graf ważony}
-    \begin{itemize}
-        \item Graf ważony to rodzaj grafu, w którym każda krawędź ma przypisaną wagę lub koszt.
-        \item Wagi krawędzi mogą reprezentować różne parametry, takie jak odległość, koszt, czas, lub dowolną inną miarę.
-        \item Wagi krawędzi są często reprezentowane na krawędziach lub przy użyciu etykiet.
-        \item Grafy ważone używane są w różnych dziedzinach, takich jak planowanie tras, sieci komunikacyjne, i analiza danych.
-    \end{itemize}
+    \begin{block}{Graf ważony}
+        Graf, w którym każda krawędź ma przypisaną wagę.
+        \begin{itemize}
+            \item Wagi krawędzi mogą reprezentować różne parametry, takie jak odległość, koszt, czas, lub dowolną inną miarę.
+            \item Wagi krawędzi są często reprezentowane na krawędziach lub przy użyciu etykiet.
+            \item Grafy ważone używane są w różnych dziedzinach, takich jak planowanie tras, sieci komunikacyjne, i analiza danych.
+        \end{itemize}
+    \end{block}
     \begin{center}
         \begin{tikzpicture}
             \node[draw, circle] (A) at (0,0) {A};
@@ -105,7 +111,7 @@
     \begin{itemize}
         \item Cykl w grafie to ścieżka, która rozpoczyna się i kończy w tym samym wierzchołku, przechodząc przez różne wierzchołki i krawędzie.
         \item Cykl może być krótki (zawierający tylko jeden wierzchołek i krawędź) lub długi.
-        \item Cykle są ważnymi strukturami w teorii grafów i są używane w różnych zastosowaniach, takich jak analiza obwodów elektronicznych lub planowanie tras.
+        \item Są używane w różnych zastosowaniach, takich jak analiza obwodów elektronicznych lub planowanie tras.
     \end{itemize}  
     \begin{center}
         \begin{tikzpicture}
@@ -159,7 +165,7 @@
 
 \begin{frame}{Graf eulerowski}
     \begin{itemize}
-        \item Graf eulerowski to graf, który ma ścieżkę (trasę zamkniętą, cykl) wzdłuż krawędzi, która przechodzi przez każdą krawędź dokładnie raz i wraca do wierzchołka początkowego.
+        \item Graf eulerowski to graf, który ma ścieżkę zamkniętą (cykl) wzdłuż krawędzi, która przechodzi przez każdą krawędź dokładnie raz i wraca do wierzchołka początkowego.
         \item Graf eulerowski jest nazwany na cześć matematyka Leonarda Eulera, który opracował teorię grafów.
         \item W grafie eulerowskim nie musi istnieć cykl eulerowski (ścieżka może być zamknięta lub otwarta).
     \end{itemize}
@@ -180,9 +186,8 @@
 
 \begin{frame}{Graf półeulerowski}
     \begin{itemize}
-        \item Graf półeulerowski (półeulerowski) to graf, w którym istnieje ścieżka (trasa) przechodząca przez każdą krawędź dokładnie raz, ale nie musi wracać do wierzchołka początkowego.
+        \item Graf półeulerowski to graf, w którym istnieje ścieżka przechodząca przez każdą krawędź dokładnie raz, ale nie musi wracać do wierzchołka początkowego.
         \item Graf półeulerowski różni się od grafu eulerowskiego tym, że nie musi tworzyć cyklu, ale nadal zawiera trasę, która pokrywa wszystkie krawędzie.
-        \item Przykładem grafu półeulerowskiego jest drzewo lub las, gdzie istnieje dokładnie jedna para wierzchołków stopnia nieparzystego.
     \end{itemize}
     \begin{center}
         \begin{tikzpicture}
@@ -200,10 +205,9 @@
 
 \begin{frame}{Problem Chińskiego Listonosza (Chinese Postman Problem)}
     \begin{itemize}
-        \item Problem Chińskiego Listonosza (Chinese Postman Problem, CPP) to znane zadanie w teorii grafów.
-        \item Celem problemu jest znalezienie najkrótszej (najmniejszej wagi) zamkniętej ścieżki w grafie, która odwiedza każdą krawędź co najmniej raz.
-        \item Wariantem problemu jest Problem Chinskiego Listonosza Cyklicznego (Chinese Postman Cycle Problem), który polega na znalezieniu najkrótszej zamkniętej ścieżki, która odwiedza każdą krawędź dokładnie raz.
-        \item Innym wariantem jest Problem Chińskiego Listonosza Skierowanego (Directed Chinese Postman Problem), który w digrafie.
+        \item Celem problemu jest znalezienie najkrótszej (o minimalnej wadze) zamkniętej ścieżki (cyklu) w grafie, która odwiedza każdą krawędź co najmniej raz.
+        \item Innym wariantem jest Problem Chińskiego Listonosza w grafie skierowanym (Directed Chinese Postman Problem).
+        \item Powyższy wariant może mieć zastosowanie, kiedy mamy do czynienia z np. ulicami jednokierunkowymi.
         \item Problem Chińskiego Listonosza ma liczne zastosowania w planowaniu tras, projektowaniu sieci, logistyce, i innych dziedzinach.
     \end{itemize}
 \end{frame}
@@ -211,15 +215,14 @@
 \begin{frame}{Historia Problemu Chińskiego Listonosza}
     \begin{itemize}
         \item Problem Chińskiego Listonosza został wprowadzony w matematyce i teorii grafów przez chińskiego matematyka Kuan Xun w 1962 roku.
-        \item Choć nazwa problemu nawiązuje do Chin, problem ten stał się ważnym zagadnieniem w teorii grafów na całym świecie.
         \item Pierwsze prace nad problemem były głównie związane z rozwiązywaniem go w grafach nieskierowanych.
-        \item W późniejszych latach pojawiły się badania nad wariantem problemu w grafach skierowanych, który stał się znany jako Problem Chińskiego Listonosza Skierowanego.
+        \item W późniejszych latach pojawiły się badania nad wariantem problemu w grafach skierowanych.
     \end{itemize}
 \end{frame}
 
 \begin{frame}{Algorytm Fleury'ego}
     \begin{itemize}
-      \item Algorytm Fleury'ego to metoda rozwiązywania Problemu Chińskiego Listonosza w grafach nieskierowanych.
+      \item Algorytm Fleury'ego to metoda rozwiązywania Problemu Chińskiego Listonosza w grafach spójnych, nieskierowanych.
       \item Celem algorytmu jest znalezienie zamkniętej ścieżki (cyklu), która przechodzi przez każdą krawędź grafu dokładnie raz.
       \item Algorytm ten został nazwany na cześć szwajcarskiego matematyka Gustava Fleury'ego, który opublikował go w 1883 roku.
     \end{itemize}
@@ -228,18 +231,18 @@
 \begin{frame}{Działanie Algorytmu Fleury'ego (Kroki)}
     \begin{enumerate}
         \item Rozpocznij od dowolnego wierzchołka grafu. Dodaj go na stos.
-        \item Wybierz dowolną krawędź wychodzącą z bieżącego wierzchołka (o ile nie jest to most).
-        \item Dodaj wybraną krawędź do ścieżki i usuń ją z grafu.
+        \item Wybierz dowolną krawędź wychodzącą z bieżącego wierzchołka (o ile nie jest to most)  i usuń ją z grafu.
+        \item Jeżeli zostały wyłącznie mosty, wybierz jeden z nich i usuń go z grafu.
         \item Przejdź do wierzchołka, do którego prowadzi wybrana krawędź. Dodaj go na stos.
         \item Powtarzaj kroki 2-4, aż nie będzie już dostępnych krawędzi wychodzących z bieżącego wierzchołka.
         \item Jeśli istnieją niespójne składowe w grafie, wybierz wierzchołek w jednej z tych składowych i rozpocznij od niego nową ścieżkę.
-        \item Algorytm kończy się, gdy wszystkie krawędzie zostaną odwiedzone i dodane do ścieżki, tworząc zamknięty cykl.
+        \item Algorytm kończy się, gdy wszystkie krawędzie zostaną odwiedzone i dodane do ścieżki.
     \end{enumerate}
 \end{frame}
 
 \begin{frame}{Algorytm Fleury'ego: Przykład}
     \begin{itemize}
-          \item Rozważmy poniższy graf, który jest grafem nieskierowanym.
+          \item Rozważmy poniższy spójny, nieskierowany graf.
     \end{itemize}
     \begin{center}
         \begin{tikzpicture}
