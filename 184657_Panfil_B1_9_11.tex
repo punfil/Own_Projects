@@ -11,208 +11,102 @@
 
 \frame{\titlepage}
 
-\begin{frame}{Graf}
-    \begin{block}{Graf}
-        matematyczna struktura danych składająca się z wierzchołków oraz krawędzi.
-        \begin{itemize}
-            \item Wierzchołki (węzły) reprezentowane są jako punkty i należą do zbioru $V$.
-            \item Krawędzie (łuki) łączą wierzchołki i należą do zbioru $E$.
-        \end{itemize}
-    \end{block}
-    \begin{center}
-        \begin{tikzpicture}
-            \node[draw, circle] (v1) at (0,0) {v\textsubscript{1}};
-            \node[draw, circle] (v2) at (2,0) {v$_2$};
-            \node[draw, circle] (v3) at (2,2) {v$_3$};
-            \node[draw, circle] (v4) at (0,2) {v$_4$};
-
-            \draw (v1) -- (v2) node[midway, below] {v$_1$v$_2$};
-            \draw (v2) -- (v3) node[midway, right] {v$_1$v$_3$};
-            \draw (v3) -- (v4) node[midway, above] {v$_3$v$_4$};
-            \draw (v4) -- (v1) node[midway, left] {v$_4$v$_1$};
-            \draw (v1) -- (v3) node[midway, left] {v$_1$v$_3$};
-        \end{tikzpicture}
-    \end{center}
-    \begin{itemize}
-        \item G = ($V$ , $E$)
-        \item $V$ = \{v$_1$, v$_2$, v$_3$, v$_4$\}
-        \item $E$ = \{v$_1$v$_2$, v$_1$v$_3$, v$_3$v$_4$, v$_4$v$_1$, v$_1$v$_3$\}
-    \end{itemize}
-\end{frame}
-
-\begin{frame}{Graf skierowany (digraf)}
-    \begin{block}{Graf skierowany - digraf}
-        Graf, w którym krawędzie mają określony kierunek.
-        \begin{itemize}
-        \item W digrafie każda krawędź ma źródło (początkowy wierzchołek) i cel (końcowy wierzchołek).
-        \item Krawędzie w digrafie są reprezentowane jako strzałki, które wskazują kierunek od źródła do celu.
-        \item Digrafy są używane do modelowania relacji, w których kierunek ma znaczenie, na przykład w sieciach telekomunikacyjnych czy ścieżkach przesyłu danych.
-        \end{itemize}
-    \end{block}
-
-    \begin{center}
-        \begin{tikzpicture}
-            \node[draw, circle] (v1) at (0,2) {v1};
-            \node[draw, circle] (v2) at (2,2) {v2};
-            \node[draw, circle] (v3) at (0,0) {v3};
-            \node[draw, circle] (v4) at (2,0) {v4};
-
-            \draw[->] (v1) -- (v2);
-            \draw[->] (v2) -- (v4);
-            \draw[->] (v4) -- (v3);
-            \draw[->] (v3) -- (v1);
-        \end{tikzpicture}
-    \end{center}
-\end{frame}
-
-\begin{frame}{Graf ważony}
-    \begin{block}{Graf ważony}
-        Graf, w którym każda krawędź ma przypisaną wagę.
-        \begin{itemize}
-            \item Wagi krawędzi mogą reprezentować różne parametry, takie jak odległość, koszt, czas, lub dowolną inną miarę.
-            \item Wagi krawędzi są często reprezentowane na krawędziach lub przy użyciu etykiet.
-            \item Grafy ważone używane są w różnych dziedzinach, takich jak planowanie tras, sieci komunikacyjne, i analiza danych.
-        \end{itemize}
-    \end{block}
-    \begin{center}
-        \begin{tikzpicture}
-            \node[draw, circle] (A) at (0,0) {A};
-            \node[draw, circle] (B) at (2,0) {B};
-            \node[draw, circle] (C) at (4,0) {C};
-
-            \draw[->] (A) -- (B) node[midway, below] {5};
-            \draw[->] (B) -- (C) node[midway, below] {3};
-        \end{tikzpicture}
-    \end{center}
-\end{frame}
-
-\begin{frame}{Ścieżka/Trasa w grafie}
-    \begin{itemize}
-        \item Ścieżka w grafie to sekwencja wierzchołków, w której każda para sąsiadujących wierzchołków jest połączona krawędzią.
-        \item Ścieżka może być używana do reprezentowania trasy lub połączeń między wierzchołkami w grafie.
-    \end{itemize}  
-    \begin{center}
-        \begin{tikzpicture}
-            \node[draw, circle] (A) at (0,0) {A};
-            \node[draw, circle] (B) at (2,0) {B};
-            \node[draw, circle] (C) at (4,0) {C};
-            \node[draw, circle] (D) at (6,0) {D};
-        
-            \draw (A) -- (B);
-            \draw (B) -- (C);
-            \draw (C) -- (D);
-
-            \draw[red, thick] (A) -- (B) -- (C);
-        \end{tikzpicture}
-    \end{center}
-\end{frame}
-
-\begin{frame}{Cykl w grafie}
-    \begin{itemize}
-        \item Cykl w grafie to ścieżka, która rozpoczyna się i kończy w tym samym wierzchołku, przechodząc przez różne wierzchołki i krawędzie.
-        \item Cykl może być krótki (zawierający tylko jeden wierzchołek i krawędź) lub długi.
-        \item Są używane w różnych zastosowaniach, takich jak analiza obwodów elektronicznych lub planowanie tras.
-    \end{itemize}  
-    \begin{center}
-        \begin{tikzpicture}
-            \node[draw, circle] (A) at (0,0) {A};
-            \node[draw, circle] (B) at (2,0) {B};
-            \node[draw, circle] (C) at (4,0) {C};
-            \node[draw, circle] (D) at (6,0) {D};
-
-            \draw (A) -- (B);
-            \draw (B) -- (C);
-            \draw (C) -- (D);
-        
-            \draw[red, thick] (A) -- (B) -- (C) -- (D);
-            \draw[red, thick] (D) to [bend left] (A);
-        \end{tikzpicture}
-    \end{center}
-\end{frame}
-
-\begin{frame}{Graf spójny}
-    \begin{itemize}
-        \item Graf spójny (lub graf spójny) to graf, w którym istnieje ścieżka między każdą parą wierzchołków.
-        \item Oznacza to, że w grafie spójnym można przejść od dowolnego wierzchołka do dowolnego innego wierzchołka, przechodząc po krawędziach.
-        \item Grafy spójne są jednym spójnym "kawałkiem" bez izolowanych wierzchołków lub podgrafów, które nie są ze sobą połączone.
-    \end{itemize}
-    \begin{center}
-        \begin{tikzpicture}
-            \node[draw, circle] (A) at (0,0) {A};
-            \node[draw, circle] (B) at (2,0) {B};
-            \node[draw, circle] (C) at (4,0) {C};
-            \node[draw, circle] (D) at (6,0) {D};
-            \node[draw, circle] (E) at (8,0) {E};
-        
-            \draw (A) -- (B);
-            \draw (B) -- (C);
-            \draw (C) -- (D);
-            \draw (D) -- (E);
-        \end{tikzpicture}
-        \begin{tikzpicture}
-            \node[draw, circle] (A) at (0,0) {A};
-            \node[draw, circle] (B) at (1,0) {B};
-            \node[draw, circle] (C) at (2,0) {C};
-            \draw (A) -- (B);
-            \draw (B) -- (C);
-
-            \node[draw, circle] (D) at (4,0) {D};
-            \node[draw, circle] (E) at (5,0) {E};
-            \draw (D) -- (E);
-          \end{tikzpicture}
-    \end{center}
-\end{frame}
-
 \begin{frame}{Graf eulerowski}
-    \begin{itemize}
-        \item Graf eulerowski to graf, który ma ścieżkę zamkniętą (cykl) wzdłuż krawędzi, która przechodzi przez każdą krawędź dokładnie raz i wraca do wierzchołka początkowego.
-        \item Graf eulerowski jest nazwany na cześć matematyka Leonarda Eulera, który opracował teorię grafów.
-        \item W grafie eulerowskim nie musi istnieć cykl eulerowski (ścieżka może być zamknięta lub otwarta).
-    \end{itemize}
+    \begin{block}{Graf eulerowski}
+        Graf spójny, który posiada wszystkie wierzchołki o stopniu parzystym, mający cykl zawierający wszystkie krawędzie.
+    \end{block}
     \begin{center}
         \begin{tikzpicture}
-            \node[draw, circle] (A) at (0,0) {A};
-            \node[draw, circle] (B) at (2,0) {B};
-            \node[draw, circle] (C) at (4,0) {C};
-            \node[draw, circle] (D) at (6,0) {D};
+            \node[draw, circle] (A) at (0,2) {A};
+            \node[draw, circle] (B) at (-2,0) {B};
+            \node[draw, circle] (C) at (2,0) {C};
+            \node[draw, circle] (D) at (-2,-2) {D};
+            \node[draw, circle] (E) at (2,-2) {E};
+            \node[draw, circle] (F) at (0,-4) {F};
 
+            \draw (A) -- (D);
             \draw (A) -- (B);
-            \draw (B) -- (C);
-            \draw (C) -- (D);
-            \draw (D) to [bend left] (A);
+            \draw (B) -- (D);
+            \draw (A) -- (C);
+            \draw (C) -- (E);
+            \draw (A) -- (E);
+            \draw (D) -- (E);
+            \draw (D) -- (F);
+            \draw (E) -- (F);
         \end{tikzpicture}
     \end{center}
 \end{frame}
 
 \begin{frame}{Graf półeulerowski}
-    \begin{itemize}
-        \item Graf półeulerowski to graf, w którym istnieje ścieżka przechodząca przez każdą krawędź dokładnie raz, ale nie musi wracać do wierzchołka początkowego.
-        \item Graf półeulerowski różni się od grafu eulerowskiego tym, że nie musi tworzyć cyklu, ale nadal zawiera trasę, która pokrywa wszystkie krawędzie.
-    \end{itemize}
+    \begin{block}{Graf półeulerowski}
+        \begin{itemize}
+            \item Graf, w którym istnieje ścieżka przechodząca przez każdą krawędź dokładnie raz.
+            \item Graf taki jest spójny i posiada dwa wierzchołki o stopniu nieparzystym.
+            \item Jeden z nich jest początkiem, drugi końcem ścieżki Eulera.
+        \end{itemize}
+    \end{block}
     \begin{center}
         \begin{tikzpicture}
-            \node[draw, circle] (A) at (0,0) {A};
-            \node[draw, circle] (B) at (2,0) {B};
-            \node[draw, circle] (C) at (4,0) {C};
-            \node[draw, circle] (D) at (6,0) {D};
+            \node[draw, circle] (A) at (0,2) {A};
+            \node[draw, circle] (B) at (-2,0) {B};
+            \node[draw, circle] (C) at (2,0) {C};
+            \node[draw, circle] (D) at (-2,-2) {D};
+            \node[draw, circle] (E) at (2,-2) {E};
+            \node[draw, circle] (F) at (0,-4) {F};
 
+            \draw (A) -- (D);
             \draw (A) -- (B);
+            \draw (B) -- (D);
+            \draw (A) -- (C);
+            \draw (C) -- (E);
             \draw (B) -- (C);
-            \draw (C) -- (D);
+            \draw (A) -- (E);
+            \draw (D) -- (E);
+            \draw (D) -- (F);
+            \draw (E) -- (F);
         \end{tikzpicture}
     \end{center}
 \end{frame}
 
-\begin{frame}{Problem Chińskiego Listonosza (Chinese Postman Problem)}
-    \begin{itemize}
-        \item Celem problemu jest znalezienie najkrótszej (o minimalnej wadze) zamkniętej ścieżki (cyklu) w grafie, która odwiedza każdą krawędź co najmniej raz.
-        \item Innym wariantem jest Problem Chińskiego Listonosza w grafie skierowanym (Directed Chinese Postman Problem).
-        \item Powyższy wariant może mieć zastosowanie, kiedy mamy do czynienia z np. ulicami jednokierunkowymi.
-        \item Problem Chińskiego Listonosza ma liczne zastosowania w planowaniu tras, projektowaniu sieci, logistyce, i innych dziedzinach.
-    \end{itemize}
+\begin{frame}{Twierdzenie Eulera - dowód}
+\begin{block}{Twierdzenie Eulera}
+    Graf spójny jest eulerowski wtedy i tylko wtedy, gdy
+    stopień każdego wierzchołka jest liczbą parzystą.
+\end{block}
+\begin{block}{Dowód}
+    Jeśli C jest cyklem Eulera w G, to trawersujemy i usuwamy
+    krawędzie w E(G) zgodnie z kolejnością zadaną przez C. Gdy przechodzimy
+    przez dowolny wierzchołek v, to usuwamy dwie incydentne z nim krawędzie,
+    więc stopień tego wierzchołka w tak zredukowanym grafie pozostaje
+    parzysty.
+\end{block}
 \end{frame}
 
-\begin{frame}{Historia Problemu Chińskiego Listonosza}
+\begin{frame}{Grafy eulerowskie - historia}
+    \begin{block}{Mosty królewieckie}
+        Nazwa „eulerowski” pochodzi stąd, iż Euler w 1736r. rozwiązał „problem
+        mostów królewieckich”. Pytano, czy można przejść dokładnie raz przez
+        każdy z siedmiu mostów tak, aby powrócić do punktu wyjścia.
+    \end{block}
+\end{frame}
+
+\begin{frame}{Problem Chińskiego Listonosza (Chinese Postman Problem)}
+    \begin{block}{Problem Chińskiego Listonosza}
+        Celem jest znalezienie cyklu Eulera.
+        Można podzielić go ze względu na rodzaj grafu:
+        \begin{itemize}
+            \item Graf (nie)ważony - cykl o najmniejszej wadze.
+            \item Graf (nie)skierowany - "ulice jednokierunkowe".
+        \end{itemize}
+        Inne warianty:
+        \begin{itemize}
+            \item Windy Chinese Postman Problem - graf ważony, koszt zależy od kierunku poruszania się.
+            \item Mixed Chinese Postman Problem - graf częściowo skierowany - nie wszystkie krawędzie mają kierunek.
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+\begin{frame}{Historia CPP}
     \begin{itemize}
         \item Problem Chińskiego Listonosza został wprowadzony w matematyce i teorii grafów przez chińskiego matematyka Kuan Xun w 1962 roku.
         \item Pierwsze prace nad problemem były głównie związane z rozwiązywaniem go w grafach nieskierowanych.
@@ -232,208 +126,374 @@
     \begin{enumerate}
         \item Rozpocznij od dowolnego wierzchołka grafu. Dodaj go na stos.
         \item Wybierz dowolną krawędź wychodzącą z bieżącego wierzchołka (o ile nie jest to most)  i usuń ją z grafu.
-        \item Jeżeli zostały wyłącznie mosty, wybierz jeden z nich i usuń go z grafu.
-        \item Przejdź do wierzchołka, do którego prowadzi wybrana krawędź. Dodaj go na stos.
+        \item Jeżeli został wyłącznie most, wybierz go i usuń go z grafu.
+        \item Przejdź do wierzchołka, do którego prowadzi wybrana, usunięta krawędź. Dodaj go na stos.
         \item Powtarzaj kroki 2-4, aż nie będzie już dostępnych krawędzi wychodzących z bieżącego wierzchołka.
-        \item Jeśli istnieją niespójne składowe w grafie, wybierz wierzchołek w jednej z tych składowych i rozpocznij od niego nową ścieżkę.
         \item Algorytm kończy się, gdy wszystkie krawędzie zostaną odwiedzone i dodane do ścieżki.
     \end{enumerate}
 \end{frame}
 
-\begin{frame}{Algorytm Fleury'ego: Przykład}
+\begin{frame}{Algorytm Fleury'ego: przykład}
     \begin{itemize}
-          \item Rozważmy poniższy spójny, nieskierowany graf.
+          \item Rozważmy poniższy spójny, nieskierowany graf eulerowski bez wag, którego wszystkie wierzchołki posiadają stopnie parzyste.
     \end{itemize}
     \begin{center}
         \begin{tikzpicture}
             \node[draw, circle] (A) at (0,0) {A};
-            \node[draw, circle] (B) at (-2,-2) {B};
-            \node[draw, circle] (C) at (0,-4) {C};
+            \node[draw, circle] (B) at (0,-2) {B};
+            \node[draw, circle] (C) at (2,0) {C};
             \node[draw, circle] (D) at (2,-2) {D};
-            \node[draw, circle] (E) at (2,-4) {E};
+            \node[draw, circle] (E) at (4,0) {E};
+            \node[draw, circle] (F) at (4,-2) {F};
 
-            \draw (A) -- (B);
+            \draw (A) -- (D);
+            \draw (A) -- (F);
             \draw (B) -- (C);
+            \draw (B) -- (E);
             \draw (C) -- (D);
-            \draw (A) -- (C);
+            \draw (C) -- (F);
             \draw (D) -- (E);
+            \draw (E) -- (F);
             \draw (C) -- (E);
+            \draw (F) -- (D);
         \end{tikzpicture}
     \end{center}
 \end{frame}
     
-\begin{frame}{Algorytm Fleury'ego: Przykład (cd.)}
+\begin{frame}{Algorytm Fleury'ego: przykład}
     \begin{itemize}
-        \item Rozpocznij od wybranego wierzchołka, na przykład wierzchołka A. Wpisz go na stos
+        \item Rozpocznij od wybranego wierzchołka, na przykład wierzchołka A. Wpisz go na stos.
         \item Wybierz krawędź wychodzącą z wierzchołka A, która nie jest mostem, na przykład krawędź do B.
-        \item Wpisz wierzchołek B na stos.
-        \item Usuń tę krawędź z grafu.
+        \item Przejdź do wierzchołka B i usuń krawędź z grafu.
+        \item Początek został oznaczony kolorem zielonym.
+        \item Obecny wierzchołek oznaczany będzie kolorem niebieskim.
+        \item Stos: A
     \end{itemize}
     \begin{center}
         \begin{tikzpicture}
-            \node[draw, circle] (A) at (0,0) {A};
-            \node[draw, circle] (B) at (-2,-2) {B};
-            \node[draw, circle] (C) at (0,-4) {C};
+            \node[draw, circle, fill=green] (A) at (0,0) {A};
+            \node[draw, circle] (B) at (0,-2) {B};
+            \node[draw, circle] (C) at (2,0) {C};
             \node[draw, circle] (D) at (2,-2) {D};
-            \node[draw, circle] (E) at (2,-4) {E};
+            \node[draw, circle] (E) at (4,0) {E};
+            \node[draw, circle] (F) at (4,-2) {F};
 
-            \draw[red] (A) -- (B);
+            \draw[->, red] (A) -- (D);
+            \draw (A) -- (F);
             \draw (B) -- (C);
+            \draw (B) -- (E);
             \draw (C) -- (D);
-            \draw (A) -- (C);
+            \draw (C) -- (F);
             \draw (D) -- (E);
+            \draw (E) -- (F);
             \draw (C) -- (E);
+            \draw (F) -- (D);
         \end{tikzpicture}
     \end{center}
 \end{frame}
-    
-\begin{frame}{Algorytm Fleury'ego: Przykład (cd.)}
+
+\begin{frame}{Algorytm Fleury'ego: przykład}
     \begin{itemize}
-        \item Przejdź do wierzchołka, do którego prowadzi wybrana krawędź, czyli do B.
-        \item Wybierz dowolną krawędź wychodzącą z wierzchołka B, która nie jest mostem, na przykład krawędź do C.
-        \item Wpisz wierzchołek C na stos.
-        \item Usuń tę krawędź z grafu.
+        \item Jesteś w wierzchołku D. Umieść go na stosie.
+        \item Wybierz krawędź wychodzącą z wierzchołka D, która nie jest mostem, na przykład krawędź do C.
+        \item Przejdź do wierzchołka C i usuń krawędź z grafu.
+        \item Stos: A, D
     \end{itemize}
     \begin{center}
         \begin{tikzpicture}
-            \node[draw, circle] (A) at (0,0) {A};
-            \node[draw, circle] (B) at (-2,-2) {B};
-            \node[draw, circle] (C) at (0,-4) {C};
-            \node[draw, circle] (D) at (2,-2) {D};
-            \node[draw, circle] (E) at (2,-4) {E};
+            \node[draw, circle, fill=green] (A) at (0,0) {A};
+            \node[draw, circle] (B) at (0,-2) {B};
+            \node[draw, circle] (C) at (2,0) {C};
+            \node[draw, circle, fill=blue] (D) at (2,-2) {D};
+            \node[draw, circle] (E) at (4,0) {E};
+            \node[draw, circle] (F) at (4,-2) {F};
 
-            \draw[red] (A) -- (B);
-            \draw[red] (B) -- (C);
-            \draw (C) -- (D);
-            \draw (A) -- (C);
+            \draw[->, red] (A) -- (D);
+            \draw (A) -- (F);
+            \draw (B) -- (C);
+            \draw (B) -- (E);
+            \draw[->, red] (D) -- (C);
+            \draw (C) -- (F);
             \draw (D) -- (E);
+            \draw (E) -- (F);
             \draw (C) -- (E);
+            \draw (F) -- (D);
         \end{tikzpicture}
     \end{center}
 \end{frame}
 
-\begin{frame}{Algorytm Fleury'ego: Przykład (cd.)}
+\begin{frame}{Algorytm Fleury'ego: przykład}
     \begin{itemize}
-      \item Przejdź do wierzchołka, do którego prowadzi wybrana krawędź, czyli do C.
-      \item Krawędź do A jest mostem.
-      \item Wybierz krawędź wychodzącą z wierzchołka C, która nie jest mostem, czyli np. krawędź do D.
-      \item Dodajemy wierzchołek D na stos.
-      \item Usuń tę krawędź z grafu.
+        \item Jesteś w wierzchołku C. Umieść go na stosie.
+        \item Wybierz krawędź wychodzącą z wierzchołka D, która nie jest mostem, na przykład krawędź do E.
+        \item Przejdź do wierzchołka E i usuń krawędź z grafu.
+        \item Stos: A, D, C
     \end{itemize}
     \begin{center}
         \begin{tikzpicture}
-            \node[draw, circle] (A) at (0,0) {A};
-            \node[draw, circle] (B) at (-2,-2) {B};
-            \node[draw, circle] (C) at (0,-4) {C};
+            \node[draw, circle, fill=green] (A) at (0,0) {A};
+            \node[draw, circle] (B) at (0,-2) {B};
+            \node[draw, circle, fill=blue] (C) at (2,0) {C};
             \node[draw, circle] (D) at (2,-2) {D};
-            \node[draw, circle] (E) at (2,-4) {E};
+            \node[draw, circle] (E) at (4,0) {E};
+            \node[draw, circle] (F) at (4,-2) {F};
 
-            \draw[red] (A) -- (B);
-            \draw[red] (B) -- (C);
-            \draw[red] (C) -- (D);
-            \draw (A) -- (C);
+            \draw[->, red] (A) -- (D);
+            \draw (A) -- (F);
+            \draw (B) -- (C);
+            \draw (B) -- (E);
+            \draw[->, red] (D) -- (C);
+            \draw (C) -- (F);
             \draw (D) -- (E);
-            \draw (C) -- (E);
+            \draw (E) -- (F);
+            \draw[->, red] (C) -- (E);
+            \draw (F) -- (D);
         \end{tikzpicture}
     \end{center}
-
 \end{frame}
 
-\begin{frame}{Algorytm Fleury'ego: Przykład (cd.)}
+\begin{frame}{Algorytm Fleury'ego: przykład}
     \begin{itemize}
-          \item Przejdź do wierzchołka, do którego prowadzi wybrana krawędź, czyli do D.
-        \item Wybierz jedyną krawędź wychodzącą z wierzchołka D, czyli krawędź do E.
-        \item Usuń tę krawędź z grafu, a wierzchołek E dodaj na stos.
+        \item Jesteś w wierzchołku E. Umieść go na stosie.
+        \item Wybierz krawędź wychodzącą z wierzchołka E, która nie jest mostem, na przykład krawędź do B.
+        \item Przejdź do wierzchołka B i usuń krawędź z grafu.
+        \item Stos: A, D, C, E
     \end{itemize}
     \begin{center}
         \begin{tikzpicture}
-            \node[draw, circle] (A) at (0,0) {A};
-            \node[draw, circle] (B) at (-2,-2) {B};
-            \node[draw, circle] (C) at (0,-4) {C};
+            \node[draw, circle, fill=green] (A) at (0,0) {A};
+            \node[draw, circle] (B) at (0,-2) {B};
+            \node[draw, circle] (C) at (2,0) {C};
             \node[draw, circle] (D) at (2,-2) {D};
-            \node[draw, circle] (E) at (2,-4) {E};
+            \node[draw, circle, fill=blue] (E) at (4,0) {E};
+            \node[draw, circle] (F) at (4,-2) {F};
 
-            \draw[red] (A) -- (B);
-            \draw[red] (B) -- (C);
-            \draw[red] (C) -- (D);
-            \draw (A) -- (C);
-            \draw[red] (D) -- (E);
-            \draw (C) -- (E);
+            \draw[->, red] (A) -- (D);
+            \draw (A) -- (F);
+            \draw (B) -- (C);
+            \draw[->, red] (E) -- (B);
+            \draw[->, red] (D) -- (C);
+            \draw (C) -- (F);
+            \draw (D) -- (E);
+            \draw (E) -- (F);
+            \draw[->, red] (C) -- (E);
+            \draw (F) -- (D);
         \end{tikzpicture}
     \end{center}
 \end{frame}
 
-\begin{frame}{Algorytm Fleury'ego: Przykład (cd.)}
+\begin{frame}{Algorytm Fleury'ego: przykład}
     \begin{itemize}
-        \item Przejdź do wierzchołka, do którego prowadzi wybrana krawędź, czyli do E.
-        \item Wybierz jedyną krawędź wychodzącą z wierzchołka E, czyli krawędź do C.
-        \item Usuń tę krawędź z grafu, a wierzchołek E dodaj na stos.
+        \item Jesteś w wierzchołku B. Umieść go na stosie.
+        \item Wybierz krawędź wychodzącą z wierzchołka B, która nie jest mostem.
+        \item Nie ma takiej krawędzi, jest tylko most do C. Nie mając wyboru, wybierz tą krawędź.
+        \item Przejdź do wierzchołka C i usuń krawędź z grafu.
+        \item Stos: A, D, C, E, B
     \end{itemize}
     \begin{center}
         \begin{tikzpicture}
-            \node[draw, circle] (A) at (0,0) {A};
-            \node[draw, circle] (B) at (-2,-2) {B};
-            \node[draw, circle] (C) at (0,-4) {C};
+            \node[draw, circle, fill=green] (A) at (0,0) {A};
+            \node[draw, circle, fill=blue] (B) at (0,-2) {B};
+            \node[draw, circle] (C) at (2,0) {C};
             \node[draw, circle] (D) at (2,-2) {D};
-            \node[draw, circle] (E) at (2,-4) {E};
+            \node[draw, circle] (E) at (4,0) {E};
+            \node[draw, circle] (F) at (4,-2) {F};
 
-            \draw[red] (A) -- (B);
-            \draw[red] (B) -- (C);
-            \draw[red] (C) -- (D);
-            \draw (A) -- (C);
-            \draw[red] (D) -- (E);
-            \draw[red] (C) -- (E);
+            \draw[->, red] (A) -- (D);
+            \draw (A) -- (F);
+            \draw[->, red] (B) -- (C);
+            \draw[->, red] (E) -- (B);
+            \draw[->, red] (D) -- (C);
+            \draw (C) -- (F);
+            \draw (D) -- (E);
+            \draw (E) -- (F);
+            \draw[->, red] (C) -- (E);
+            \draw (F) -- (D);
         \end{tikzpicture}
     \end{center}
 \end{frame}
 
-\begin{frame}{Algorytm Fleury'ego: Przykład (cd.)}
+\begin{frame}{Algorytm Fleury'ego: przykład}
     \begin{itemize}
-        \item Przejdź do wierzchołka, do którego prowadzi wybrana krawędź, czyli do C.
-        \item Wybierz jedyną krawędź wychodzącą z wierzchołka C, czyli krawędź do A.
-        \item Usuń tę krawędź z grafu, a wierzchołek A dodaj na stos.
+        \item Jesteś w wierzchołku C. Umieść go na stosie.
+        \item Wybierz krawędź wychodzącą z wierzchołka C, która nie jest mostem.
+        \item Nie ma takich krawędzi, jest tylko most do F. Nie mając wyboru, wybierz tą krawędź.
+        \item Przejdź do wierzchołka F i usuń krawędź z grafu.
+        \item Stos: A, D, C, E, B, C
     \end{itemize}
     \begin{center}
         \begin{tikzpicture}
-            \node[draw, circle] (A) at (0,0) {A};
-            \node[draw, circle] (B) at (-2,-2) {B};
-            \node[draw, circle] (C) at (0,-4) {C};
+            \node[draw, circle, fill=green] (A) at (0,0) {A};
+            \node[draw, circle] (B) at (0,-2) {B};
+            \node[draw, circle, fill=blue] (C) at (2,0) {C};
             \node[draw, circle] (D) at (2,-2) {D};
-            \node[draw, circle] (E) at (2,-4) {E};
+            \node[draw, circle] (E) at (4,0) {E};
+            \node[draw, circle] (F) at (4,-2) {F};
 
-            \draw[red] (A) -- (B);
-            \draw[red] (B) -- (C);
-            \draw[red] (C) -- (D);
-            \draw[red] (A) -- (C);
-            \draw[red] (D) -- (E);
-            \draw[red] (C) -- (E);
+            \draw[->, red] (A) -- (D);
+            \draw (A) -- (F);
+            \draw[->, red] (B) -- (C);
+            \draw[->, red] (E) -- (B);
+            \draw[->, red] (D) -- (C);
+            \draw[->, red] (C) -- (F);
+            \draw (D) -- (E);
+            \draw (E) -- (F);
+            \draw[->, red] (C) -- (E);
+            \draw (F) -- (D);
         \end{tikzpicture}
     \end{center}
 \end{frame}
 
-\begin{frame}{Algorytm Fleury'ego: Przykład (cd.)}
+\begin{frame}{Algorytm Fleury'ego: przykład}
     \begin{itemize}
-        \item W wyniku działania algorytmu Fleury'ego znaleziona została zamknięta ścieżka przechodząca przez każdą krawędź dokładnie raz.
-        \item Znaleziony cykl jest zapisany na stosie w odwrotnej kolejności: A - C - E - D - C - B - A
+        \item Jesteś w wierzchołku F. Umieść go na stosie.
+        \item Wybierz krawędź wychodzącą z wierzchołka F, która nie jest mostem, na przykład krawędź do B.
+        \item Przejdź do wierzchołka E i usuń krawędź z grafu.
+        \item Stos: A, D, C, E, B, C, F
     \end{itemize}
     \begin{center}
         \begin{tikzpicture}
-            \node[draw, circle] (A) at (0,0) {A};
-            \node[draw, circle] (B) at (-2,-2) {B};
-            \node[draw, circle] (C) at (0,-4) {C};
+            \node[draw, circle, fill=green] (A) at (0,0) {A};
+            \node[draw, circle] (B) at (0,-2) {B};
+            \node[draw, circle] (C) at (2,0) {C};
             \node[draw, circle] (D) at (2,-2) {D};
-            \node[draw, circle] (E) at (2,-4) {E};
+            \node[draw, circle] (E) at (4,0) {E};
+            \node[draw, circle, fill=blue] (F) at (4,-2) {F};
 
-            \draw[red] (A) -- (B);
-            \draw[red] (B) -- (C);
-            \draw[red] (C) -- (D);
-            \draw[red] (A) -- (C);
-            \draw[red] (D) -- (E);
-            \draw[red] (C) -- (E);
+            \draw[->, red] (A) -- (D);
+            \draw (A) -- (F);
+            \draw[->, red] (B) -- (C);
+            \draw[->, red] (E) -- (B);
+            \draw[->, red] (D) -- (C);
+            \draw[->, red] (C) -- (F);
+            \draw (D) -- (E);
+            \draw[->, red] (F) -- (E);
+            \draw[->, red] (C) -- (E);
+            \draw (F) -- (D);
         \end{tikzpicture}
     \end{center}
 \end{frame}
 
+\begin{frame}{Algorytm Fleury'ego: przykład}
+    \begin{itemize}
+        \item Jesteś w wierzchołku E. Umieść go na stosie.
+        \item Wybierz krawędź wychodzącą z wierzchołka E, która nie jest mostem - została tylko krawędź do D.
+        \item Przejdź do wierzchołka D i usuń krawędź z grafu.
+        \item Stos: A, D, C, E, B, C, F, E
+    \end{itemize}
+    \begin{center}
+        \begin{tikzpicture}
+            \node[draw, circle, fill=green] (A) at (0,0) {A};
+            \node[draw, circle] (B) at (0,-2) {B};
+            \node[draw, circle] (C) at (2,0) {C};
+            \node[draw, circle] (D) at (2,-2) {D};
+            \node[draw, circle, fill=blue] (E) at (4,0) {E};
+            \node[draw, circle] (F) at (4,-2) {F};
+
+            \draw[->, red] (A) -- (D);
+            \draw (A) -- (F);
+            \draw[->, red] (B) -- (C);
+            \draw[->, red] (E) -- (B);
+            \draw[->, red] (D) -- (C);
+            \draw[->, red] (C) -- (F);
+            \draw[->, red] (E) -- (D);
+            \draw[->, red] (F) -- (E);
+            \draw[->, red] (C) -- (E);
+            \draw (F) -- (D);
+        \end{tikzpicture}
+    \end{center}
+\end{frame}
+
+\begin{frame}{Algorytm Fleury'ego: przykład}
+    \begin{itemize}
+        \item Jesteś w wierzchołku D. Umieść go na stosie.
+        \item Wybierz krawędź wychodzącą z wierzchołka D, która nie jest mostem - została tylko krawędź do F.
+        \item Przejdź do wierzchołka F i usuń krawędź z grafu.
+        \item Stos: A, D, C, E, B, C, F, E, D
+    \end{itemize}
+    \begin{center}
+        \begin{tikzpicture}
+            \node[draw, circle, fill=green] (A) at (0,0) {A};
+            \node[draw, circle] (B) at (0,-2) {B};
+            \node[draw, circle] (C) at (2,0) {C};
+            \node[draw, circle, fill=blue] (D) at (2,-2) {D};
+            \node[draw, circle] (E) at (4,0) {E};
+            \node[draw, circle] (F) at (4,-2) {F};
+
+            \draw[->, red] (A) -- (D);
+            \draw (A) -- (F);
+            \draw[->, red] (B) -- (C);
+            \draw[->, red] (E) -- (B);
+            \draw[->, red] (D) -- (C);
+            \draw[->, red] (C) -- (F);
+            \draw[->, red] (E) -- (D);
+            \draw[->, red] (F) -- (E);
+            \draw[->, red] (C) -- (E);
+            \draw[->, red] (D) -- (F);
+        \end{tikzpicture}
+    \end{center}
+\end{frame}
+
+\begin{frame}{Algorytm Fleury'ego: przykład}
+    \begin{itemize}
+        \item Jesteś w wierzchołku F. Umieść go na stosie.
+        \item Wybierz krawędź wychodzącą z wierzchołka F, która nie jest mostem - została tylko krawędź do A.
+        \item Przejdź do wierzchołka A i usuń krawędź z grafu.
+        \item Stos: A, D, C, E, B, C, F, E, D, F
+    \end{itemize}
+    \begin{center}
+        \begin{tikzpicture}
+            \node[draw, circle, fill=green] (A) at (0,0) {A};
+            \node[draw, circle] (B) at (0,-2) {B};
+            \node[draw, circle] (C) at (2,0) {C};
+            \node[draw, circle] (D) at (2,-2) {D};
+            \node[draw, circle] (E) at (4,0) {E};
+            \node[draw, circle, fill=blue] (F) at (4,-2) {F};
+
+            \draw[->, red] (A) -- (D);
+            \draw[->, red] (F) -- (A);
+            \draw[->, red] (B) -- (C);
+            \draw[->, red] (E) -- (B);
+            \draw[->, red] (D) -- (C);
+            \draw[->, red] (C) -- (F);
+            \draw[->, red] (E) -- (D);
+            \draw[->, red] (F) -- (E);
+            \draw[->, red] (C) -- (E);
+            \draw[->, red] (D) -- (F);
+        \end{tikzpicture}
+    \end{center}
+\end{frame}
+
+
+\begin{frame}{Algorytm Fleury'ego: przykład}
+    \begin{itemize}
+        \item Jesteś w wierzchołku A. Umieść go na stosie.
+        \item Wybierz krawędź wychodzącą z wierzchołka A. Nie ma takiej krawędzi.
+        \item Sprawdź, czy zostały jakieś krawędzie. Nie - stos w odwrotnej kolejności tworzy szukany cykl Eulera.
+        \item Stos: A, D, C, E, B, C, F, E, D, F, A
+    \end{itemize}
+    \begin{center}
+        \begin{tikzpicture}
+            \node[draw, circle, fill=green] (A) at (0,0) {A};
+            \node[draw, circle] (B) at (0,-2) {B};
+            \node[draw, circle] (C) at (2,0) {C};
+            \node[draw, circle] (D) at (2,-2) {D};
+            \node[draw, circle] (E) at (4,0) {E};
+            \node[draw, circle] (F) at (4,-2) {F};
+
+            \draw[->, red] (A) -- (D);
+            \draw[->, red] (F) -- (A);
+            \draw[->, red] (B) -- (C);
+            \draw[->, red] (E) -- (B);
+            \draw[->, red] (D) -- (C);
+            \draw[->, red] (C) -- (F);
+            \draw[->, red] (E) -- (D);
+            \draw[->, red] (F) -- (E);
+            \draw[->, red] (C) -- (E);
+            \draw[->, red] (D) -- (F);
+        \end{tikzpicture}
+    \end{center}
+\end{frame}
 
 \begin{frame}{Algorytm Hierholzera}
     \begin{itemize}
@@ -454,6 +514,14 @@
         \item Jeśli bieżący wierzchołek nie ma już dostępnych krawędzi i istnieją inne wierzchołki na ścieżce, znajdź ostatni wierzchołek na ścieżce, który ma dostępne krawędzie i wróć do niego.
         \item Powtarzaj kroki 2-6, aż nie zostaną odwiedzone wszystkie krawędzie i utworzony zostanie Euleryjski cykl.
     \end{enumerate}
+\end{frame}
+
+\begin{frame}{Źródła}
+\begin{block}{Źródła}
+    \begin{itemize}
+        \item Materiały wykładowe - Teoria grafów i sieci - prof. dr. hab. M.Kubale
+    \end{itemize}
+\end{block}
 \end{frame}
 
 \end{document}
