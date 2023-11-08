@@ -151,8 +151,7 @@
 
 \begin{frame}{Część 2 - Algorytm Fleury'ego}
     \begin{itemize}
-      \item Algorytm Fleury'ego to metoda rozwiązywania Problemu Chińskiego Listonosza w grafach spójnych, nieskierowanych.
-      \item Celem algorytmu jest znalezienie zamkniętej ścieżki (cyklu), która przechodzi przez każdą krawędź grafu dokładnie raz.
+      \item Algorytm Fleury'ego służy do znajdowania cyklu lub ścieżki Eulera w spójnym grafie nieskierowanym.
       \item Algorytm ten został nazwany na cześć szwajcarskiego matematyka Gustava Fleury'ego, który opublikował go w 1883 roku.
     \end{itemize}
 \end{frame}
@@ -170,7 +169,7 @@
 
 \begin{frame}{Część 2 - Algorytm Fleury'ego: przykład}
     \begin{block}{Przykład}
-          Rozważmy poniższy spójny, nieważony, nieskierowany graf eulerowski.
+          Rozważmy poniższy nieważony, nieskierowany graf eulerowski.
     \end{block}
     \begin{center}
         \begin{tikzpicture}
@@ -195,7 +194,7 @@
     \end{center}
 \end{frame}
     
-\begin{frame}{Algorytm Fleury'ego: przykład}
+\begin{frame}{Część 2 -Algorytm Fleury'ego: przykład}
     \begin{itemize}
         \item Rozpocznij od wybranego wierzchołka, na przykład wierzchołka $A$. Wpisz go na stos.
         \item Wybierz krawędź wychodzącą z wierzchołka $A$, która nie jest mostem, na przykład krawędź do $B$.
@@ -227,7 +226,7 @@
     \end{center}
 \end{frame}
 
-\begin{frame}{Algorytm Fleury'ego: przykład}
+\begin{frame}{Część 2 - Algorytm Fleury'ego: przykład}
     \begin{itemize}
         \item Jesteś w wierzchołku $D$. Umieść go na stosie.
         \item Wybierz krawędź wychodzącą z wierzchołka $D$, która nie jest mostem, na przykład krawędź do $C$.
@@ -257,7 +256,7 @@
     \end{center}
 \end{frame}
 
-\begin{frame}{Algorytm Fleury'ego: przykład}
+\begin{frame}{Część 2 - Algorytm Fleury'ego: przykład}
     \begin{itemize}
         \item Jesteś w wierzchołku $C$. Umieść go na stosie.
         \item Wybierz krawędź wychodzącą z wierzchołka $D$, która nie jest mostem, na przykład krawędź do $E$.
@@ -287,7 +286,7 @@
     \end{center}
 \end{frame}
 
-\begin{frame}{Algorytm Fleury'ego: przykład}
+\begin{frame}{Część 2 - Algorytm Fleury'ego: przykład}
     \begin{itemize}
         \item Jesteś w wierzchołku $E$. Umieść go na stosie.
         \item Wybierz krawędź wychodzącą z wierzchołka $E$, która nie jest mostem, na przykład krawędź do $B$.
@@ -317,7 +316,7 @@
     \end{center}
 \end{frame}
 
-\begin{frame}{Algorytm Fleury'ego: przykład}
+\begin{frame}{Część 2 - Algorytm Fleury'ego: przykład}
     \begin{itemize}
         \item Jesteś w wierzchołku $B$. Umieść go na stosie.
         \item Wybierz krawędź wychodzącą z wierzchołka $B$, która nie jest mostem.
@@ -348,7 +347,7 @@
     \end{center}
 \end{frame}
 
-\begin{frame}{Algorytm Fleury'ego: przykład}
+\begin{frame}{Część 2 - Algorytm Fleury'ego: przykład}
     \begin{itemize}
         \item Jesteś w wierzchołku $C$. Umieść go na stosie.
         \item Wybierz krawędź wychodzącą z wierzchołka $C$, która nie jest mostem.
@@ -379,7 +378,7 @@
     \end{center}
 \end{frame}
 
-\begin{frame}{Algorytm Fleury'ego: przykład}
+\begin{frame}{Część 2 - Algorytm Fleury'ego: przykład}
     \begin{itemize}
         \item Jesteś w wierzchołku $F$. Umieść go na stosie.
         \item Wybierz krawędź wychodzącą z wierzchołka $F$, która nie jest mostem, na przykład krawędź do $E$.
@@ -409,7 +408,7 @@
     \end{center}
 \end{frame}
 
-\begin{frame}{Algorytm Fleury'ego: przykład}
+\begin{frame}{Część 2 - Algorytm Fleury'ego: przykład}
     \begin{itemize}
         \item Jesteś w wierzchołku $E$. Umieść go na stosie.
         \item Wybierz krawędź wychodzącą z wierzchołka $E$, która nie jest mostem - została tylko krawędź do $D$.
@@ -439,7 +438,7 @@
     \end{center}
 \end{frame}
 
-\begin{frame}{Algorytm Fleury'ego: przykład}
+\begin{frame}{Część 2 - Algorytm Fleury'ego: przykład}
     \begin{itemize}
         \item Jesteś w wierzchołku $D$. Umieść go na stosie.
         \item Wybierz krawędź wychodzącą z wierzchołka $D$, która nie jest mostem - została tylko krawędź do $F$.
@@ -469,21 +468,52 @@
     \end{center}
 \end{frame}
 
-\begin{frame}{Algorytm Fleury'ego: przykład}
+\begin{frame}{Część 2 - Algorytm Fleury'ego: przykład}
     \begin{itemize}
-        \item Jesteś w wierzchołku F. Umieść go na stosie.
-        \item Wybierz krawędź wychodzącą z wierzchołka F, która nie jest mostem - została tylko krawędź do A.
-        \item Przejdź do wierzchołka A i usuń krawędź z grafu.
-        \item Stos: A, D, C, E, B, C, F, E, D, F
+        \item Jesteś w wierzchołku $F$. Umieść go na stosie.
+        \item Wybierz krawędź wychodzącą z wierzchołka $F$, która nie jest mostem - została tylko krawędź do $A$.
+        \item Przejdź do wierzchołka $A$ i usuń krawędź z grafu.
+        \item Stos: $A$, $D$, $C$, $E$, $B$, $C$, $F$, $E$, $D$, $F$
     \end{itemize}
     \begin{center}
         \begin{tikzpicture}
-            \node[draw, circle, fill=green] (A) at (0,0) {A};
-            \node[draw, circle] (B) at (0,-2) {B};
-            \node[draw, circle] (C) at (2,0) {C};
-            \node[draw, circle] (D) at (2,-2) {D};
-            \node[draw, circle] (E) at (4,0) {E};
-            \node[draw, circle, fill=blue] (F) at (4,-2) {F};
+            \node[draw, circle, fill=green] (A) at (0,0) {$A$};
+            \node[draw, circle] (B) at (0,-2) {$B$};
+            \node[draw, circle] (C) at (2,0) {$C$};
+            \node[draw, circle] (D) at (2,-2) {$D$};
+            \node[draw, circle] (E) at (4,0) {$E$};
+            \node[draw, circle, fill=blue] (F) at (4,-2) {$F$};
+
+            \draw[->, red] (A) -- (D);
+            \draw[->, green] (F) -- (A);
+            \draw[->, red] (B) -- (C);
+            \draw[->, red] (E) -- (B);
+            \draw[->, red] (D) -- (C);
+            \draw[->, red] (C) -- (F);
+            \draw[->, red] (E) -- (D);
+            \draw[->, red] (F) -- (E);
+            \draw[->, red] (C) -- (E);
+            \draw[->, red] (D) -- (F);
+        \end{tikzpicture}
+    \end{center}
+\end{frame}
+
+
+\begin{frame}{Część 2 - Algorytm Fleury'ego: przykład}
+    \begin{itemize}
+        \item Jesteś w wierzchołku $A$. Umieść go na stosie.
+        \item Wybierz krawędź wychodzącą z wierzchołka $A$. Nie ma takiej krawędzi.
+        \item Sprawdź, czy zostały nieodwiedzone krawędzie. Nie - stos w odwrotnej kolejności tworzy szukany cykl Eulera.
+        \item Stos: $A$, $D$, $C$, $E$, $B$, $C$, $F$, $E$, $D$, $F$, $A$
+    \end{itemize}
+    \begin{center}
+        \begin{tikzpicture}
+            \node[draw, circle, fill=green] (A) at (0,0) {$A$};
+            \node[draw, circle] (B) at (0,-2) {$B$};
+            \node[draw, circle] (C) at (2,0) {$C$};
+            \node[draw, circle] (D) at (2,-2) {$D$};
+            \node[draw, circle] (E) at (4,0) {$E$};
+            \node[draw, circle] (F) at (4,-2) {$F$};
 
             \draw[->, red] (A) -- (D);
             \draw[->, red] (F) -- (A);
@@ -499,41 +529,10 @@
     \end{center}
 \end{frame}
 
-
-\begin{frame}{Algorytm Fleury'ego: przykład}
-    \begin{itemize}
-        \item Jesteś w wierzchołku A. Umieść go na stosie.
-        \item Wybierz krawędź wychodzącą z wierzchołka A. Nie ma takiej krawędzi.
-        \item Sprawdź, czy zostały jakieś krawędzie. Nie - stos w odwrotnej kolejności tworzy szukany cykl Eulera.
-        \item Stos: A, D, C, E, B, C, F, E, D, F, A
-    \end{itemize}
-    \begin{center}
-        \begin{tikzpicture}
-            \node[draw, circle, fill=green] (A) at (0,0) {A};
-            \node[draw, circle] (B) at (0,-2) {B};
-            \node[draw, circle] (C) at (2,0) {C};
-            \node[draw, circle] (D) at (2,-2) {D};
-            \node[draw, circle] (E) at (4,0) {E};
-            \node[draw, circle] (F) at (4,-2) {F};
-
-            \draw[->, red] (A) -- (D);
-            \draw[->, red] (F) -- (A);
-            \draw[->, red] (B) -- (C);
-            \draw[->, red] (E) -- (B);
-            \draw[->, red] (D) -- (C);
-            \draw[->, red] (C) -- (F);
-            \draw[->, red] (E) -- (D);
-            \draw[->, red] (F) -- (E);
-            \draw[->, red] (C) -- (E);
-            \draw[->, red] (D) -- (F);
-        \end{tikzpicture}
-    \end{center}
-\end{frame}
-
-\begin{frame}{Algorytm Hierholzera}
+\begin{frame}{Część 2 - Algorytm Hierholzera}
     \begin{block}{Algorytm Hierholzera}
         \begin{itemize}
-            \item Algorytm Hierholzera jest używany do znalezienia Euleryjskiego cyklu w grafie.
+            \item Algorytm Hierholzera jest używany do znalezienia cyklu eulera w grafie.
             \item Jest on wydajniejszą, a jednocześnie bardziej skomplikowaną alternatywą dla algorytmu Fleury'ego.
             \item Nazwa algorytmu pochodzi od niemieckiego matematyka Carla Hierholzera, który pracował nad tym problemem w latach 1873-1874.
             \item Zauważył on, że cykl Eulera jest sumą cykli prostych o rozłącznych krawędziach.
@@ -542,30 +541,30 @@
     \end{block}
 \end{frame}
     
-\begin{frame}{Działanie Algorytmu Hierholzera}
+\begin{frame}{Część 2 - działanie algorytmu Hierholzera}
     \begin{enumerate}
-        \item Rozpocznij od wybranego wierzchołka w grafie o stopniu niezerowym.
+        \item Rozpocznij od wybranego wierzchołka w grafie eulerowskim.
         \item Wybierz dowolną krawędź wychodzącą z bieżącego wierzchołka i dodaj ją do ścieżki.
         \item Usuń wybraną krawędź z grafu.
         \item Przejdź do wierzchołka, do którego prowadzi wybrana krawędź.
         \item Jeśli bieżący wierzchołek ma jeszcze dostępne krawędzie, wróć do kroku 2 i kontynuuj.
         \item Jeśli bieżący wierzchołek nie ma już dostępnych krawędzi i istnieją inne wierzchołki na ścieżce, znajdź ostatni wierzchołek na ścieżce, który ma dostępne krawędzie i wróć do niego.
-        \item Powtarzaj kroki 2-6, aż nie zostaną odwiedzone wszystkie krawędzie i utworzony zostanie Euleryjski cykl.
+        \item Powtarzaj kroki 2-6, aż nie zostaną odwiedzone wszystkie krawędzie i utworzony zostanie cykl eulera.
     \end{enumerate}
 \end{frame}
 
-\begin{frame}{Algorytm Hierholzera: przykład}
+\begin{frame}{Część 2 - algorytm Hierholzera: przykład}
     \begin{itemize}
-        \item Rozważmy poniższy spójny, nieskierowany graf eulerowski bez wag, którego wszystkie wierzchołki posiadają stopnie parzyste.
+        \item Rozważmy poniższy nieważony, nieskierowany graf eulerowski.
     \end{itemize}
     \begin{center}
         \begin{tikzpicture}
-            \node[draw, circle] (A) at (-2,2) {A};
-            \node[draw, circle] (B) at (2,2) {B};
-            \node[draw, circle] (C) at (-4,0) {C};
-            \node[draw, circle] (D) at (0,0) {D};
-            \node[draw, circle] (E) at (4,0) {E};
-            \node[draw, circle] (F) at (0,-2) {F};
+            \node[draw, circle] (A) at (-2,2) {$A$};
+            \node[draw, circle] (B) at (2,2) {$B$};
+            \node[draw, circle] (C) at (-4,0) {$C$};
+            \node[draw, circle] (D) at (0,0) {$D$};
+            \node[draw, circle] (E) at (4,0) {$E$};
+            \node[draw, circle] (F) at (0,-2) {$F$};
 
             \draw (A) -- (B);
             \draw (A) -- (C);
@@ -582,21 +581,21 @@
     \end{center}
 \end{frame}
 
-\begin{frame}{Algorytm Hierholzera: przykład}
+\begin{frame}{Część 2 - Algorytm Hierholzera: przykład}
     \begin{itemize}
-        \item Wybierz wierzchołek startowy np. A - oznaczony kolorem zielonym.
+        \item Wybierz wierzchołek startowy np. $A$ - oznaczony kolorem zielonym.
         \item Znajdujemy cykl prosty rozpoczynający się w tym wierzchołku.
         \item Cykl umieszczamy na liście, a z grafu usuwamy wszystkie krawędzie tego cyklu.
-        \item C: A B C A
+        \item C: $A$ $B$ $C$ $A$
     \end{itemize}
     \begin{center}
         \begin{tikzpicture}
-            \node[draw, circle] (A) at (-2,2) {A};
-            \node[draw, circle] (B) at (2,2) {B};
-            \node[draw, circle] (C) at (-4,0) {C};
-            \node[draw, circle] (D) at (0,0) {D};
-            \node[draw, circle] (E) at (4,0) {E};
-            \node[draw, circle] (F) at (0,-2) {F};
+            \node[draw, circle, fill=green] (A) at (-2,2) {$A$};
+            \node[draw, circle] (B) at (2,2) {$B$};
+            \node[draw, circle] (C) at (-4,0) {$C$};
+            \node[draw, circle] (D) at (0,0) {$D$};
+            \node[draw, circle] (E) at (4,0) {$E$};
+            \node[draw, circle] (F) at (0,-2) {$F$};
 
             \draw (A)[->, red] -- (B);
             \draw (C)[->, red] -- (A);
@@ -614,22 +613,22 @@
 \end{frame}
 
 
-\begin{frame}{Algorytm Hierholzera: przykład}
+\begin{frame}{Część 2 - Algorytm Hierholzera: przykład}
     \begin{itemize}
-        \item Przeglądając listę cyklu C wybieramy wierzchołek, który wciąż posiada incydentne krawędzie. Np. A.
+        \item Przeglądając listę cyklu C wybieramy wierzchołek, który wciąż posiada incydentne krawędzie np. $A$.
         \item Znajdujemy cykl prosty rozpoczynający się w tym wierzchołku.
         \item Cykl umieszczamy na liście, a z grafu usuwamy wszystkie krawędzie tego cyklu.
-        \item C: [A] B C A
-        \item C: [A] D B F A B C A
+        \item C: [$A$] $B$ $C$ $A$
+        \item C: [$A$] $D$ $B$ $F$ $A$ $B$ $C$ $A$
     \end{itemize}
     \begin{center}
         \begin{tikzpicture}
-            \node[draw, circle] (A) at (-2,2) {A};
-            \node[draw, circle] (B) at (2,2) {B};
-            \node[draw, circle] (C) at (-4,0) {C};
-            \node[draw, circle] (D) at (0,0) {D};
-            \node[draw, circle] (E) at (4,0) {E};
-            \node[draw, circle] (F) at (0,-2) {F};
+            \node[draw, circle, fill=green] (A) at (-2,2) {$A$};
+            \node[draw, circle] (B) at (2,2) {$B$};
+            \node[draw, circle] (C) at (-4,0) {$C$};
+            \node[draw, circle] (D) at (0,0) {$D$};
+            \node[draw, circle] (E) at (4,0) {$E$};
+            \node[draw, circle] (F) at (0,-2) {$F$};
 
             \draw (A)[->, red] -- (D);
             \draw (E)[->, red] -- (A);
@@ -643,22 +642,22 @@
     \end{center}
 \end{frame}
 
-\begin{frame}{Algorytm Hierholzera: przykład}
+\begin{frame}{Część 2 - Algorytm Hierholzera: przykład}
     \begin{itemize}
-        \item Przeglądając listę cyklu C wybieramy wierzchołek, który wciąż posiada incydentne krawędzie. Np. A.
+        \item Przeglądając listę cyklu C wybieramy wierzchołek, który wciąż posiada incydentne krawędzie np. $D$.
         \item Znajdujemy cykl prosty rozpoczynający się w tym wierzchołku.
         \item Cykl umieszczamy na liście, a z grafu usuwamy wszystkie krawędzie tego cyklu.
-        \item C: A [D] B F A B C A
-        \item C: A [D] C F E D B F A B C A
+        \item C: $A$ [$D$] $B$ $F$ $A$ $B$ $C$ $A$
+        \item C: $A$ [$D$] $C$ $F$ $E$ $D$ $B$ $F$ $A$ $B$ $C$ $A$
     \end{itemize}
     \begin{center}
         \begin{tikzpicture}
-            \node[draw, circle] (A) at (-2,2) {A};
-            \node[draw, circle] (B) at (2,2) {B};
-            \node[draw, circle] (C) at (-4,0) {C};
-            \node[draw, circle] (D) at (0,0) {D};
-            \node[draw, circle] (E) at (4,0) {E};
-            \node[draw, circle] (F) at (0,-2) {F};
+            \node[draw, circle] (A) at (-2,2) {$A$};
+            \node[draw, circle] (B) at (2,2) {$B$};
+            \node[draw, circle, fill=green] (C) at (-4,0) {$C$};
+            \node[draw, circle] (D) at (0,0) {$D$};
+            \node[draw, circle] (E) at (4,0) {$E$};
+            \node[draw, circle] (F) at (0,-2) {$F$};
 
             \draw (D)[->, red] -- (C);
             \draw (C)[->, red] -- (F);
@@ -668,20 +667,20 @@
     \end{center}
 \end{frame}
 
-\begin{frame}{Algorytm Hierholzera: przykład}
+\begin{frame}{Część 2 - Algorytm Hierholzera: przykład}
     \begin{itemize}
         \item Lista C nie zawiera już wierzchołków o niezerowym stopniu.
         \item Lista C zawiera cykl Eulera.
-        \item C: A D C F E D B F A B C A
+        \item C: $A$ $D$ $C$ $F$ $E$ $D$ $B$ $F$ $A$ $B$ $C$ $A$
     \end{itemize}
     \begin{center}
         \begin{tikzpicture}
-            \node[draw, circle] (A) at (-2,2) {A};
-            \node[draw, circle] (B) at (2,2) {B};
-            \node[draw, circle] (C) at (-4,0) {C};
-            \node[draw, circle] (D) at (0,0) {D};
-            \node[draw, circle] (E) at (4,0) {E};
-            \node[draw, circle] (F) at (0,-2) {F};
+            \node[draw, circle] (A) at (-2,2) {$A$};
+            \node[draw, circle] (B) at (2,2) {$B$};
+            \node[draw, circle] (C) at (-4,0) {$C$};
+            \node[draw, circle] (D) at (0,0) {$D$};
+            \node[draw, circle] (E) at (4,0) {$E$};
+            \node[draw, circle] (F) at (0,-2) {$F$};
 
             \draw(A)[->, red] -- (D);
             \draw(D)[->, red] -- (C);
@@ -698,31 +697,13 @@
     \end{center}
 \end{frame}
 
-\begin{frame}{Grafy semieulerowskie, nieważone}
-    \begin{block}{}
-        Część 2: Grafy semieulerowskie, nieważone.
-    \end{block}
-\end{frame}
-
-\begin{frame}{Grafy semieulerowskie, nieważone}
+\begin{frame}{Część 3 - Grafy semieulerowskie, nieważone}
     \begin{block}{}
         \begin{itemize}
             \item W grafach tych, wystarczy dodać krawędź łączącą wierzchołki o nieparzystym stopniu.
             \item Otrzymujemy w ten sposób graf eulerowski, w którym możemy znaleźć cykl korzystając z wcześniej wspomnianych algorytmów.
             \item Po znalezieniu cyklu, usuwamy uprzednio dodaną krawędź otrzymując ścieżkę Eulera.
         \end{itemize}
-    \end{block}
-\end{frame}
-
-\begin{frame}{Grafy eulerowskie, ważone}
-    \begin{block}{}
-        Część 3: Grafy eulerowskie, ważone.
-    \end{block}
-\end{frame}
-
-\begin{frame}{Grafy semieulerowskie, ważone}
-    \begin{block}{}
-        Część 4: Grafy semieulerowskie, ważone.
     \end{block}
 \end{frame}
 
