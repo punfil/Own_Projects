@@ -7,7 +7,7 @@
     \usetheme{Warsaw}
     \title{Problem chińskiego listonosza (PCL)}
     \author{184657 Wojciech Panfil}
-    \date{Gdańsk, 9.11.2023}
+    \date{Gdańsk, \texorpdfstring{$9.11.2023$}{9.11.2023}}
 \begin{document}
 
 \frame{\titlepage}
@@ -20,7 +20,7 @@
             \item Część 3: Grafy półeulerowskie, nieskierowane, nieważone.
             \item Część 4: Grafy eulerowskie, nieskierowane, ważone.
             \item Część 5: Grafy półeulerowskie, nieskierowane, ważone.
-            \item Część 6: Grafy nieeulerowskie nieskierowane.
+            \item Część 6: Grafy spójne, nieeulerowskie, nieskierowane.
             \item Część 7: Zastosowania.
         \end{itemize}
     \end{block}
@@ -28,13 +28,18 @@
         \begin{itemize}
             \item Algorytm Fleury'ego
             \item Algorytm Hierholzera
+            \item Algorytm ogólny
         \end{itemize}
     \end{block}
 \end{frame}
 
 \begin{frame}{Część 1 - graf eulerowski}
     \begin{block}{Graf eulerowski}
-        Graf spójny, który posiada wszystkie wierzchołki o stopniu parzystym, mający cykl zawierający wszystkie krawędzie.
+        \begin{itemize}
+        \item Graf spójny mający cykl zawierający wszystkie jego krawędzie zwany cyklem Eulera.
+        \item Jeżeli graf jest nieskierowany - stopień każdego wierzchołka musi być parzysty.
+        \item Jeżeli graf jest skierowany - stopień wejściowy każdego wierzchołka jest równy stopniowi wyjściowemu.
+        \end{itemize}
     \end{block}
     \begin{center}
         \begin{tikzpicture}
@@ -61,8 +66,9 @@
 \begin{frame}{Część 1 - graf półeulerowski}
     \begin{block}{Graf półeulerowski}
         \begin{itemize}
-            \item Graf spójny, w którym istnieje ścieżka przechodząca przez każdą krawędź dokładnie raz.
-            \item Posiada dwa wierzchołki o stopniu nieparzystym.
+            \item Graf spójny, w którym istnieje ścieżka (Eulera) przechodząca przez każdą krawędź dokładnie raz.
+            \item Jeżeli graf jest nieskierowany - posiada dwa wierzchołki o stopniu nieparzystym.
+            \item Jeżeli graf jest skierowany - posiada dwa wierzchołki, których stopeiń wejściowy jest różny od stopnia wyjściowego.
             \item Jeden z nich jest początkiem, drugi końcem ścieżki Eulera.
         \end{itemize}
     \end{block}
@@ -95,9 +101,9 @@
     stopień każdego wierzchołka jest liczbą parzystą.
 \end{block}
 \begin{block}{Dowód}
-    Jeśli C jest cyklem Eulera w G, to trawersujemy i usuwamy
-    krawędzie w E(G) zgodnie z kolejnością zadaną przez C. Gdy przechodzimy
-    przez dowolny wierzchołek v, to usuwamy dwie incydentne z nim krawędzie,
+    Jeśli $C$ jest cyklem Eulera w $G$, to trawersujemy i usuwamy
+    krawędzie w $E$($G$) zgodnie z kolejnością zadaną przez $C$. Gdy przechodzimy
+    przez dowolny wierzchołek $v$, to usuwamy dwie incydentne z nim krawędzie,
     więc stopień tego wierzchołka w tak zredukowanym grafie pozostaje
     parzysty.
 \end{block}
@@ -121,7 +127,7 @@
 
 \begin{frame}{Część 1 - Problem Chińskiego Listonosza}
     \begin{block}{Problem Chińskiego Listonosza}
-        Celem problemu jest znalezienie drogi o minimalnej sumie wag przechodzącej przez wszystkie krawędzie co najmniej raz.
+        Celem problemu jest znalezienie ścieżki zamkniętej o minimalnej sumie wag przechodzącej przez wszystkie krawędzie co najmniej raz.
     \end{block}
     \begin{block}{Podział ze względu na rodzaj grafu}
         \begin{itemize}
@@ -150,10 +156,13 @@
 \end{frame}
 
 \begin{frame}{Część 2 - Algorytm Fleury'ego}
-    \begin{itemize}
-      \item Algorytm Fleury'ego służy do znajdowania cyklu lub ścieżki Eulera w spójnym grafie nieskierowanym.
-      \item Algorytm ten został nazwany na cześć szwajcarskiego matematyka Gustava Fleury'ego, który opublikował go w 1883 roku.
-    \end{itemize}
+    \begin{block}{}
+        \begin{itemize}
+            \item Algorytm Fleury'ego służy do znajdowania cyklu lub ścieżki Eulera w spójnym grafie nieskierowanym.
+            \item Algorytm ten został nazwany na cześć szwajcarskiego matematyka Gustava Fleury'ego, który opublikował go w 1883 roku.
+            \item Złożoność z wyszukiwaniem mostów Tarjana ($\mathcal{O}(|E|^2)$)
+        \end{itemize}
+    \end{block}
 \end{frame}
 
 \begin{frame}{Część 2 - Działanie Algorytmu Fleury'ego}
@@ -537,6 +546,7 @@
             \item Nazwa algorytmu pochodzi od niemieckiego matematyka Carla Hierholzera, który pracował nad tym problemem w latach 1873-1874.
             \item Zauważył on, że cykl Eulera jest sumą cykli prostych o rozłącznych krawędziach.
             \item Algorytm pozwala znajdować cykle Eulera w grafach skierowanych i nieskierowanych.
+            \item Złożoność: $\mathcal{O}(|E|)$
         \end{itemize}
     \end{block}
 \end{frame}
@@ -700,9 +710,10 @@
 \begin{frame}{Część 3 - Grafy półeulerowskie, nieważone}
     \begin{block}{}
         \begin{itemize}
-            \item W grafach tych, wystarczy dodać krawędź łączącą wierzchołki o nieparzystym stopniu.
+            \item W grafach tych, w porównaniu do ulerowskich wystarczy dodać krawędź łączącą wierzchołki o nieparzystym stopniu.
             \item Otrzymujemy w ten sposób graf eulerowski, w którym możemy znaleźć cykl korzystając z wcześniej wspomnianych algorytmów.
             \item Po znalezieniu cyklu, usuwamy uprzednio dodaną krawędź otrzymując ścieżkę Eulera.
+            \item Aby otrzymać ścieżkę zamkniętą, można znaleźć najkrótszą ścieżkę łączącą dwa wierzchołki nieparzystego stopnia (np. algorytm Dijkstry ($\mathcal{O}({E} \cdot {\log V})$))
         \end{itemize}
     \end{block}
 \end{frame}
@@ -724,7 +735,34 @@
             \item Dołożona krawędź może mieć dowolną wagę - przy jej usunięciu waga zostanie odjęta od sumy.
             \item Graf eulerowski posiada tylko jeden cykl Eulera.
             \item Korzystamy z wcześniej omówionych algorytmów.
+            \item Aby otrzymać ścieżkę zamkniętą, można znaleźć najkrótszą ścieżkę łączącą dwa wierzchołki nieparzystego stopnia (np. algorytm Dijkstry ($\mathcal{O}({E} \cdot {\log V})$))
         \end{itemize}
+    \end{block}
+\end{frame}
+
+\begin{frame}{Część 6 - Algorytm ogólny - graf spójny}
+    \begin{block}{Algorytm ogólny}
+        \begin{itemize}
+            \item Jeśli graf zawiera więcej niż dwa wierzchołki o nieparzystych stopniach, problem staje się trudny obliczeniowo.
+            \item Lemat o uściskach dłoni -  liczba wierzchołków o nieparzystych stopniach w grafie spójnym jest zawsze liczbą parzystą.
+            \item Wierzchołki możemy połączyć w pary za pomocą znalezionych ścieżek.
+            \item \textbf{Problem:} Suma wag użytych do połączeń ścieżek winna być minimalna, ponieważ będą one dublowane celem uzyskania parzystego stopnia wierzchołków.
+            \item Problem znajdowania skojarzeń par wierzchołków o minimalnych wagach krawędzi rozwiązuje \textbf{algorytm Edmondsa} o złożoności $\mathcal{O}(|V|^{3})$.
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+\begin{frame}{Część 6 - Algorytm ogólny - graf spójny}
+    \begin{block}{Algorytm ogólny}
+        \begin{enumerate}
+            \item Sprawdź czy graf jest spójny - jeżeli nie zakończ.
+            \item Wyszukaj w grafie wszystkie wierzchołki o nieparzystych stopniach.
+            \item Jeżeli liczba ta jest równa 0, idź do kroku 7.
+            \item Wyznacz za pomocą np. algorytmu Dijkstry ($\mathcal{O}({E} \cdot {\log V})$) lub Bellmana-Ford'a ($\mathcal{O}(|E| \cdot |V|)$) najkrótsze ścieżki łączące ze sobą wszystkie znalezione wierzchołki o nieparzystych stopniach.
+            \item Wyszukaj doskonałe skojarzenie tych wierzchołków w pary o najmniejszej sumie wag (algorytm Edmondsa).
+            \item Krawędzie wchodzące w skład wyznaczonych ścieżek zdubluj w grafie wejściowym.
+            \item Wyznacz w powstałym multigrafie cykl Eulera i wyprowadź wynik.
+        \end{enumerate}
     \end{block}
 \end{frame}
 
@@ -733,25 +771,25 @@
         Problem Chińskiego Listonosza ma zastosowanie w dziedzinach, w których konieczne jest znalezienie
         optymalnej trasy lub cykly, który odwiedza wszystkie krawędzie z minimalnym kosztem.
     \end{block}
+\end{frame}
+
+\begin{frame}{Część 7 - zastosowania problemu chińskiego listonosza}
     \begin{block}{Automatyczna eksploracja sieci połączeń - roboty indeksujące}
         Wyszukiwarki takie jak Google, Bing, Yahoo korzystają z robotów indeksujących do skanowania i indeksowania
         treści stron internetowych. \\\textbf{Problem:} Jak odwiedzić jak najwięcej stron minimalnym kosztem?
     \end{block}
-\end{frame}
-
-\begin{frame}{Część 7 - zastosowania problemu chińskiego listonosza}
     \begin{block}{Automatyczna eksploracja sieci połączeń - optymalizacja dostępu do treści}
         Aplikacje, które pobierają treści z wielu miejsc w internecie. \\\textbf{Problem:} Jak zoptymalizować kolejność pobierania zasobów minimalizując koszty transferu danych?
     \end{block}
 \end{frame}
 
-\begin{frame}{Źródła}
-    \begin{block}{Źródła}
-        \begin{itemize}
-            \item Materiały wykładowe - Teoria grafów i sieci - prof. dr. hab. M.Kubale
-            \item Materiały lekcyjne - mgr Jerzy Wałaszek - I LO im. Kazimierza Brodzińskiego w Tarnowie
-        \end{itemize}
-    \end{block}
+\begin{frame}{Bibliografia}
+    \begin{thebibliography}{99}
+            \bibitem{1} Materiały wykładowe - Teoria grafów i sieci - prof. dr. hab. M.Kubale
+            \bibitem{2} Materiały lekcyjne - mgr Jerzy Wałaszek - I LO im. Kazimierza Brodzińskiego w Tarnowie \\\url{https://eduinf.waw.pl/inf/alg/001_search/0122.php}
+            \bibitem{3} Algorytm Edmonds'a - Luis Goddyn \\\url{https://eduinf.waw.pl/inf/alg/001_search/data/edmonds.pdf}
+            \bibitem{4} M.Szachniuk, A.Świercz Politechnika Poznańska \\\url{http://www.cs.put.poznan.pl/mszachniuk/mszachniuk_files/lab_aisd/Szachniuk-ASD-t4.pdf}
+    \end{thebibliography}
 \end{frame}
 
 \end{document}
