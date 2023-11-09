@@ -14,15 +14,15 @@
 
 \begin{frame}{Abstrakt}
     \begin{block}{Plan prezentacji}
-        \begin{itemize}
-            \item Część 1: Definicje.
-            \item Część 2: Grafy eulerowskie, nieskierowane, nieważone.
-            \item Część 3: Grafy półeulerowskie, nieskierowane, nieważone.
-            \item Część 4: Grafy eulerowskie, nieskierowane, ważone.
-            \item Część 5: Grafy półeulerowskie, nieskierowane, ważone.
-            \item Część 6: Grafy spójne, nieeulerowskie, nieskierowane.
-            \item Część 7: Zastosowania.
-        \end{itemize}
+        \begin{enumerate}
+            \item Definicje.
+            \item Grafy eulerowskie, nieskierowane, nieważone.
+            \item Grafy półeulerowskie, nieskierowane, nieważone.
+            \item Grafy eulerowskie, nieskierowane, ważone.
+            \item Grafy półeulerowskie, nieskierowane, ważone.
+            \item Grafy spójne, nieeulerowskie, nieskierowane.
+            \item Zastosowania.
+        \end{enumerate}
     \end{block}
     \begin{block}{Omawiane algorytmy}
         \begin{itemize}
@@ -115,7 +115,7 @@
 
 \begin{frame}{Część 1 - grafy eulerowskie - historia}
     \begin{block}{Mosty królewieckie}
-        Nazwa „eulerowski” pochodzi stąd, iż Euler w 1736r. rozwiązał „problem
+        Nazwa „eulerowski” pochodzi stąd, iż Euler w 1736 r. rozwiązał „problem
         mostów królewieckich”. Pytano, czy można przejść dokładnie raz przez
         każdy z siedmiu mostów tak, aby powrócić do punktu wyjścia.
     \end{block}
@@ -134,7 +134,7 @@
             \item Graf eulerowski - przejście przez każdą krawędź jeden raz i powrót do początku.
             \item Graf półeulerowski - przejście przez każdą krawędź jeden raz.
             \item Graf (nie)ważony - cykl o minimalnej sumie wag.
-            \item Graf (nie)skierowany - "ulice jednokierunkowe".
+            \item Graf (nie)skierowany - ulice jednokierunkowe.
         \end{itemize}
     \end{block}
     \begin{block}{Inne, przykładowe warianty}
@@ -205,7 +205,7 @@
     
 \begin{frame}{Część 2 -Algorytm Fleury'ego: przykład}
     \begin{itemize}
-        \item Rozpocznij od wybranego wierzchołka, na przykład wierzchołka $A$. Wpisz go na stos.
+        \item Rozpocznij od wybranego wierzchołka, na przykład wierzchołka $A$. Dodaj go na stos.
         \item Wybierz krawędź wychodzącą z wierzchołka $A$, która nie jest mostem, na przykład krawędź do $D$.
         \item Przejdź do wierzchołka $D$ i usuń krawędź z grafu.
         \item Początek został oznaczony kolorem zielonym.
@@ -557,7 +557,7 @@
 \begin{frame}{Część 2 - działanie algorytmu Hierholzera}
     \begin{enumerate}
         \item Rozpocznij od wybranego wierzchołka o niezerowym stopniu w grafie eulerowskim.
-        \item Znajdujemy cykl rozpoczynający się w wybranym wierzchołki. Zapamiętujemy kolejne wierzchołki tej ścieżki, a przebyte krawędzie usuwamy.
+        \item Znajdujemy cykl rozpoczynający się w wybranym wierzchołku. Zapamiętujemy kolejne wierzchołki tej ścieżki, a przebyte krawędzie usuwamy.
         \item Mając pierwszy cykl, w pętli przechodzimy jego kolejne wierzchołki i dopóki dany wierzchołek ma niezerowy stopień, możemy znajdować kolejne cykle, które zawierają ten wierzchołek.
         \item Jeśli bieżący wierzchołek nie ma już dostępnych krawędzi i istnieją inne wierzchołki o niezerowym stopniu na ścieżce, weź takowy i wróć do punktu 2.
         \item Powtarzaj kroki, aż nie zostaną odwiedzone wszystkie krawędzie i utworzony zostanie cykl Eulera.
@@ -770,17 +770,38 @@
 \begin{frame}{Część 7 - zastosowania problemu chińskiego listonosza}
     \begin{block}{Zastosowania}
         Problem Chińskiego Listonosza ma zastosowanie w dziedzinach, w których konieczne jest znalezienie
-        optymalnej trasy lub cykly, który odwiedza wszystkie krawędzie z minimalnym kosztem.
+        optymalnej trasy lub cyklu, który odwiedza wszystkie krawędzie minimalizując koszt.
     \end{block}
 \end{frame}
 
 \begin{frame}{Część 7 - zastosowania problemu chińskiego listonosza}
-    \begin{block}{Automatyczna eksploracja sieci połączeń - roboty indeksujące}
-        Wyszukiwarki takie jak Google, Bing, Yahoo korzystają z robotów indeksujących do skanowania i indeksowania
-        treści stron internetowych. \\\textbf{Problem:} Jak odwiedzić jak najwięcej stron minimalnym kosztem?
+    \begin{block}{Automatyczna eksploracja sieci połączeń - Logistyka i dostawy}
+        Kurier ładuje się w bazie, rozwozi paczki i wraca do bazy.
+        Analiza kolejności odwiedzania może pomóc w minimalizowania kosztów.
+        \begin{itemize}
+            \item Wierzchołki: punkty docelowe
+            \item Krawędzie: trasa pomiędzy punktami
+        \end{itemize}
     \end{block}
-    \begin{block}{Automatyczna eksploracja sieci połączeń - optymalizacja dostępu do treści}
-        Aplikacje, które pobierają treści z wielu miejsc w internecie. \\\textbf{Problem:} Jak zoptymalizować kolejność pobierania zasobów minimalizując koszty transferu danych?
+\end{frame}
+
+\begin{frame}{Część 7 - zastosowania problemu chińskiego listonosza}
+    \begin{block}{Automatyczna eksploracja sieci połączeń - sieć telekomunikacyjna}
+        Analiza połączeń między różnymi węzłami lub stacjami bazowymi może pomóc w optymalizacji tras sygnałów lub danych w celu poprawy przepustowości i jakości usług telekomunikacyjnych.
+        \begin{itemize}
+            \item Wierzchołki: węzły lub stacje bazowe
+            \item Krawędzie: połączenia lub trasy między różnymi węzłami
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+\begin{frame}{Część 7 - zastosowania problemu chińskiego listonosza}
+    \begin{block}{Automatyczna eksploracja sieci połączeń - sieć społecznościowa}
+        Analiza połączeń między różnymi węzłami lub stacjami bazowymi może pomóc w optymalizacji tras sygnałów lub danych w celu poprawy przepustowości i jakości usług telekomunikacyjnych.
+        \begin{itemize}
+            \item Wierzchołki: użytkownicy lub grupy użytkowników.
+            \item Krawędzie: powiązania lub interakcje między grupami lub użytkownikami.
+        \end{itemize}
     \end{block}
 \end{frame}
 
