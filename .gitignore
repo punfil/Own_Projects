@@ -13,4 +13,9 @@
 
 # Python
 __pycache__
-*.txt
+
+# C
+*.out
+*.a
+*.so
+build/
