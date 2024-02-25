@@ -10,3 +10,7 @@
 *.toc
 *.vrb
 *.pdf
+
+# Python
+__pycache__
+*.txt
