@@ -84,16 +84,25 @@ def test_python_time_accurancy():
 def test_python_performance(load_generated_numbers):
     N = 1
     assert load_generated_numbers
+    clock_info = time.get_clock_info('monotonic')
 
-    start = time.time_ns()
+    LOGGER.info("Clock resolution: %.9f seconds", clock_info.resolution)
+
+    start = time.monotonic_ns()
     for _ in range(N):
         for dec_num in load_generated_numbers:
             my_oct(dec_num)
-    checkpoint_1 = time.time_ns()
+    checkpoint_1 = time.monotonic_ns()
 
     for _ in range(N):
         for dec_num in load_generated_numbers:
             pass
-    end = time.time_ns()
+    end = time.monotonic_ns()
 
     LOGGER.log(logging.INFO, "Calc loop exec_time: %.9f, empty loop exec_time: %.9f", (checkpoint_1 - start) / 1_000_000_000, (end - checkpoint_1) / 1_000_000_000)
+
+@pytest.mark.skip(reason="Not working well... Launch manually")
+def test_c_performance(load_generated_numbers):
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    process = subprocess.run(f"{script_dir}/../oct_c/build/OctTesterPerf", capture_output=True, encoding="utf-8", shell=True, check=True).stdout
+    LOGGER.info(process)
