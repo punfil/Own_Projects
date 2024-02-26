@@ -10,5 +10,5 @@ def generate_N_numbers(N):
         uniq_num.add(randint(MIN_C_VAL + 1, MAX_C_VAL))
 
     numbers = [f"{num}\n" for num in uniq_num]
-    with open("../numbers_generated.txt", "w") as f:
+    with open(NUMBERS_PATH, "w") as f:
         f.writelines(numbers)
