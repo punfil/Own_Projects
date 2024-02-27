@@ -26,7 +26,7 @@
 	W języku C funkcja została zaimplementowana w poniższy sposób:
 	\begin{lstlisting}
 	#define MAX_OCT_NUMBER_LENGTH 50
-	char *my_oct(int64_t dec_num) {
+	unsigned char *my_oct(int64_t dec_num) {
 		char *oct_num;
 		bool is_positive;
 		uint32_t length = 0;
@@ -79,21 +79,21 @@
 		return prefix + oct_num_rev[::-1]
 	\end{lstlisting}
 	
-	Jak można zauważyć, jako odpowiednik typu \lstinline{str} języka Python użyty został typ \lstinline{char *}.
+	Jak można zauważyć, jako odpowiednik typu \texttt{str} języka Python użyty został typ \texttt{unsigned char *}.
 
 	\section{Testy poprawności}
 	Celem przetestowania poprawności zaimplementowanych funkcji, 
-	wygenerowany został zbiór miliona unikalnych liczb z całego zakresu $int64\_t$ 
-	z pomocą narzędzia random.randint() z biblioteki standardowej języka Python w formie pliku tekstowego.
+	wygenerowany został zbiór miliona unikalnych liczb z całego zakresu wartości \texttt{int64\_t} 
+	z pomocą narzędzia \texttt{random.randint()} z biblioteki standardowej języka Python w formie pliku tekstowego.
 	Uzyskane wyniki porównywane były do wartości zwracanych przez funkcję \texttt{oct} wbudowaną w bibliotekę
 	standardową języka Python.
 	
 	\section{Testy wydajności}
 		Celem uniknięcia przekłamań pochodzących z działającego w tle systemu synchronizacji czasu
-		wykorzystany został zegar typu \lstinline{monotonic}.
+		wykorzystany został zegar typu \texttt{monotonic}.
 
-		\subsection{Język C}
-		Do pomiaru czasu w języku C, wykorzystana została biblioteka \lstinline{time}.
+		\paragraph{Język C}
+		Do pomiaru czasu w języku C, wykorzystana zostały funkcje zdefiniowane w pliku nagłówkowym \texttt{time.h}.
 		Przed pomiarami wykonane zostało zapytanie rozdzielczości pomiaru za pomocą:
 		\begin{lstlisting}
 		struct timespec resolution;
@@ -105,7 +105,7 @@
 		clock_gettime(CLOCK_MONOTONIC, &start);
 		\end{lstlisting}
 
-		\subsection{Język Python}
+		\paragraph{Język Python}
 		Do pomiaru czasu w języku Python, wykorzystała została biblioteka \lstinline{time}.
 		Przed pomiarami wykonane zostało zapytanie rozdzielczości pomiaru za pomocą:
 		\begin{lstlisting}
@@ -120,21 +120,22 @@
 		a wykorzystywanym systemem operacyjnym był Linux Fedora 38 z zainstalowanym językiem Python w wersji 3.11.6. 
 		W przypadku obu języków rozdzielczość pomiaru wyniosła $1e-9$.
 		Dokładność pomiaru nie została dokładnie ustalona z uwagi na trudność w dostępnie do informacji.
-		Jedynie dla języka Python 3.7 odnaleziono PEP0564, według którego dokładność funkcji \lstinline{time.monotonic_ns()} ustalono na 84ns.
+		Jedynie dla języka Python 3.7 odnaleziono dokument PEP0564, według którego dokładność funkcji \texttt{time.monotonic\_ns()} ustalono na 84ns.
 		Według wartości raportowanych przez system operacyjny:
 		\begin{lstlisting}
-		cat /sys/devices/system/clocksource/clocksource0/current_clocksource
-		# tsc
+cat /sys/devices/system/clocksource/clocksource0/current_clocksource
+# Output: tsc
 		\end{lstlisting}
-		Wykorzystywany był sprzętowy rejestr procesora, który uaktualniany każdorazowo wraz z sygnałem CLK.
-		W związku z powyższymi danymi, w sprawozdaniu przyjęto dokładność pomiaru na poziomie 1s (błąd bezzwględny pomiaru w najgorszym przypadku).
+		wykorzystywany był sprzętowy rejestr procesora, który uaktualniany każdorazowo wraz z sygnałem CLK.
+		W związku z powyższymi danymi, w sprawozdaniu przyjęto dokładność pomiaru na poziomie $1$s (błąd bezzwględny pomiaru w najgorszym przypadku).
 		
 		W eksperymencie, wykonano trzy pomiary czasu. Przed rozpoczęciem pętli obliczeniowej, po jej zakończeniu, a nastepnie na koniec pustej pętli (analogicznej do obliczeniowej).
 		Celem dobrania wartości $N$ - liczby powtórzeń, pod kątem nieprzekraczania $1\%$ przez wartość błędu względnego, wykonano pomiary czasu wykonania pojedynczej pętli, 
 		które wyniosły odpowiednio około $3.663$s dla \texttt{my\_oct()} w języku Python, $0.078$s dla \texttt{oct()} w języku Python oraz $0.091$s dla \texttt{my\_oct()} w języku C.
 
-		Błąd bezgledny pomiaru w najgorszym przypadku jest sumowany. W związku z tym, że trzeba wykonać dwukrotnie różnicę, co daje łącznie 4 operandy, wynosi on zatem 4s.
-		Celem osiągnięcia zamierzonej dokładności eksperyment powinien trwać zatem co najmniej 400 sekund.
+		Błąd bezgledny pomiaru w najgorszym przypadku jest sumowany. W związku z tym, że trzeba wykonać dwukrotnie różnicę, co daje łącznie $4$ operandy, wynosi on zatem $4$s.
+		Celem osiągnięcia zamierzonej dokładności eksperyment powinien trwać zatem co najmniej 400 sekund. Biorąc najkrótszy czas wykonania pojedynczego obiegu pętli, łatwo wyliczyć, 
+		że $N$ powinien wynosić co najmniej $5000$.
 		
 	
 	\section{Analiza uzyskanych wyników}

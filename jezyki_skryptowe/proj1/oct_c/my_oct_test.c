@@ -6,7 +6,7 @@
 #include <stdbool.h>
 
 void test_single_number(int64_t number) {
-    char *oct_num = my_oct(number);
+    unsigned char *oct_num = my_oct(number);
     fprintf(stdout, "%s\n", oct_num);
     free(oct_num);
 }
