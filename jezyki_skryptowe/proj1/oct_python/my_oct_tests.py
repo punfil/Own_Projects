@@ -91,8 +91,8 @@ def test_python_performance(load_generated_numbers):
     start = time.monotonic_ns()
     for _ in range(N):
         for dec_num in load_generated_numbers:
-            #oct(dec_num)
-            my_oct(dec_num)
+            oct(dec_num)
+            #my_oct(dec_num)
     checkpoint_1 = time.monotonic_ns()
 
     for _ in range(N):

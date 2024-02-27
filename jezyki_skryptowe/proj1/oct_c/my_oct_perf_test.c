@@ -64,7 +64,7 @@ struct ret_val *read_numbers_from_file() {
 
 int main(int argc, char **argv) {
     struct ret_val *dec_numbers = read_numbers_from_file();
-    uint8_t N = 1;
+    uint16_t N = 6000;
     struct timespec start, end, checkpoint, resolution;
 
     clock_getres(CLOCK_MONOTONIC, &resolution);
@@ -73,7 +73,7 @@ int main(int argc, char **argv) {
     clock_gettime(CLOCK_MONOTONIC, &start);
     for (int i = 0; i < N; i++) {
         for (uint64_t j = 0; j < dec_numbers->num_cnt; j++) {
-            my_oct(dec_numbers->num_ptr[j]);
+            free(my_oct(dec_numbers->num_ptr[j]));
         }
     }
     clock_gettime(CLOCK_MONOTONIC, &checkpoint);

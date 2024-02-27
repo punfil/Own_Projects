@@ -21,9 +21,11 @@
 	Celem niniejszego projektu była implementacja własnej funkcji
 	konwertującej liczby do systemu ósemkowego w języku C oraz Python.
 	W obu językach została ona nazwana \texttt{my\_oct}.
+	Przyjmuje ona na wejście liczbę całkowitą, a następnie zwraca ją w
+	postaci ciągu znaków z przedrostkiem \texttt{(-)0o}.
 
 	\section{Implementacje funkcji}
-	W języku C funkcja została zaimplementowana w poniższy sposób:
+	W języku C funkcja została nazwana \texttt{my\_oct} i zaimplementowana w poniższy sposób:
 	\begin{lstlisting}
 	#define MAX_OCT_NUMBER_LENGTH 50
 	unsigned char *my_oct(int64_t dec_num) {
@@ -58,7 +60,7 @@
 	}
 	\end{lstlisting}
 
-	Natomiast w języku Python wyglądała ona następująco:
+	W języku Python została ona nazwana analogicznie i wyglądała następująco:
 
 	\begin{lstlisting}
 	def my_oct(dec_num: int) -> str:
@@ -83,10 +85,17 @@
 
 	\section{Testy poprawności}
 	Celem przetestowania poprawności zaimplementowanych funkcji, 
-	wygenerowany został zbiór miliona unikalnych liczb z całego zakresu wartości \texttt{int64\_t} 
-	z pomocą narzędzia \texttt{random.randint()} z biblioteki standardowej języka Python w formie pliku tekstowego.
-	Uzyskane wyniki porównywane były do wartości zwracanych przez funkcję \texttt{oct} wbudowaną w bibliotekę
-	standardową języka Python.
+	wygenerowany został zbiór miliona unikalnych liczb mieszczących się w zakresie wartości \texttt{int64\_t} 
+	z pomocą narzędzia \texttt{random.randint()} z biblioteki standardowej języka Python w formie pliku tekstowego
+	(każda liczba w nowej linii). Uzyskane wyniki porównywane były do wartości zwracanych przez funkcję \texttt{oct}
+	wbudowaną w bibliotekę standardową języka Python.
+
+	Dla języka Python zaimplementowane zostały unit test'y w framework'u \texttt{pytest}, które wczytywały wygenerowane
+	liczby, a następnie porównywały wynik funkcji \texttt{my\_oct()} z \texttt{oct()}. W przypadku różnych wartości, test zgłaszał wyjątek.
+	
+	Dla języka C stworzony został program, który jako argument przyjmował liczbę \texttt{int64\_t}, a rezultat \texttt{my\_oct()}
+	umieszczał w standardowym wyjściu. Dzięki temu można było stworzyć analogiczny test jak dla funkcji \texttt{my\_oct()} zaimplementowanej w języku Python, który wykorzystywał
+	bibliotekę \texttt{subprocess} do uruchamiania pliku wykonywalnego z odpowiednim argumentem, a następnie porównywał odczytany wynik z funkcją wbudowaną.
 	
 	\section{Testy wydajności}
 		Celem uniknięcia przekłamań pochodzących z działającego w tle systemu synchronizacji czasu
@@ -117,7 +126,7 @@
 		\end{lstlisting}
 
 		Platforma testowa oparta była o procesor Intel Core i5 8600K o taktowaniu 3600MHz, 
-		a wykorzystywanym systemem operacyjnym był Linux Fedora 38 z zainstalowanym językiem Python w wersji 3.11.6. 
+		a wykorzystywanym systemem operacyjnym był Linux Fedora 38 z zainstalowanym interpreterem języka Python w wersji 3.11.6. 
 		W przypadku obu języków rozdzielczość pomiaru wyniosła $1e-9$.
 		Dokładność pomiaru nie została dokładnie ustalona z uwagi na trudność w dostępnie do informacji.
 		Jedynie dla języka Python 3.7 odnaleziono dokument PEP0564, według którego dokładność funkcji \texttt{time.monotonic\_ns()} ustalono na 84ns.
@@ -126,19 +135,55 @@
 cat /sys/devices/system/clocksource/clocksource0/current_clocksource
 # Output: tsc
 		\end{lstlisting}
-		wykorzystywany był sprzętowy rejestr procesora, który uaktualniany każdorazowo wraz z sygnałem CLK.
+		wykorzystywany był sprzętowy rejestr procesora, który był uaktualniany każdorazowo wraz z sygnałem CLK.
 		W związku z powyższymi danymi, w sprawozdaniu przyjęto dokładność pomiaru na poziomie $1$s (błąd bezzwględny pomiaru w najgorszym przypadku).
 		
-		W eksperymencie, wykonano trzy pomiary czasu. Przed rozpoczęciem pętli obliczeniowej, po jej zakończeniu, a nastepnie na koniec pustej pętli (analogicznej do obliczeniowej).
-		Celem dobrania wartości $N$ - liczby powtórzeń, pod kątem nieprzekraczania $1\%$ przez wartość błędu względnego, wykonano pomiary czasu wykonania pojedynczej pętli, 
-		które wyniosły odpowiednio około $3.663$s dla \texttt{my\_oct()} w języku Python, $0.078$s dla \texttt{oct()} w języku Python oraz $0.091$s dla \texttt{my\_oct()} w języku C.
+		W eksperymencie, wykonano trzy pomiary czasu:
+		\begin{itemize}
+			\item pomiar $p_1$ – przed rozpoczęciem N-krotnego wykonania funkcji na wczytanych danych
+			\item pomiar $p_2$ – po zakończeniu N-krotnego wykonania funkcji na wczytanych danych i przed rozpoczęciem n-krotnego wykonania pustej pętli
+			\item pomiar $p_3$ – po zakończeniu N-krotnego wykonania pustej pętli (instrukcja \texttt{NOP})
+		\end{itemize}
+		Celem dobrania wartości $N$ - liczby powtórzeń, pod kątem nieprzekraczania $1\%$ przez wartość błędu względnego, wykonano pomiary czasu wykonania pojedynczej pętli ($p_2$ - $p_1$), 
+		które wyniosły dla przykładowo wygenerowanych danych, po uprzednim odjęciu wartości ($p_3$ - $p_2$), odpowiednio:
+		\begin{itemize}
+			\item $3.676358073$s dla \texttt{my\_oct()} w języku Python,
+			\item $0.072454523$s dla \texttt{oct()} w języku Python,
+			\item $0.06633278$s dla \texttt{my\_oct()} w języku C.
+		\end{itemize}
 
-		Błąd bezgledny pomiaru w najgorszym przypadku jest sumowany. W związku z tym, że trzeba wykonać dwukrotnie różnicę, co daje łącznie $4$ operandy, wynosi on zatem $4$s.
-		Celem osiągnięcia zamierzonej dokładności eksperyment powinien trwać zatem co najmniej 400 sekund. Biorąc najkrótszy czas wykonania pojedynczego obiegu pętli, łatwo wyliczyć, 
-		że $N$ powinien wynosić co najmniej $5000$.
+		Błąd bezwzględny pomiaru w najgorszym przypadku jest sumowany. W związku z tym, że trzeba wykonać dwukrotnie różnicę, co łącznie daje $4$ operandy, wynosi on $4$s.
+		Celem osiągnięcia zamierzonej dokładności eksperyment powinien trwać zatem co najmniej 400 sekund. Dobrane wartości N oraz obliczony błąd względny przedstawione zostały w poniższej tabeli:
 		
+		\begin{table}[!h]
+			\begin{tabular}{|c|c|c|c|}
+				\hline
+				\textbf{Funkcja} & \textbf{N} & \textbf{Czas działania} & \textbf{Błąd względny} \\
+				\hline
+				\texttt{oct()} w języku Python & $6500$ & $452.947763469$s & $0.883104$\% \\
+				\hline
+				\texttt{my\_oct()} w języku C & $6000$ & $466.296518647$s & $0.85782$\% \\
+				\hline
+				\texttt{my\_oct()} w języku Python & $115$ & $432.212319115$s & $0.92547$\% \\
+				\hline
+			\end{tabular}
+		\end{table}
 	
 	\section{Analiza uzyskanych wyników}
-	Krótka analiza uzyskanych wyników, wskazująca na przyczyny uzyskania takiej, a nie innej kolejności wyników.
+	Uzyskane dane dla $N=1$ wskazują, że najszybszą z testowanych funkcji jest ta ręcznie zaimplementowana w języku C.
+	Dla większej ilości iteracji przewagę zyskuje jednak implementacja zawarta w ramach biblioteki standardowej języka Python.
+	Autorowi niniejszego sprawozdania wydaje się, że może to wynikać z kilku powodów:
+	\begin{itemize}
+		\item Technika zwalniania pamięci (GC uruchamiany co jakiś czas zamiast zwalniania każdorazowo blok po bloku),
+		\item Implementacja bazująca na operacjach bitowych (według kodu źródłowego CPython'a), zamiast dzielenia w pętli,
+		\item Sekcje najbardziej wymagające obliczeniowe zaimplementowane bezpośrednio w assemblerze,
+		\item Optymalizacje czasu kompilacji, np. wykorzystanie LTO,
+		\item Brak wykorzystania operacji na stringach takich jak \texttt{strrev()}.
+	\end{itemize}
+
+	W przypadku funkcji \texttt{my\_oct()} zaimplementowanej przez autora sprawozdania w języku Python, na gorszy wynik wpływ
+	mają nie tylko czynniki wspomniane wcześniej takie jak nieoptymalna implementacja, ale także jego interpretowanie, zamiast kompilacji.
+	Należy pamiętać, że funkcja \texttt{oct()} pochodząca z wbudowanej biblioteki jest skompilowana.
+
 
 \end{document}
