@@ -4,6 +4,7 @@
 \usepackage{polski}
 \usepackage{babel}
 \usepackage{indentfirst}
+\usepackage{listings}
 
 \title{
 	\textbf{Języki skryptowe i ich zastosowania}\\
@@ -17,20 +18,124 @@
 	\maketitle
 	
 	\section{Testowana funkcja}
-	Nazwa testowanej funkcji i krótki opis tego, co ona robi.
-	
+	Celem niniejszego projektu była implementacja własnej funkcji
+	konwertującej liczby do systemu ósemkowego w języku C oraz Python.
+	W obu językach została ona nazwana \texttt{my\_oct}.
+
 	\section{Implementacje funkcji}
-	Kod źródłowy twoich implementacji testowanej funkcji.
+	W języku C funkcja została zaimplementowana w poniższy sposób:
+	\begin{lstlisting}
+	#define MAX_OCT_NUMBER_LENGTH 50
+	char *my_oct(int64_t dec_num) {
+		char *oct_num;
+		bool is_positive;
+		uint32_t length = 0;
+		
+		if (!dec_num) {
+			return "0o0";
+		}
+
+		oct_num = calloc(1, MAX_OCT_NUMBER_LENGTH);
+		if (!oct_num) {
+			fprintf(stderr, "Not enough memory.\n");
+			goto err;
+		}
+
+		is_positive = dec_num > 0 ? true : false;
+
+		while (dec_num && length < MAX_OCT_NUMBER_LENGTH - 3) {
+			oct_num[length++] = abs(dec_num % 8) + '0';
+			dec_num /= 8;
+		}
+
+		oct_num[length] = '\0';
+		strcat(oct_num, is_positive ? "o0" : "o0-");
+		strrev(oct_num);
+
+		return oct_num;
+	err:
+		return NULL;
+	}
+	\end{lstlisting}
+
+	Natomiast w języku Python wyglądała ona następująco:
+
+	\begin{lstlisting}
+	def my_oct(dec_num: int) -> str:
+		'''
+		Convert decimal number to octal representation.
+		'''
+		if not dec_num:
+			return "0o0"
+
+		prefix = "-0o" if dec_num < 0 else "0o"
+
+		dec_num = abs(dec_num)
+		oct_num_rev = ""
+		while dec_num:
+			oct_num_rev += str(dec_num % 8)
+			dec_num //= 8
+
+		return prefix + oct_num_rev[::-1]
+	\end{lstlisting}
 	
+	Jak można zauważyć, jako odpowiednik typu \lstinline{str} języka Python użyty został typ \lstinline{char *}.
+
 	\section{Testy poprawności}
-	Opis sposobu generowania danych oraz ilość wygenerowanych zestawów. 
+	Celem przetestowania poprawności zaimplementowanych funkcji, 
+	wygenerowany został zbiór miliona unikalnych liczb z całego zakresu $int64\_t$ 
+	z pomocą narzędzia random.randint() z biblioteki standardowej języka Python w formie pliku tekstowego.
+	Uzyskane wyniki porównywane były do wartości zwracanych przez funkcję \texttt{oct} wbudowaną w bibliotekę
+	standardową języka Python.
 	
 	\section{Testy wydajności}
-	Nazwy funkcji użytych do pomiaru czasu i ich dokładność.
-	
-	Opis sposobu pomiaru czasu.
-	
-	Uzyskane w trakcie testu wartości parametru n, wyniki pomiarów czasu działania testowanych funkcji oraz błędy względne pomiaru.
+		Celem uniknięcia przekłamań pochodzących z działającego w tle systemu synchronizacji czasu
+		wykorzystany został zegar typu \lstinline{monotonic}.
+
+		\subsection{Język C}
+		Do pomiaru czasu w języku C, wykorzystana została biblioteka \lstinline{time}.
+		Przed pomiarami wykonane zostało zapytanie rozdzielczości pomiaru za pomocą:
+		\begin{lstlisting}
+		struct timespec resolution;
+		clock_getres(CLOCK_MONOTONIC, &resolution);
+		\end{lstlisting}
+		Do pomiaru czasu wykorzystana została funkcja:
+		\begin{lstlisting}
+		struct timespec start;
+		clock_gettime(CLOCK_MONOTONIC, &start);
+		\end{lstlisting}
+
+		\subsection{Język Python}
+		Do pomiaru czasu w języku Python, wykorzystała została biblioteka \lstinline{time}.
+		Przed pomiarami wykonane zostało zapytanie rozdzielczości pomiaru za pomocą:
+		\begin{lstlisting}
+		clock_info = time.get_clock_info('monotonic')
+		\end{lstlisting}
+		Do pomiaru czasu wykorzystana została funkcja:
+		\begin{lstlisting}
+		start = time.monotonic_ns()
+		\end{lstlisting}
+
+		Platforma testowa oparta była o procesor Intel Core i5 8600K o taktowaniu 3600MHz, 
+		a wykorzystywanym systemem operacyjnym był Linux Fedora 38 z zainstalowanym językiem Python w wersji 3.11.6. 
+		W przypadku obu języków rozdzielczość pomiaru wyniosła $1e-9$.
+		Dokładność pomiaru nie została dokładnie ustalona z uwagi na trudność w dostępnie do informacji.
+		Jedynie dla języka Python 3.7 odnaleziono PEP0564, według którego dokładność funkcji \lstinline{time.monotonic_ns()} ustalono na 84ns.
+		Według wartości raportowanych przez system operacyjny:
+		\begin{lstlisting}
+		cat /sys/devices/system/clocksource/clocksource0/current_clocksource
+		# tsc
+		\end{lstlisting}
+		Wykorzystywany był sprzętowy rejestr procesora, który uaktualniany każdorazowo wraz z sygnałem CLK.
+		W związku z powyższymi danymi, w sprawozdaniu przyjęto dokładność pomiaru na poziomie 1s (błąd bezzwględny pomiaru w najgorszym przypadku).
+		
+		W eksperymencie, wykonano trzy pomiary czasu. Przed rozpoczęciem pętli obliczeniowej, po jej zakończeniu, a nastepnie na koniec pustej pętli (analogicznej do obliczeniowej).
+		Celem dobrania wartości $N$ - liczby powtórzeń, pod kątem nieprzekraczania $1\%$ przez wartość błędu względnego, wykonano pomiary czasu wykonania pojedynczej pętli, 
+		które wyniosły odpowiednio około $3.663$s dla \texttt{my\_oct()} w języku Python, $0.078$s dla \texttt{oct()} w języku Python oraz $0.091$s dla \texttt{my\_oct()} w języku C.
+
+		Błąd bezgledny pomiaru w najgorszym przypadku jest sumowany. W związku z tym, że trzeba wykonać dwukrotnie różnicę, co daje łącznie 4 operandy, wynosi on zatem 4s.
+		Celem osiągnięcia zamierzonej dokładności eksperyment powinien trwać zatem co najmniej 400 sekund.
+		
 	
 	\section{Analiza uzyskanych wyników}
 	Krótka analiza uzyskanych wyników, wskazująca na przyczyny uzyskania takiej, a nie innej kolejności wyników.
