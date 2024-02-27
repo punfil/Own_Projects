@@ -49,12 +49,9 @@ char *my_oct(int64_t dec_num) {
     }
 
     is_positive = dec_num > 0 ? true : false;
-    if (!is_positive) {
-        dec_num = -dec_num;
-    }
 
     while (dec_num && length < MAX_OCT_NUMBER_LENGTH - 3) {
-        oct_num[length++] = (dec_num % 8) + '0';
+        oct_num[length++] = abs(dec_num % 8) + '0';
         dec_num /= 8;
     }
 

@@ -60,7 +60,7 @@ def test_c_single_number(generate_single_number):
     assert oct_num in get_c_result(generate_single_number)
 
 
-@pytest.mark.skip("Function tested")
+#@pytest.mark.skip("Function tested")
 def test_python_generated_numbers(load_generated_numbers):
     assert load_generated_numbers
 
@@ -69,7 +69,7 @@ def test_python_generated_numbers(load_generated_numbers):
             raise ValueError("Improper value %d from %d", my_oct(number), number)
 
 
-@pytest.mark.skip(reason="Function tested")
+#@pytest.mark.skip(reason="Function tested")
 def test_c_generated_numbers(load_generated_numbers):
     assert load_generated_numbers
 
