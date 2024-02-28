@@ -5,6 +5,18 @@
 \usepackage{babel}
 \usepackage{indentfirst}
 \usepackage{listings}
+\usepackage[colorlinks=true, urlcolor=blue, linkcolor=red]{hyperref}
+\usepackage[document]{ragged2e}
+\lstset{
+	frame=l,
+	basicstyle=\ttfamily,
+	numbers=left,
+	texcl=false,
+	tabsize=1,
+	breaklines=true,
+	postbreak=\mbox{{$\hookrightarrow$}\space}
+}
+\sloppy
 
 \title{
 	\textbf{Języki skryptowe i ich zastosowania}\\
@@ -18,6 +30,7 @@
 	\maketitle
 	
 	\section{Testowana funkcja}
+	\justify
 	Celem niniejszego projektu była implementacja własnej funkcji
 	konwertującej liczby do systemu ósemkowego w języku C oraz Python.
 	W obu językach została ona nazwana \texttt{my\_oct}.
@@ -26,10 +39,10 @@
 
 	\section{Implementacje funkcji}
 	W języku C funkcja została nazwana \texttt{my\_oct} i zaimplementowana w poniższy sposób:
-	\begin{lstlisting}
+	\begin{lstlisting}[language=C, caption={Implementacja w języku C},captionpos=b]
 	#define MAX_OCT_NUMBER_LENGTH 50
 	unsigned char *my_oct(int64_t dec_num) {
-		char *oct_num;
+		unsigned char *oct_num;
 		bool is_positive;
 		uint32_t length = 0;
 		
@@ -62,7 +75,7 @@
 
 	W języku Python została ona nazwana analogicznie i wyglądała następująco:
 
-	\begin{lstlisting}
+	\begin{lstlisting}[language=Python, caption={Implementacja w języku Python},captionpos=b]
 	def my_oct(dec_num: int) -> str:
 		'''
 		Convert decimal number to octal representation.
@@ -84,17 +97,18 @@
 	Jak można zauważyć, jako odpowiednik typu \texttt{str} języka Python użyty został typ \texttt{unsigned char *}.
 
 	\section{Testy poprawności}
+	\justify
 	Celem przetestowania poprawności zaimplementowanych funkcji, 
 	wygenerowany został zbiór miliona unikalnych liczb mieszczących się w zakresie wartości \texttt{int64\_t} 
 	z pomocą narzędzia \texttt{random.randint()} z biblioteki standardowej języka Python w formie pliku tekstowego
 	(każda liczba w nowej linii). Uzyskane wyniki porównywane były do wartości zwracanych przez funkcję \texttt{oct}
 	wbudowaną w bibliotekę standardową języka Python.
-
+	\justify
 	Dla języka Python zaimplementowane zostały unit test'y w framework'u \texttt{pytest}, które wczytywały wygenerowane
 	liczby, a następnie porównywały wynik funkcji \texttt{my\_oct()} z \texttt{oct()}. W przypadku różnych wartości, test zgłaszał wyjątek.
-	
+	\justify
 	Dla języka C stworzony został program, który jako argument przyjmował liczbę \texttt{int64\_t}, a rezultat \texttt{my\_oct()}
-	umieszczał w standardowym wyjściu. Dzięki temu można było stworzyć analogiczny test jak dla funkcji \texttt{my\_oct()} zaimplementowanej w języku Python, który wykorzystywał
+	umieszczał w standardowym wyjściu. Dzięki temu można było stworzyć podobny test jak dla funkcji \texttt{my\_oct()} zaimplementowanej w języku Python, który wykorzystywał
 	bibliotekę \texttt{subprocess} do uruchamiania pliku wykonywalnego z odpowiednim argumentem, a następnie porównywał odczytany wynik z funkcją wbudowaną.
 	
 	\section{Testy wydajności}
@@ -102,8 +116,8 @@
 		wykorzystany został zegar typu \texttt{monotonic}.
 
 		\paragraph{Język C}
-		Do pomiaru czasu w języku C, wykorzystana zostały funkcje zdefiniowane w pliku nagłówkowym \texttt{time.h}.
-		Przed pomiarami wykonane zostało zapytanie rozdzielczości pomiaru za pomocą:
+		Do pomiaru czasu w języku C, wykorzystane zostały funkcje zdefiniowane w pliku nagłówkowym \texttt{time.h}.
+		Przed pomiarami wykonane zostało zapytanie o rozdzielczość pomiaru za pomocą:
 		\begin{lstlisting}
 		struct timespec resolution;
 		clock_getres(CLOCK_MONOTONIC, &resolution);
@@ -116,7 +130,7 @@
 
 		\paragraph{Język Python}
 		Do pomiaru czasu w języku Python, wykorzystała została biblioteka \lstinline{time}.
-		Przed pomiarami wykonane zostało zapytanie rozdzielczości pomiaru za pomocą:
+		Przed pomiarami wykonane zostało zapytanie o rozdzielczość pomiaru za pomocą:
 		\begin{lstlisting}
 		clock_info = time.get_clock_info('monotonic')
 		\end{lstlisting}
@@ -128,7 +142,7 @@
 		Platforma testowa oparta była o procesor Intel Core i5 8600K o taktowaniu 3600MHz, 
 		a wykorzystywanym systemem operacyjnym był Linux Fedora 38 z zainstalowanym interpreterem języka Python w wersji 3.11.6. 
 		W przypadku obu języków rozdzielczość pomiaru wyniosła $1e-9$.
-		Dokładność pomiaru nie została dokładnie ustalona z uwagi na trudność w dostępnie do informacji.
+		Dokładność pomiaru nie została dokładnie ustalona z uwagi na trudność w dostępie do informacji.
 		Jedynie dla języka Python 3.7 odnaleziono dokument PEP0564, według którego dokładność funkcji \texttt{time.monotonic\_ns()} ustalono na 84ns.
 		Według wartości raportowanych przez system operacyjny:
 		\begin{lstlisting}
@@ -170,17 +184,18 @@ cat /sys/devices/system/clocksource/clocksource0/current_clocksource
 		\end{table}
 	
 	\section{Analiza uzyskanych wyników}
-	Uzyskane dane dla $N=1$ wskazują, że najszybszą z testowanych funkcji jest ta ręcznie zaimplementowana w języku C.
+	\justify
+	Uzyskane dane dla $N=1$ wskazują, że najszybszą z testowanych funkcji jest ta ręcznie stworzona w języku C.
 	Dla większej ilości iteracji przewagę zyskuje jednak implementacja zawarta w ramach biblioteki standardowej języka Python.
 	Autorowi niniejszego sprawozdania wydaje się, że może to wynikać z kilku powodów:
 	\begin{itemize}
-		\item Technika zwalniania pamięci (GC uruchamiany co jakiś czas zamiast zwalniania każdorazowo blok po bloku),
-		\item Implementacja bazująca na operacjach bitowych (według kodu źródłowego CPython'a), zamiast dzielenia w pętli,
-		\item Sekcje najbardziej wymagające obliczeniowe zaimplementowane bezpośrednio w assemblerze,
+		\item Technika zwalniania pamięci (GC uruchamiany co jakiś czas zamiast zwalniania każdorazowo blok po bloku,
+		z drugiej strony przy zadaniach stricte obliczeniowych jego działanie może być kosztowne),
+		\item Implementacja bazująca na operacjach bitowych (\href{https://github.com/python/cpython/tree/main}{według kodu źródłowego CPython'a}), zamiast dzielenia w pętli,
 		\item Optymalizacje czasu kompilacji, np. wykorzystanie LTO,
 		\item Brak wykorzystania operacji na stringach takich jak \texttt{strrev()}.
 	\end{itemize}
-
+	\justify
 	W przypadku funkcji \texttt{my\_oct()} zaimplementowanej przez autora sprawozdania w języku Python, na gorszy wynik wpływ
 	mają nie tylko czynniki wspomniane wcześniej takie jak nieoptymalna implementacja, ale także jego interpretowanie, zamiast kompilacji.
 	Należy pamiętać, że funkcja \texttt{oct()} pochodząca z wbudowanej biblioteki jest skompilowana.

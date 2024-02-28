@@ -34,7 +34,7 @@ void strrev(char *str) {
 }
 
 unsigned char *my_oct(int64_t dec_num) {
-    char *oct_num;
+    unsigned char *oct_num;
     bool is_positive;
     uint32_t length = 0;
     
