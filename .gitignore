@@ -10,3 +10,12 @@
 *.toc
 *.vrb
 *.pdf
+
+# Python
+__pycache__
+
+# C
+*.out
+*.a
+*.so
+build/
