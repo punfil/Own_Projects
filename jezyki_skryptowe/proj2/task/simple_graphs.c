@@ -279,90 +279,6 @@ delete_edge(AdjacencyMatrix *self, PyObject *args) {
     return PyBool_FromLong(1);
 }
 
-static PyObject *
-AdjacencyMatrix_eq(AdjacencyMatrix *self, PyObject *other) {
-    AdjacencyMatrix *other_matrix;
-
-    if (!PyObject_TypeCheck(other, Py_TYPE(self))) {
-        return NULL;
-    }
-
-    other_matrix = (AdjacencyMatrix *)other;
-    if (self->vertices != other_matrix->vertices) {
-        Py_RETURN_FALSE;
-    }
-
-    for (unsigned i = 0; i < MAX_VERTICES; i++) {
-        if (self->edges[i] != other_matrix->edges[i]) {
-            Py_RETURN_FALSE;
-        }
-    }
-
-    Py_RETURN_TRUE;
-}
-
-static PyObject *
-AdjacencyMatrix_ne(AdjacencyMatrix *self, PyObject *other) {
-    AdjacencyMatrix *other_matrix;
-
-    if (!PyObject_TypeCheck(other, Py_TYPE(self))) {
-        return NULL;
-    }
-
-    other_matrix = (AdjacencyMatrix *)other;
-    if (self->vertices != other_matrix->vertices) {
-        Py_RETURN_TRUE;
-    }
-
-    for (unsigned i = 0; i < MAX_VERTICES; i++) {
-        if (self->edges[i] != other_matrix->edges[i]) {
-            Py_RETURN_TRUE;
-        }
-    }
-
-    Py_RETURN_FALSE;
-}
-
-static PyObject *
-AdjacencyMatrix_richcmp(PyObject *self, PyObject *other, int opid) {
-    AdjacencyMatrix *other_matrix, *this_matrix;
-
-    other_matrix = (AdjacencyMatrix *)other;
-    this_matrix = (AdjacencyMatrix *)self;
-    if (this_matrix->vertices != other_matrix->vertices) {
-        if (opid == Py_EQ) {
-            Py_RETURN_FALSE;
-        } else if (opid == Py_NE) {
-            Py_RETURN_TRUE;
-        } else {
-            PyErr_SetString(PyExc_NotImplementedError, "Unsupported comparison operator");
-            return NULL;
-        }
-    }
-
-    for (unsigned i = 0; i < MAX_VERTICES; i++) {
-        if (this_matrix->edges[i] != other_matrix->edges[i]) {
-            if (opid == Py_EQ) {
-                Py_RETURN_FALSE;
-            } else if (opid == Py_NE) {
-                Py_RETURN_TRUE;
-            } else {
-                PyErr_SetString(PyExc_NotImplementedError, "Unsupported comparison operator");
-                return NULL;
-            }
-        }
-    }
-
-    if (opid == Py_EQ) {
-        Py_RETURN_TRUE;
-    } else if (opid == Py_NE) {
-        Py_RETURN_FALSE;
-    } else {
-        PyErr_SetString(PyExc_NotImplementedError, "Unsupported comparison operator");
-        return NULL;
-    }
-}
-
 static PyObject*
 complement(AdjacencyMatrix *self) {
     AdjacencyMatrix *copy = (AdjacencyMatrix *)PyObject_CallObject(Py_TYPE(self), NULL);
@@ -397,8 +313,6 @@ AdjacencyMatrix_methods[] = {
     {"add_edge",           (PyCFunction)add_edge,           METH_VARARGS, NULL},
     {"delete_edge",        (PyCFunction)delete_edge,        METH_VARARGS, NULL},
     {"edges",              (PyCFunction)edges,              METH_NOARGS, NULL},
-    {"__eq__",             (PyCFunction)AdjacencyMatrix_eq, METH_VARARGS,NULL},
-    {"__ne__",             (PyCFunction)AdjacencyMatrix_ne, METH_VARARGS,NULL},
     {"complement",         (PyCFunction)complement,         METH_NOARGS, NULL},
     {NULL, NULL, 0, NULL}
 };
@@ -411,12 +325,11 @@ AdjacencyMatrixType = {
     .tp_new = AdjacencyMatrix_new,
     .tp_dealloc = (destructor)AdjacencyMatrix_dealloc,
     .tp_init = (initproc)AdjacencyMatrix_init,
-    .tp_richcompare = (richcmpfunc)AdjacencyMatrix_richcmp,
     .tp_methods = AdjacencyMatrix_methods  // Point to methods array
 };
 
 static struct PyModuleDef
-simple_graph_module = {
+    simple_graph_module = {
     PyModuleDef_HEAD_INIT,
     "_simple_graphs",
     NULL,
