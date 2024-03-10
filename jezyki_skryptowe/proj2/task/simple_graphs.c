@@ -7,26 +7,23 @@
 #define MIN(a,b) (((a)<(b))?(a):(b))
 #define MAX(a,b) (((a)>(b))?(a):(b))
 #define MAX_VERTICES 16
+#define G6_MIN_ASCII_VALUE 63
 
 typedef struct {
     PyObject_HEAD
     unsigned short vertices;
-    unsigned short *edges;
+    unsigned short edges[16];
 } AdjacencyMatrix;
 
 static PyObject *AdjacencyMatrix_new(PyTypeObject *type, PyObject *args, PyObject *kwds) {
-    AdjacencyMatrix *self = (AdjacencyMatrix *) type->tp_alloc(type, 0);
+    AdjacencyMatrix *self = (AdjacencyMatrix *)type->tp_alloc(type, 0);
     if (!self) {
-        PyErr_SetString(PyExc_MemoryError, "Failed to allocate memory for edges");
+        PyErr_SetString(PyExc_MemoryError, "Failed to allocate memory for AdjacencyMatrix.");
         return NULL;
     }
 
-    self->vertices = 0x0000;
-    self->edges = (unsigned short *)calloc(MAX_VERTICES, sizeof(unsigned short));
-    if (self->edges == NULL) {
-        PyErr_SetString(PyExc_MemoryError, "Failed to allocate memory for edges");
-        return NULL;
-    }
+    self->vertices = 0;
+    memset(self->edges, 0, MAX_VERTICES * sizeof(unsigned short));
 
     PyObject_INIT(self, type);
 
@@ -34,41 +31,38 @@ static PyObject *AdjacencyMatrix_new(PyTypeObject *type, PyObject *args, PyObjec
 }
 
 static void AdjacencyMatrix_dealloc(AdjacencyMatrix *self) {
-    free(self->edges);
-    Py_TYPE(self)->tp_free((PyObject *) self);
+    Py_TYPE(self)->tp_free((PyObject *)self);
 }
 
 static int AdjacencyMatrix_init(AdjacencyMatrix *self, PyObject *args, PyObject *kwargs) {
     static char *keywords[] = {"text", NULL};
-    char *txt = "?";
+    int k = 0, i = 1, c = 0;
+    unsigned vertices_count = 0;
+    char *txt = NULL;
 
     if (!PyArg_ParseTupleAndKeywords(args, kwargs, "|s", keywords, &txt)) {
         return -1;
     }
 
-    int vertices_count = 0;
-    for (int i = 0; i < txt[0] - 63; i++) {
-        self->vertices = self->vertices << 1;
-        self->vertices = self->vertices | 0x0001;
+    for (i = 0; i < txt[0] - G6_MIN_ASCII_VALUE; i++) {
+        self->vertices <<= 1;
+        self->vertices |= 1;
         vertices_count++;
     }
 
-    int k = 0;
-    int i = 1;
-    int c = 0;
-
-    for (int v = 1; v < vertices_count; v++) {
-        for (int u = 0; u < v; u++) {
+    i = 1;
+    for (unsigned v = 1; v < vertices_count; v++) {
+        for (unsigned u = 0; u < v; u++) {
             if (!k) {
-                c = txt[i] - 63;
+                c = txt[i] - G6_MIN_ASCII_VALUE;
                 i++;
                 k = 6;
             }
 
             k--;
-            if ((c & (1 << k)) != 0) {
-                self->edges[u] = self->edges[u] | (0x0001 << v);
-                self->edges[v] = self->edges[v] | (0x0001 << u);
+            if ((c & (1 << k))) {
+                self->edges[u] |= (1 << v);
+                self->edges[v] |= (1 << u);
             }
         }
     }
@@ -77,29 +71,30 @@ static int AdjacencyMatrix_init(AdjacencyMatrix *self, PyObject *args, PyObject 
 }
 
 static PyObject *number_of_vertices(AdjacencyMatrix *self) {
-    long ctr = 0;
+    long vertices_cnt = 0;
     unsigned short vertices = self->vertices;
-    for (int i = 0; i < MAX_VERTICES; i++) {
-        if ((vertices & 1)) {
-            ctr++;
+    for (unsigned i = 0; i < MAX_VERTICES; i++) {
+        if (vertices & 1U) {
+            vertices_cnt++;
         }
 
-        vertices = vertices >> 1;
+        vertices >>= 1;
     }
 
-    return PyLong_FromLong(ctr);
+    return PyLong_FromLong(vertices_cnt);
 }
 
 
 static PyObject *vertices(AdjacencyMatrix *self) {
-    PyObject *vertices_set = PySet_New(NULL);
+    PyObject *item = NULL;
+    PyObject *vertices_set = PySet_New(NULL);    
     if (!vertices_set) {
         return NULL;
     }
 
-    for (int i = 0; i < 16; i++) {
-        if (((self->vertices >> i) & 0x0001) == 1) {
-            PyObject *item = PyLong_FromLong(i);
+    for (unsigned i = 0; i < MAX_VERTICES; i++) {
+        if ((self->vertices >> i) & 1U) {
+            item = PyLong_FromLong(i);
             PySet_Add(vertices_set, item);
             Py_DECREF(item);
         }
@@ -109,41 +104,45 @@ static PyObject *vertices(AdjacencyMatrix *self) {
 }
 
 static PyObject *vertex_degree(AdjacencyMatrix *self, PyObject *args) {
+    long vertex_degree = 0, edges;
     int v;
 
-    if (args != NULL) {
+    if (args) {
         PyArg_ParseTuple(args, "i", &v);
     }
 
-    short ctr = 0;
-    short edges = self->edges[v];
-    for (int i = 0; i < 16; i++) {
-        if ((edges & 0x0001) == 1) {
-            ctr++;
+    edges = self->edges[v];
+
+    for (unsigned i = 0; i < MAX_VERTICES; i++) {
+        if (edges & 1U) {
+            vertex_degree++;
         }
-        edges = edges >> 1;
+
+        edges >>= 1;
     }
 
-    long ret = (long) ctr;
-    return PyLong_FromLong(ret);
+    return PyLong_FromLong(vertex_degree);
 }
 
 static PyObject *vertex_neighbors(AdjacencyMatrix *self, PyObject *args) {
+    PyObject *neighbors_set = PySet_New(NULL);
+    short edges;
     int v;
 
-    if (args != NULL) {
+    if (args) {
         PyArg_ParseTuple(args, "i", &v);
     }
-    PyObject *neighbors_set = PySet_New(NULL);
 
-    short edges = self->edges[v];
-    for (int i = 0; i < 16; i++) {
-        if ((edges & 0x0001) == 1) {
+    edges = self->edges[v];
+
+    for (unsigned i = 0; i < MAX_VERTICES; i++) {
+        if (edges & 1U) {
             PyObject *item = PyLong_FromLong(i);
             PySet_Add(neighbors_set, item);
             Py_DECREF(item);
         }
-        edges = edges >> 1;
+
+        edges >>= 1U;
     }
 
     return neighbors_set;
@@ -152,47 +151,49 @@ static PyObject *vertex_neighbors(AdjacencyMatrix *self, PyObject *args) {
 static PyObject *add_vertex(AdjacencyMatrix *self, PyObject *args) {
     int v;
 
-    if (args != NULL) {
+    if (args) {
         PyArg_ParseTuple(args, "i", &v);
     }
 
-    short tmp = (0x0001 << v);
-    self->vertices = self->vertices | tmp;
+    self->vertices |= (1U << v);
     return PyBool_FromLong(1);
 }
 
 static PyObject *delete_vertex(AdjacencyMatrix *self, PyObject *args) {
+    short tmp;
     int v;
 
-    if (args != NULL) {
+    if (args) {
         PyArg_ParseTuple(args, "i", &v);
     }
 
-    self->edges[v] = 0x0000;
+    self->edges[v] = 0;
+    tmp = ~(1U << v);
 
-    short tmp = 0x0001 << v;
-    tmp = ~tmp;
-
-    for (int i = 0; i < 16; i++) {
-        self->edges[i] = self->edges[i] & tmp;
+    for (unsigned i = 0; i < MAX_VERTICES; i++) {
+        self->edges[i] &= tmp;
     }
-    self->vertices = self->vertices & tmp;
+
+    self->vertices &= tmp;
     return PyBool_FromLong(1);
 }
 
 static PyObject *number_of_edges(AdjacencyMatrix *self) {
-    short ctr = 0;
-    for (int j = 0; j < 16; j++) {
-        short edges = self->edges[j];
-        for (int i = 0; i < 16; i++) {
-            if ((edges & 1) == 1) {
-                ctr++;
+    long edges_cnt = 0;
+
+    for (unsigned i = 0; i < MAX_VERTICES; i++) {
+        short edges = self->edges[i];
+
+        for (unsigned j = 0; j < MAX_VERTICES; j++) {
+            if (edges & 1) {
+                edges_cnt++;
             }
-            edges = edges >> 1;
+
+            edges >>= 1U;
         }
     }
-    long ret = ctr / 2;
-    return PyLong_FromLong(ret);
+
+    return PyLong_FromLong(edges_cnt / 2);
 }
 
 static PyObject *edges(AdjacencyMatrix *self) {
@@ -201,17 +202,19 @@ static PyObject *edges(AdjacencyMatrix *self) {
         return NULL;
     }
 
-    for (int j = 0; j < 16; j++) {
-        short edges = self->edges[j];
-        for (int i = 0; i < 16; i++) {
-            if ((edges & 0x0001) == 1) {
+    for (unsigned i = 0; i < MAX_VERTICES; i++) {
+        short edges = self->edges[i];
+
+        for (unsigned j = 0; j < MAX_VERTICES; j++) {
+            if (edges & 1U) {
                 PyObject *edge = PyTuple_New(2);
                 PyTuple_SetItem(edge, 0, PyLong_FromLong(MIN(i, j)));
                 PyTuple_SetItem(edge, 1, PyLong_FromLong(MAX(i, j)));
                 PySet_Add(edges_set, edge);
                 Py_DECREF(edge);
             }
-            edges = edges >> 1;
+
+            edges >>= 1U;
         }
     }
 
@@ -219,32 +222,30 @@ static PyObject *edges(AdjacencyMatrix *self) {
 }
 
 static PyObject *is_edge(AdjacencyMatrix *self, PyObject *args) {
+    long edges_v;
     int v, u;
 
-    if (args != NULL) {
+    if (args) {
         PyArg_ParseTuple(args, "ii", &v, &u);
     }
 
-    short edges_v = self->edges[v];
-    edges_v = edges_v >> u;
-    edges_v = edges_v & 0x0001;
+    edges_v = self->edges[v] >> u;
 
-    return PyBool_FromLong(edges_v);
+    return PyBool_FromLong(edges_v & 1U);
 }
 
 static PyObject *add_edge(AdjacencyMatrix *self, PyObject *args) {
     int v, u;
 
-    if (args != NULL) {
+    if (args) {
         PyArg_ParseTuple(args, "ii", &v, &u);
     }
 
     if (v != u) {
-        short update_u = (1 << v);
-        short update_v = (1 << u);
-        self->edges[v] = self->edges[v] | update_v;
-        self->edges[u] = self->edges[u] | update_u;
+        self->edges[v] |= 1U << u;
+        self->edges[u] |= 1U << v;
     }
+
     return PyBool_FromLong(1);
 }
 
@@ -255,10 +256,8 @@ static PyObject *delete_edge(AdjacencyMatrix *self, PyObject *args) {
         PyArg_ParseTuple(args, "ii", &v, &u);
     }
 
-    short update_u = ~(0x0001 << v);
-    short update_v = ~(0x0001 << u);
-    self->edges[v] = self->edges[v] & update_v;
-    self->edges[u] = self->edges[u] & update_u;
+    self->edges[v] &= ~(1 << u);
+    self->edges[u] &= ~(1 << v);
     return PyBool_FromLong(1);
 }
 
