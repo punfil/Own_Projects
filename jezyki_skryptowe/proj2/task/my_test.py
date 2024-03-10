@@ -1,4 +1,2 @@
-import spam
+import simple_graphs
 
-print(spam.system("ls -l"))
-print(spam.system("uname -r"))
