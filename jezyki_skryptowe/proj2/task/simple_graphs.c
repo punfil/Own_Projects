@@ -15,7 +15,8 @@ typedef struct {
     unsigned short edges[16];
 } AdjacencyMatrix;
 
-static PyObject *AdjacencyMatrix_new(PyTypeObject *type, PyObject *args, PyObject *kwds) {
+static PyObject *
+AdjacencyMatrix_new(PyTypeObject *type, PyObject *args, PyObject *kwds) {
     AdjacencyMatrix *self = (AdjacencyMatrix *)type->tp_alloc(type, 0);
     if (!self) {
         PyErr_SetString(PyExc_MemoryError, "Failed to allocate memory for AdjacencyMatrix.");
@@ -30,11 +31,13 @@ static PyObject *AdjacencyMatrix_new(PyTypeObject *type, PyObject *args, PyObjec
     return (PyObject *)self;
 }
 
-static void AdjacencyMatrix_dealloc(AdjacencyMatrix *self) {
+static void
+AdjacencyMatrix_dealloc(AdjacencyMatrix *self) {
     Py_TYPE(self)->tp_free((PyObject *)self);
 }
 
-static int AdjacencyMatrix_init(AdjacencyMatrix *self, PyObject *args, PyObject *kwargs) {
+static int
+AdjacencyMatrix_init(AdjacencyMatrix *self, PyObject *args, PyObject *kwargs) {
     static char *keywords[] = {"text", NULL};
     int k = 0, i = 1, c = 0;
     unsigned vertices_count = 0;
@@ -42,6 +45,10 @@ static int AdjacencyMatrix_init(AdjacencyMatrix *self, PyObject *args, PyObject 
 
     if (!PyArg_ParseTupleAndKeywords(args, kwargs, "|s", keywords, &txt)) {
         return -1;
+    }
+
+    if (!txt) {
+        return 0;
     }
 
     for (i = 0; i < txt[0] - G6_MIN_ASCII_VALUE; i++) {
@@ -70,7 +77,8 @@ static int AdjacencyMatrix_init(AdjacencyMatrix *self, PyObject *args, PyObject 
     return 0;
 }
 
-static PyObject *number_of_vertices(AdjacencyMatrix *self) {
+static PyObject *
+number_of_vertices(AdjacencyMatrix *self) {
     long vertices_cnt = 0;
     unsigned short vertices = self->vertices;
     for (unsigned i = 0; i < MAX_VERTICES; i++) {
@@ -85,9 +93,10 @@ static PyObject *number_of_vertices(AdjacencyMatrix *self) {
 }
 
 
-static PyObject *vertices(AdjacencyMatrix *self) {
+static PyObject *
+vertices(AdjacencyMatrix *self) {
     PyObject *item = NULL;
-    PyObject *vertices_set = PySet_New(NULL);    
+    PyObject *vertices_set = PySet_New(NULL);
     if (!vertices_set) {
         return NULL;
     }
@@ -103,7 +112,8 @@ static PyObject *vertices(AdjacencyMatrix *self) {
     return vertices_set;
 }
 
-static PyObject *vertex_degree(AdjacencyMatrix *self, PyObject *args) {
+static PyObject *
+vertex_degree(AdjacencyMatrix *self, PyObject *args) {
     long vertex_degree = 0, edges;
     int v;
 
@@ -124,7 +134,8 @@ static PyObject *vertex_degree(AdjacencyMatrix *self, PyObject *args) {
     return PyLong_FromLong(vertex_degree);
 }
 
-static PyObject *vertex_neighbors(AdjacencyMatrix *self, PyObject *args) {
+static PyObject *
+vertex_neighbors(AdjacencyMatrix *self, PyObject *args) {
     PyObject *neighbors_set = PySet_New(NULL);
     short edges;
     int v;
@@ -148,7 +159,8 @@ static PyObject *vertex_neighbors(AdjacencyMatrix *self, PyObject *args) {
     return neighbors_set;
 }
 
-static PyObject *add_vertex(AdjacencyMatrix *self, PyObject *args) {
+static PyObject *
+add_vertex(AdjacencyMatrix *self, PyObject *args) {
     int v;
 
     if (args) {
@@ -159,7 +171,8 @@ static PyObject *add_vertex(AdjacencyMatrix *self, PyObject *args) {
     return PyBool_FromLong(1);
 }
 
-static PyObject *delete_vertex(AdjacencyMatrix *self, PyObject *args) {
+static PyObject *
+delete_vertex(AdjacencyMatrix *self, PyObject *args) {
     short tmp;
     int v;
 
@@ -178,7 +191,8 @@ static PyObject *delete_vertex(AdjacencyMatrix *self, PyObject *args) {
     return PyBool_FromLong(1);
 }
 
-static PyObject *number_of_edges(AdjacencyMatrix *self) {
+static PyObject *
+number_of_edges(AdjacencyMatrix *self) {
     long edges_cnt = 0;
 
     for (unsigned i = 0; i < MAX_VERTICES; i++) {
@@ -196,7 +210,8 @@ static PyObject *number_of_edges(AdjacencyMatrix *self) {
     return PyLong_FromLong(edges_cnt / 2);
 }
 
-static PyObject *edges(AdjacencyMatrix *self) {
+static PyObject *
+edges(AdjacencyMatrix *self) {
     PyObject *edges_set = PySet_New(NULL);
     if (!edges_set) {
         return NULL;
@@ -221,7 +236,8 @@ static PyObject *edges(AdjacencyMatrix *self) {
     return edges_set;
 }
 
-static PyObject *is_edge(AdjacencyMatrix *self, PyObject *args) {
+static PyObject *
+is_edge(AdjacencyMatrix *self, PyObject *args) {
     long edges_v;
     int v, u;
 
@@ -234,7 +250,8 @@ static PyObject *is_edge(AdjacencyMatrix *self, PyObject *args) {
     return PyBool_FromLong(edges_v & 1U);
 }
 
-static PyObject *add_edge(AdjacencyMatrix *self, PyObject *args) {
+static PyObject *
+add_edge(AdjacencyMatrix *self, PyObject *args) {
     int v, u;
 
     if (args) {
@@ -249,7 +266,8 @@ static PyObject *add_edge(AdjacencyMatrix *self, PyObject *args) {
     return PyBool_FromLong(1);
 }
 
-static PyObject *delete_edge(AdjacencyMatrix *self, PyObject *args) {
+static PyObject *
+delete_edge(AdjacencyMatrix *self, PyObject *args) {
     int v, u;
 
     if (args != NULL) {
@@ -261,46 +279,152 @@ static PyObject *delete_edge(AdjacencyMatrix *self, PyObject *args) {
     return PyBool_FromLong(1);
 }
 
-static PyMemberDef AdjacencyMatrix_members[] = {
-    {"vertices", T_USHORT, offsetof(AdjacencyMatrix, vertices), 0, NULL},
-    {"edges", T_PYSSIZET, offsetof(AdjacencyMatrix, edges), 0, NULL},
-    {NULL}  // Sentinel
-};
+static PyObject *
+AdjacencyMatrix_eq(AdjacencyMatrix *self, PyObject *other) {
+    AdjacencyMatrix *other_matrix;
 
-static PyMethodDef AdjacencyMatrix_methods[] = {
-    {"number_of_vertices", (PyCFunction) number_of_vertices, METH_NOARGS, NULL},
-    {"vertices",           (PyCFunction) vertices,           METH_NOARGS, NULL},
-    {"vertex_degree",      (PyCFunction) vertex_degree,      METH_VARARGS, NULL},
-    {"vertex_neighbors",   (PyCFunction) vertex_neighbors,   METH_VARARGS, NULL},
-    {"add_vertex",         (PyCFunction) add_vertex,         METH_VARARGS, NULL},
-    {"delete_vertex",      (PyCFunction) delete_vertex,      METH_VARARGS, NULL},
-    {"number_of_edges",    (PyCFunction) number_of_edges,    METH_NOARGS, NULL},
-    {"is_edge",            (PyCFunction) is_edge,            METH_VARARGS, NULL},
-    {"add_edge",           (PyCFunction) add_edge,           METH_VARARGS, NULL},
-    {"delete_edge",        (PyCFunction) delete_edge,        METH_VARARGS, NULL},
-    {"edges",              (PyCFunction) edges,              METH_NOARGS, NULL},
+    if (!PyObject_TypeCheck(other, Py_TYPE(self))) {
+        return NULL;
+    }
+
+    other_matrix = (AdjacencyMatrix *)other;
+    if (self->vertices != other_matrix->vertices) {
+        Py_RETURN_FALSE;
+    }
+
+    for (unsigned i = 0; i < MAX_VERTICES; i++) {
+        if (self->edges[i] != other_matrix->edges[i]) {
+            Py_RETURN_FALSE;
+        }
+    }
+
+    Py_RETURN_TRUE;
+}
+
+static PyObject *
+AdjacencyMatrix_ne(AdjacencyMatrix *self, PyObject *other) {
+    AdjacencyMatrix *other_matrix;
+
+    if (!PyObject_TypeCheck(other, Py_TYPE(self))) {
+        return NULL;
+    }
+
+    other_matrix = (AdjacencyMatrix *)other;
+    if (self->vertices != other_matrix->vertices) {
+        Py_RETURN_TRUE;
+    }
+
+    for (unsigned i = 0; i < MAX_VERTICES; i++) {
+        if (self->edges[i] != other_matrix->edges[i]) {
+            Py_RETURN_TRUE;
+        }
+    }
+
+    Py_RETURN_FALSE;
+}
+
+static PyObject *
+AdjacencyMatrix_richcmp(PyObject *self, PyObject *other, int opid) {
+    AdjacencyMatrix *other_matrix, *this_matrix;
+
+    other_matrix = (AdjacencyMatrix *)other;
+    this_matrix = (AdjacencyMatrix *)self;
+    if (this_matrix->vertices != other_matrix->vertices) {
+        if (opid == Py_EQ) {
+            Py_RETURN_FALSE;
+        } else if (opid == Py_NE) {
+            Py_RETURN_TRUE;
+        } else {
+            PyErr_SetString(PyExc_NotImplementedError, "Unsupported comparison operator");
+            return NULL;
+        }
+    }
+
+    for (unsigned i = 0; i < MAX_VERTICES; i++) {
+        if (this_matrix->edges[i] != other_matrix->edges[i]) {
+            if (opid == Py_EQ) {
+                Py_RETURN_FALSE;
+            } else if (opid == Py_NE) {
+                Py_RETURN_TRUE;
+            } else {
+                PyErr_SetString(PyExc_NotImplementedError, "Unsupported comparison operator");
+                return NULL;
+            }
+        }
+    }
+
+    if (opid == Py_EQ) {
+        Py_RETURN_TRUE;
+    } else if (opid == Py_NE) {
+        Py_RETURN_FALSE;
+    } else {
+        PyErr_SetString(PyExc_NotImplementedError, "Unsupported comparison operator");
+        return NULL;
+    }
+}
+
+static PyObject*
+complement(AdjacencyMatrix *self) {
+    AdjacencyMatrix *copy = (AdjacencyMatrix *)PyObject_CallObject(Py_TYPE(self), NULL);
+    if (!copy) {
+        return NULL;
+    }
+
+    copy->vertices = self->vertices;
+    for (unsigned i = 0; i < MAX_VERTICES; i++) {
+        if (copy->vertices & (1 << i)) {
+            for (unsigned j = 0; j < MAX_VERTICES; j++) {
+                if (i != j && !(self->edges[i] & (1 << j)) && copy->vertices & (1 << j)) {
+                    copy->edges[i] |= (1 << j);
+                }
+            }
+        }
+    }
+
+    return (PyObject *)copy;
+}
+
+static PyMethodDef
+AdjacencyMatrix_methods[] = {
+    {"number_of_vertices", (PyCFunction)number_of_vertices, METH_NOARGS, NULL},
+    {"vertices",           (PyCFunction)vertices,           METH_NOARGS, NULL},
+    {"vertex_degree",      (PyCFunction)vertex_degree,      METH_VARARGS, NULL},
+    {"vertex_neighbors",   (PyCFunction)vertex_neighbors,   METH_VARARGS, NULL},
+    {"add_vertex",         (PyCFunction)add_vertex,         METH_VARARGS, NULL},
+    {"delete_vertex",      (PyCFunction)delete_vertex,      METH_VARARGS, NULL},
+    {"number_of_edges",    (PyCFunction)number_of_edges,    METH_NOARGS, NULL},
+    {"is_edge",            (PyCFunction)is_edge,            METH_VARARGS, NULL},
+    {"add_edge",           (PyCFunction)add_edge,           METH_VARARGS, NULL},
+    {"delete_edge",        (PyCFunction)delete_edge,        METH_VARARGS, NULL},
+    {"edges",              (PyCFunction)edges,              METH_NOARGS, NULL},
+    {"__eq__",             (PyCFunction)AdjacencyMatrix_eq, METH_VARARGS,NULL},
+    {"__ne__",             (PyCFunction)AdjacencyMatrix_ne, METH_VARARGS,NULL},
+    {"complement",         (PyCFunction)complement,         METH_NOARGS, NULL},
     {NULL, NULL, 0, NULL}
 };
 
-static PyTypeObject AdjacencyMatrixType = {
+static PyTypeObject
+AdjacencyMatrixType = {
     PyVarObject_HEAD_INIT(NULL, 0)
-    .tp_name = "_simple_graphs.AdjacencyMatrix",
+    .tp_name = "simple_graphs.AdjacencyMatrix",
     .tp_basicsize = sizeof(AdjacencyMatrix),
     .tp_new = AdjacencyMatrix_new,
     .tp_dealloc = (destructor)AdjacencyMatrix_dealloc,
     .tp_init = (initproc)AdjacencyMatrix_init,
-    .tp_members = AdjacencyMatrix_members,
+    .tp_richcompare = (richcmpfunc)AdjacencyMatrix_richcmp,
     .tp_methods = AdjacencyMatrix_methods  // Point to methods array
 };
 
-static struct PyModuleDef simple_graph_module = {
+static struct PyModuleDef
+simple_graph_module = {
     PyModuleDef_HEAD_INIT,
     "_simple_graphs",
     NULL,
     -1
 };
 
-PyMODINIT_FUNC PyInit_simple_graphs(void) {
+PyMODINIT_FUNC
+PyInit_simple_graphs(void) {
     PyObject *mod = PyModule_Create(&simple_graph_module);
     if (mod == NULL) {
         PyErr_SetString(PyExc_ModuleNotFoundError, "Failed to create the module");

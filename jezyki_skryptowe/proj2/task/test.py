@@ -36,7 +36,7 @@ def test_of_operation_complement( structure, g6_sequence ):
             g1, g2 = graphs.Graph( g6 ), structure( g6 )
             if g1.complement() != g2.complement():
                 g6_sequence.close()
-                print_error_and_quit( f"błędny wynik operacji dla grafu {g6}" )
+                print_error_and_quit( f"błędny wynik operacji dla grafu {g1.vertices()}\n \n {g1.complement().edges()} \n \n {g2.complement().edges()}" )
     except Exception as e:
         print_error_and_quit( f"podczas testu na grafie {g6} wystąpił wyjątek {e}" )
 
