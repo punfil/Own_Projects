@@ -6,6 +6,15 @@ import pytz
 
 
 FONT_SIZE = 20
+ENGLISH_TO_POLISH_DAYS = {
+    "Mon": "Pon",
+    "Tue": "Wt",
+    "Wed": "Śr",
+    "Thu": "Czw",
+    "Fri": "Pt",
+    "Sat": "Sob",
+    "Sun": "Niedz"
+}
 
 
 class Alarm:
@@ -61,17 +70,8 @@ class AddAlarmDialog(QDialog):
 
     def get_alarm(self):
         time = self.time_edit.time()
-        polish_to_english = {
-            "Pon": "Mon",
-            "Wt": "Tue",
-            "Śr": "Wed",
-            "Czw": "Thu",
-            "Pt": "Fri",
-            "Sob": "Sat",
-            "Niedz": "Sun"
-        }
 
-        days = [polish_to_english[checkbox.text()] for checkbox in self.day_checkboxes if checkbox.isChecked()]
+        days = [checkbox.text() for checkbox in self.day_checkboxes if checkbox.isChecked()]
         enabled = self.enabled_checkbox.isChecked()
         return Alarm(time, days, enabled)
 
@@ -337,14 +337,13 @@ class ClockAppQT5(QWidget):
     def check_alarms(self):
         current_time = QTime.currentTime()
         current_day = QDate.currentDate().toString("ddd")
-        print(current_time)
         for alarm in self.alarms:
-            print(alarm.time)
-            print(current_day)
-            print(alarm.days)
-            if current_time >= alarm.time and current_day in alarm.days and alarm.enabled:
+            if current_time.hour() == alarm.time.hour() and \
+                    current_time.minute() == alarm.time.minute() and \
+                    current_time.second() == alarm.time.second() and ENGLISH_TO_POLISH_DAYS[current_day] in alarm.days and alarm.enabled:
                 self.show_alarm_message(alarm)
                 alarm.enabled = False
+                self.update_alarm_list()
 
     def show_alarm_message(self, alarm):
         msg_box = QMessageBox(self)
