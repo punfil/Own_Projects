@@ -1,10 +1,79 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel, QComboBox, QPushButton, QTabWidget, QTimeEdit, QMessageBox, QAction, QMenuBar, QHBoxLayout
-from PyQt5.QtCore import QTimer, QDateTime, Qt, QTime
+from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel, QComboBox, QPushButton, QTabWidget, \
+    QTimeEdit, QMessageBox, QAction, QMenuBar, QHBoxLayout, QListWidget, QDialog, QCheckBox
+from PyQt5.QtCore import QTimer, QDateTime, Qt, QTime, QDate
 import pytz
 
 
 FONT_SIZE = 20
+
+
+class Alarm:
+    def __init__(self, time, days, enabled=True):
+        self.time = time
+        self.days = days
+        self.enabled = enabled
+
+
+class AddAlarmDialog(QDialog):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("Dodaj nowy alarm")
+        self.setModal(True)
+
+        layout = QVBoxLayout()
+
+        self.time_edit = QTimeEdit()
+        self.time_edit.setDisplayFormat("HH:mm:ss")
+        layout.addWidget(QLabel("Czas alarmu:"))
+        layout.addWidget(self.time_edit)
+
+        self.day_checkboxes = []
+        days_of_week = ["Pon", "Wt", "Śr", "Czw", "Pt", "Sob", "Niedz"]
+        for day in days_of_week:
+            checkbox = QCheckBox(day)
+            self.day_checkboxes.append(checkbox)
+            layout.addWidget(checkbox)
+
+        layout.addSpacing(20)
+
+        self.enabled_checkbox = QCheckBox("Włączony")
+        self.enabled_checkbox.setChecked(True)
+        layout.addWidget(self.enabled_checkbox)
+
+        buttons_layout = QHBoxLayout()
+        add_button = QPushButton("Zapisz")
+        add_button.clicked.connect(self.accept)
+        cancel_button = QPushButton("Anuluj")
+        cancel_button.clicked.connect(self.reject)
+        buttons_layout.addWidget(add_button)
+        buttons_layout.addWidget(cancel_button)
+
+        layout.addLayout(buttons_layout)
+        self.setLayout(layout)
+
+    def set_alarm(self, alarm):
+        self.time_edit.setTime(alarm.time)
+        for checkbox, day in zip(self.day_checkboxes, alarm.days):
+            if day in checkbox.text():
+                checkbox.setChecked(True)
+        self.enabled_checkbox.setChecked(alarm.enabled)
+
+    def get_alarm(self):
+        time = self.time_edit.time()
+        polish_to_english = {
+            "Pon": "Mon",
+            "Wt": "Tue",
+            "Śr": "Wed",
+            "Czw": "Thu",
+            "Pt": "Fri",
+            "Sob": "Sat",
+            "Niedz": "Sun"
+        }
+
+        days = [polish_to_english[checkbox.text()] for checkbox in self.day_checkboxes if checkbox.isChecked()]
+        enabled = self.enabled_checkbox.isChecked()
+        return Alarm(time, days, enabled)
 
 
 class ClockAppQT5(QWidget):
@@ -23,7 +92,9 @@ class ClockAppQT5(QWidget):
         self.clock_layout = QVBoxLayout()
         self.current_time_label = QLabel()
         self.current_time_label.setAlignment(Qt.AlignCenter)
-        self.current_time_label.font().setWeight(FONT_SIZE)
+        font = self.current_time_label.font()
+        font.setPointSize(FONT_SIZE)
+        self.current_time_label.setFont(font)
         self.clock_layout.addWidget(self.current_time_label)
 
         self.timezones = pytz.common_timezones
@@ -41,6 +112,9 @@ class ClockAppQT5(QWidget):
         self.stopwatch_label = QLabel("00:00:00")
         self.stopwatch_label.setAlignment(Qt.AlignCenter)
         self.stopwatch_label.font().setWeight(FONT_SIZE)
+        font = self.stopwatch_label.font()
+        font.setPointSize(FONT_SIZE)
+        self.stopwatch_label.setFont(font)
         self.stopwatch_layout.addWidget(self.stopwatch_label)
 
         self.start_stopwatch_button = QPushButton("Rozpocznij")
@@ -63,12 +137,14 @@ class ClockAppQT5(QWidget):
 
         # Timer Tab
         self.timer_layout = QVBoxLayout()
-
         self.timer_edit = QTimeEdit()
         self.timer_edit.setDisplayFormat("hh:mm:ss")
         self.timer_edit.setTime(QTime(0, 0))
         self.timer_edit.setAlignment(Qt.AlignCenter)
         self.timer_edit.font().setWeight(FONT_SIZE)
+        font = self.timer_edit.font()
+        font.setPointSize(FONT_SIZE)
+        self.timer_edit.setFont(font)
         self.timer_layout.addWidget(self.timer_edit, alignment=Qt.AlignCenter)
 
         self.start_timer_button = QPushButton("Rozpocznij")
@@ -88,6 +164,30 @@ class ClockAppQT5(QWidget):
 
         self.timer_tab.setLayout(self.timer_layout)
         self.tab_widget.addTab(self.timer_tab, "Minutnik")
+
+        # Alarm Tab
+        self.alarm_tab = QWidget()
+        self.alarm_layout = QVBoxLayout()
+
+        # Alarm List
+        self.alarms = []
+        self.alarm_list = QListWidget()
+        self.alarm_list.itemDoubleClicked.connect(self.edit_selected_alarm)
+        self.alarm_layout.addWidget(self.alarm_list)
+
+        alarm_buttons_layout = QHBoxLayout()
+        self.add_alarm_button = QPushButton("Dodaj nowy alarm")
+        self.remove_alarm_button = QPushButton("Usuń alarm")
+
+        self.add_alarm_button.clicked.connect(self.add_new_alarm_dialog)
+        self.remove_alarm_button.clicked.connect(self.remove_selected_alarm)
+
+        alarm_buttons_layout.addWidget(self.add_alarm_button)
+        alarm_buttons_layout.addWidget(self.remove_alarm_button)
+        self.alarm_layout.addLayout(alarm_buttons_layout)
+
+        self.alarm_tab.setLayout(self.alarm_layout)
+        self.tab_widget.addTab(self.alarm_tab, "Budzik")
 
         self.menu_bar = QMenuBar(self)
 
@@ -124,6 +224,12 @@ class ClockAppQT5(QWidget):
         self.timer_timer = QTimer()
         self.timer_timer.timeout.connect(self.update_timer)
         self.timer_running = False
+        self.timer_end_time = QDateTime.currentDateTime().time()
+
+        # Alarm
+        self.check_alarm_timer = QTimer()
+        self.check_alarm_timer.timeout.connect(self.check_alarms)
+        self.check_alarm_timer.start(1000)  # Check every second
 
     def update_time(self):
         current_timezone = pytz.timezone(self.timezone_combo.currentText())
@@ -191,9 +297,61 @@ class ClockAppQT5(QWidget):
                      "- Wyświetlenie aktualnego czasu w różnych strefach czasowych.\n" \
                      "- Skorzystać ze stopera celem zmierzenia czasu.\n" \
                      "- Użyć minutnika do odmierzenia czasu. \n\n" \
+                     "- Ustawić budzik. \n\n" \
                      "Stworzono używając PyQT5. \n\n"\
                      "184657 Panfil Wojciech"
         QMessageBox.about(self, 'O aplikacji', about_text)
+
+    def add_new_alarm_dialog(self):
+        dialog = AddAlarmDialog(self)
+        if dialog.exec_():
+            alarm = dialog.get_alarm()
+            self.alarms.append(alarm)
+            self.update_alarm_list()
+
+    def edit_selected_alarm(self, item):
+        selected_index = self.alarm_list.indexFromItem(item).row()
+        alarm = self.alarms[selected_index]
+        dialog = AddAlarmDialog(self)
+        dialog.setWindowTitle("Edytuj alarm")
+        dialog.set_alarm(alarm)
+        if dialog.exec_():
+            edited_alarm = dialog.get_alarm()
+            self.alarms[selected_index] = edited_alarm
+            self.update_alarm_list()
+
+    def remove_selected_alarm(self):
+        selected_items = self.alarm_list.selectedItems()
+        if not selected_items:
+            return
+        alarm_index = self.alarm_list.row(selected_items[0])
+        del self.alarms[alarm_index]
+        self.update_alarm_list()
+
+    def update_alarm_list(self):
+        self.alarm_list.clear()
+        for alarm in self.alarms:
+            item = f"{alarm.time.toString("hh:mm:ss")} - {alarm.days} ({"Włączony" if alarm.enabled else "Wyłączony"})"
+            self.alarm_list.addItem(item)
+
+    def check_alarms(self):
+        current_time = QTime.currentTime()
+        current_day = QDate.currentDate().toString("ddd")
+        print(current_time)
+        for alarm in self.alarms:
+            print(alarm.time)
+            print(current_day)
+            print(alarm.days)
+            if current_time >= alarm.time and current_day in alarm.days and alarm.enabled:
+                self.show_alarm_message(alarm)
+                alarm.enabled = False
+
+    def show_alarm_message(self, alarm):
+        msg_box = QMessageBox(self)
+        msg_box.setWindowTitle("Alarm!")
+        msg_box.setIcon(QMessageBox.Information)
+        msg_box.setText("Alarm {}!".format(alarm.time.toString("hh:mm:ss")))
+        msg_box.exec_()
 
 
 def launch_qt():

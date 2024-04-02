@@ -18,5 +18,6 @@ def main():
 
     launch_qt()
 
+
 if __name__ == '__main__':
     main()
