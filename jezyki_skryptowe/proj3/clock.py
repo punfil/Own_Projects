@@ -1,7 +1,7 @@
-import sys
 import argparse
 
 from clock_qt import launch_qt
+from clock_gtk import launch_gtk
 
 
 def main():
@@ -13,8 +13,7 @@ def main():
     if args.qt:
         launch_qt()
     elif args.gtk:
-        print("Do nothing with GTK for now.")
-        sys.exit(0)
+        launch_gtk()
 
     launch_qt()
 
