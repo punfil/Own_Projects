@@ -67,101 +67,86 @@ class ClockAppGTK3(Gtk.Window):
         self.set_border_width(10)
         self.set_default_size(800, 600)
 
-        # Initialize timezones and create main notebook
-        self.timezones = pytz.common_timezones
         self.notebook = Gtk.Notebook()
         self.add(self.notebook)
 
-        # Create Clock tab
-        self.create_clock_tab()
-
-        # Create Stopwatch tab
-        self.create_stopwatch_tab()
-
-        # Create Timer tab
-        self.create_timer_tab()
-
-        # Create Alarm tab
-        self.create_alarm_tab()
-
-        # Create menu bar
-        self.create_menu()
-
-        # Start updating time
-        self.time_update_id = GLib.timeout_add_seconds(1, self.update_time)
-
-    def create_clock_tab(self):
-        clock_tab = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
+        # Clock Tab
+        self.clock_tab = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
         self.current_time_label = Gtk.Label()
         self.current_time_label.set_alignment(0.5, 0.5)
         self.current_time_label.set_markup('<span size="large"></span>')
-        clock_tab.pack_start(self.current_time_label, True, True, 0)
+        self.clock_tab.pack_start(self.current_time_label, True, True, 0)
 
         self.timezone_combo = Gtk.ComboBoxText()
+        self.timezones = pytz.common_timezones
         for timezone in self.timezones:
             self.timezone_combo.append_text(timezone)
         self.timezone_combo.connect("changed", self.update_time)
-        clock_tab.pack_start(self.timezone_combo, False, False, 0)
+        self.timezone_combo.set_active(0)
+        self.clock_tab.pack_start(self.timezone_combo, False, False, 0)
 
-        self.notebook.append_page(clock_tab, Gtk.Label(label="Zegar"))
+        self.notebook.append_page(self.clock_tab, Gtk.Label(label="Zegar"))
 
-    def create_stopwatch_tab(self):
-        stopwatch_tab = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
+        # Stopwatch Tab
+        self.stopwatch_tab = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
         self.stopwatch_label = Gtk.Label(label="00:00:00")
         self.stopwatch_label.set_alignment(0.5, 0.5)
-        stopwatch_tab.pack_start(self.stopwatch_label, True, True, 0)
+        self.stopwatch_tab.pack_start(self.stopwatch_label, True, True, 0)
 
-        start_stopwatch_button = Gtk.Button(label="Rozpocznij")
-        start_stopwatch_button.connect("clicked", self.start_stopwatch)
-        stopwatch_tab.pack_start(start_stopwatch_button, False, False, 0)
+        self.start_stopwatch_button = Gtk.Button(label="Rozpocznij")
+        self.stopwatch_tab.pack_start(self.start_stopwatch_button, False, False, 0)
+        self.start_stopwatch_button.connect("clicked", self.start_stopwatch)
 
-        stop_stopwatch_button = Gtk.Button(label="Zatrzymaj")
-        stop_stopwatch_button.connect("clicked", self.stop_stopwatch)
-        stopwatch_tab.pack_start(stop_stopwatch_button, False, False, 0)
+        self.stop_stopwatch_button = Gtk.Button(label="Zatrzymaj")
+        self.stopwatch_tab.pack_start(self.stop_stopwatch_button, False, False, 0)
+        self.stop_stopwatch_button.connect("clicked", self.stop_stopwatch)
 
-        reset_stopwatch_button = Gtk.Button(label="Wyczyść")
-        reset_stopwatch_button.connect("clicked", self.reset_stopwatch)
-        stopwatch_tab.pack_start(reset_stopwatch_button, False, False, 0)
+        self.reset_stopwatch_button = Gtk.Button(label="Wyczyść")
+        self.stopwatch_tab.pack_start(self.reset_stopwatch_button, False, False, 0)
+        self.reset_stopwatch_button.connect("clicked", self.reset_stopwatch)
 
-        self.notebook.append_page(stopwatch_tab, Gtk.Label(label="Stoper"))
+        self.notebook.append_page(self.stopwatch_tab, Gtk.Label(label="Stoper"))
 
-    def create_timer_tab(self):
-        timer_tab = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
+        # Timer Tab
+        self.timer_tab = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
         self.timer_edit = Gtk.Entry()
         self.timer_edit.set_placeholder_text("hh:mm:ss")
-        timer_tab.pack_start(self.timer_edit, True, True, 0)
+        self.timer_tab.pack_start(self.timer_edit, True, True, 0)
 
-        start_timer_button = Gtk.Button(label="Rozpocznij")
-        start_timer_button.connect("clicked", self.start_timer)
-        timer_tab.pack_start(start_timer_button, False, False, 0)
+        self.start_timer_button = Gtk.Button(label="Rozpocznij")
+        self.timer_tab.pack_start(self.start_timer_button, False, False, 0)
+        self.start_timer_button.connect("clicked", self.start_timer)
 
-        stop_timer_button = Gtk.Button(label="Zatrzymaj")
-        stop_timer_button.connect("clicked", self.stop_timer)
-        timer_tab.pack_start(stop_timer_button, False, False, 0)
+        self.stop_timer_button = Gtk.Button(label="Zatrzymaj")
+        self.timer_tab.pack_start(self.stop_timer_button, False, False, 0)
+        self.stop_timer_button.connect("clicked", self.stop_timer)
 
-        reset_timer_button = Gtk.Button(label="Wyczyść")
-        reset_timer_button.connect("clicked", self.reset_timer)
-        timer_tab.pack_start(reset_timer_button, False, False, 0)
+        self.reset_timer_button = Gtk.Button(label="Wyczyść")
+        self.timer_tab.pack_start(self.reset_timer_button, False, False, 0)
+        self.reset_timer_button.connect("clicked", self.reset_timer)
 
-        self.notebook.append_page(timer_tab, Gtk.Label(label="Minutnik"))
+        self.notebook.append_page(self.timer_tab, Gtk.Label(label="Minutnik"))
 
-    def create_alarm_tab(self):
-        alarm_tab = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
+        # Alarm Tab
+        self.alarm_tab = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
         self.alarm_list = Gtk.ListBox()
-        alarm_tab.pack_start(self.alarm_list, True, True, 0)
+        self.alarm_tab.pack_start(self.alarm_list, True, True, 0)
 
-        add_alarm_button = Gtk.Button(label="Dodaj nowy alarm")
-        add_alarm_button.connect("clicked", self.add_new_alarm_dialog)
-        alarm_tab.pack_start(add_alarm_button, False, False, 0)
+        self.add_alarm_button = Gtk.Button(label="Dodaj nowy alarm")
+        self.add_alarm_button.connect("clicked", self.add_new_alarm_dialog)
+        self.alarm_tab.pack_start(self.add_alarm_button, False, False, 0)
 
-        remove_alarm_button = Gtk.Button(label="Usuń alarm")
-        remove_alarm_button.connect("clicked", self.remove_selected_alarm)
-        alarm_tab.pack_start(remove_alarm_button, False, False, 0)
+        self.remove_alarm_button = Gtk.Button(label="Usuń alarm")
+        self.remove_alarm_button.connect("clicked", self.remove_selected_alarm)
+        self.alarm_tab.pack_start(self.remove_alarm_button, False, False, 0)
 
-        self.notebook.append_page(alarm_tab, Gtk.Label(label="Budzik"))
+        self.notebook.append_page(self.alarm_tab, Gtk.Label(label="Budzik"))
 
-    def create_menu(self):
-        menu_bar = Gtk.MenuBar()
+        self.menu_bar = Gtk.MenuBar()
+        vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=0)
+        vbox.pack_start(self.menu_bar, False, False, 0)
+
+        self.add(vbox)
 
         file_menu = Gtk.Menu()
         file_menu_exit = Gtk.MenuItem(label="Exit")
@@ -170,7 +155,7 @@ class ClockAppGTK3(Gtk.Window):
 
         file_menu_item = Gtk.MenuItem(label="File")
         file_menu_item.set_submenu(file_menu)
-        menu_bar.append(file_menu_item)
+        self.menu_bar.append(file_menu_item)
 
         help_menu = Gtk.Menu()
         help_menu_about = Gtk.MenuItem(label="About")
@@ -179,17 +164,18 @@ class ClockAppGTK3(Gtk.Window):
 
         help_menu_item = Gtk.MenuItem(label="Help")
         help_menu_item.set_submenu(help_menu)
-        menu_bar.append(help_menu_item)
+        self.menu_bar.append(help_menu_item)
 
-        vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=0)
-        vbox.pack_start(menu_bar, False, False, 0)
-        self.add(vbox)
 
-    def update_time(self, widget):
-        timezone = self.timezones[self.timezone_combo.get_active()]
-        local_time = pytz.timezone(timezone).localize(datetime.datetime.now())
-        local_time_str = local_time.strftime("%Y-%m-%d %H:%M:%S %Z%z")
-        self.current_time_label.set_text(local_time_str)
+        self.time_update_id = GLib.timeout_add_seconds(1, self.update_time, None)
+
+    def update_time(self, combo):
+        timezone_index = self.timezone_combo.get_active()
+
+        current_time = datetime.now(pytz.timezone(pytz.common_timezones[timezone_index]))
+        local_time_str = current_time.strftime('%Y-%m-%d %H:%M:%S %Z%z')
+        self.current_time_label.set_markup('<span size="large">{}</span>'.format(local_time_str))
+        return True
 
     def start_stopwatch(self, button):
         if hasattr(self, 'stopwatch_timer_id'):
