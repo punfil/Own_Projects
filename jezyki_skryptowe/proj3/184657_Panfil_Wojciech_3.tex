@@ -1,0 +1,78 @@
+\documentclass[11pt]{article}
+\usepackage[a4paper, margin=2.5cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{polski}
+\usepackage{babel}
+\usepackage{indentfirst}
+\usepackage{listings}
+\usepackage[colorlinks=true, urlcolor=blue, linkcolor=red]{hyperref}
+\usepackage[document]{ragged2e}
+\lstset{
+	frame=l,
+	basicstyle=\ttfamily,
+	numbers=left,
+	texcl=false,
+	tabsize=1,
+	breaklines=true,
+	postbreak=\mbox{{$\hookrightarrow$}\space}
+}
+\sloppy
+
+\title{
+	\textbf{Języki skryptowe i ich zastosowania}\\
+	Zadanie nr 3: Aplikacja z GUI - zegar}
+
+\author{Wojciech Panfil, 184657}
+
+\date{3 kwietnia 2024}
+
+\begin{document}
+	\maketitle
+	
+    \section{O projekcie}
+	\justify
+	Celem niniejszego projektu jest implementacja własnego zegara w formie
+    aplikacji graficznej w języku \texttt{Python}. Aplikacja powinna posiadać
+    dwa interfejsy graficzne: jeden oparty o \texttt{Qt}, drugi o \texttt{GTK}.
+
+    \section{Uruchomienie programu}
+    Program będzie uruchamiać wybrany przez użytkownika interfejs graficzny w zależności
+    od wartości parametru linii poleceń:
+    \begin{lstlisting}[language=bash, caption={uruchomienie GUI w PyQT5},captionpos=b]
+    python3 ./clock.py -qt
+    \end{lstlisting}
+    \begin{lstlisting}[language=bash, caption={uruchomienie GUI w PyGTK3},captionpos=b]
+    python3 ./clock.py -gtk
+    \end{lstlisting}
+    W przypadku braku wyboru, uruchomione zostanie GUI w PyQT5.
+
+    \section{Funkcjonalność}
+    Wzorem do określenia funkcjonalności programu posłużył program "Zegar" wbudowany
+    w system Android.
+    Program posiadać będzie cztery zakładki:
+    \begin{enumerate}
+        \item Zegar (domyślna) - wyświetla aktualny czas z dokładnością do sekundy,
+        umożliwia również wybór strefy czasowej z listy wybory.
+        Lista stref czasowych pochodzić będzie z biblioteki pytz.
+        \item Stoper - umożliwiać będzie pomiar czasu z dokładnością do sekundy.
+        Na głównym planie znajdować się będzie upłynięty czas, natomiast pod spodem
+        trzy przyciski - Rozpocznij, Zatrzymaj, Wyczyść, służące odpowiednio do 
+        rozpoczęcia pracy stopera, zatrzymania i wyczyszczenia zmierzonej wartości.
+        \item Minutnik - umożliwiać będzie odmierzenie czasu z dokładnością do sekundy.
+        Na głównym planie znajdować się będzie odmierzany czas, następnie na dole znajdować się
+        będzie pole tekstowe z możliwością wprowadzenia czasu do odmierzenia w formacie HH:MM:SS.
+        Dół przeznaczony zostanie na przycisk rozpoczęcia odliczania i zatrzymania.
+        \item Budzik - umożliwiać będzie włączenie alarmu o określonej przez użytkownika godzinie.
+        Na głównym planie znajdować się będzie lista włączonych alarmów. Na dole listy znajdować
+        się będzie przycisk umożliwiający dodanie nowego alarmu. 
+        Po wybraniu alarmu z listy (lub dodaniu nowego) użytkownik będzie mógł określić czas, w którym
+        odtworzony zostanie dźwięk z dokładnością do sekundy. Dodatkowo, dostępny będzie
+        przełącznik, który określać będzie, czy dany budzik jest włączony, a także lista dostępnych do
+        odtworzenia dźwięków.
+    \end{enumerate}
+
+    \section{Implementacja - PyQT5}
+
+    \section{Implementacja - PyGTK3}
+
+\end{document}
