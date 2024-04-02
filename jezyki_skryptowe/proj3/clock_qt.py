@@ -1,5 +1,5 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel, QComboBox, QPushButton, QTabWidget, QTimeEdit, QMessageBox, QAction
+from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel, QComboBox, QPushButton, QTabWidget, QTimeEdit, QMessageBox, QAction, QMenuBar, QHBoxLayout
 from PyQt5.QtCore import QTimer, QDateTime, Qt, QTime
 import pytz
 
@@ -18,13 +18,12 @@ class ClockAppQT5(QWidget):
         self.clock_tab = QWidget()
         self.stopwatch_tab = QWidget()
         self.timer_tab = QWidget()
-        self.help_tab = QWidget()
 
         # Clock Tab
         self.clock_layout = QVBoxLayout()
         self.current_time_label = QLabel()
         self.current_time_label.setAlignment(Qt.AlignCenter)
-        self.current_time_label.font().setPointSize(FONT_SIZE)
+        self.current_time_label.font().setWeight(FONT_SIZE)
         self.clock_layout.addWidget(self.current_time_label)
 
         self.timezones = pytz.common_timezones
@@ -41,7 +40,7 @@ class ClockAppQT5(QWidget):
         self.stopwatch_layout = QVBoxLayout()
         self.stopwatch_label = QLabel("00:00:00")
         self.stopwatch_label.setAlignment(Qt.AlignCenter)
-        self.stopwatch_label.font().setPointSize(FONT_SIZE)
+        self.stopwatch_label.font().setWeight(FONT_SIZE)
         self.stopwatch_layout.addWidget(self.stopwatch_label)
 
         self.start_stopwatch_button = QPushButton("Rozpocznij")
@@ -52,9 +51,12 @@ class ClockAppQT5(QWidget):
         self.stop_stopwatch_button.clicked.connect(self.stop_stopwatch)
         self.reset_stopwatch_button.clicked.connect(self.reset_stopwatch)
 
-        self.stopwatch_layout.addWidget(self.start_stopwatch_button)
-        self.stopwatch_layout.addWidget(self.stop_stopwatch_button)
-        self.stopwatch_layout.addWidget(self.reset_stopwatch_button)
+        stopwatch_buttons_layout = QVBoxLayout()
+        stopwatch_buttons_layout.addWidget(self.start_stopwatch_button)
+        stopwatch_buttons_layout.addWidget(self.stop_stopwatch_button)
+        stopwatch_buttons_layout.addWidget(self.reset_stopwatch_button)
+
+        self.stopwatch_layout.addLayout(stopwatch_buttons_layout)
 
         self.stopwatch_tab.setLayout(self.stopwatch_layout)
         self.tab_widget.addTab(self.stopwatch_tab, "Stoper")
@@ -65,35 +67,44 @@ class ClockAppQT5(QWidget):
         self.timer_edit = QTimeEdit()
         self.timer_edit.setDisplayFormat("hh:mm:ss")
         self.timer_edit.setTime(QTime(0, 0))
-        self.timer_edit.font().setPointSize(FONT_SIZE)
-        self.timer_layout.addWidget(self.timer_edit)
+        self.timer_edit.setAlignment(Qt.AlignCenter)
+        self.timer_edit.font().setWeight(FONT_SIZE)
+        self.timer_layout.addWidget(self.timer_edit, alignment=Qt.AlignCenter)
 
         self.start_timer_button = QPushButton("Rozpocznij")
-        self.start_timer_button.clicked.connect(self.start_timer)
-        self.timer_layout.addWidget(self.start_timer_button)
-
         self.stop_timer_button = QPushButton("Zatrzymaj")
+        self.reset_timer_button = QPushButton("Wyczyść")
+
+        self.start_timer_button.clicked.connect(self.start_timer)
         self.stop_timer_button.clicked.connect(self.stop_timer)
-        self.timer_layout.addWidget(self.stop_timer_button)
+        self.reset_timer_button.clicked.connect(self.reset_timer)
+
+        timer_buttons_layout = QVBoxLayout()
+        timer_buttons_layout.addWidget(self.start_timer_button)
+        timer_buttons_layout.addWidget(self.stop_timer_button)
+        timer_buttons_layout.addWidget(self.reset_timer_button)
+
+        self.timer_layout.addLayout(timer_buttons_layout)
 
         self.timer_tab.setLayout(self.timer_layout)
-        self.tab_widget.addTab(self.timer_tab, "Timer")
+        self.tab_widget.addTab(self.timer_tab, "Minutnik")
 
-        # Help Tab
-        self.help_tab = QWidget()
-        self.help_layout = QVBoxLayout()
-        self.help_text = QLabel()
-        self.help_text.setText("Clock, Stopwatch, and Timer App\n\n"
-                               "This application allows you to:\n"
-                               "- View the current time in different timezones.\n"
-                               "- Use a stopwatch to measure time intervals.\n"
-                               "- Set a timer for countdown.\n\n"
-                               "Created using PyQt5 by [Your Name]")
-        self.help_layout.addWidget(self.help_text)
-        self.help_tab.setLayout(self.help_layout)
-        self.tab_widget.addTab(self.help_tab, "About")
+        self.menu_bar = QMenuBar(self)
+
+        # File menu
+        file_menu = self.menu_bar.addMenu('Plik')
+        exit_action = QAction('Wyjdź', self)
+        exit_action.triggered.connect(self.exit_app)
+        file_menu.addAction(exit_action)
+
+        # Help menu
+        help_menu = self.menu_bar.addMenu('Pomoc')
+        about_action = QAction('O aplikacji', self)
+        about_action.triggered.connect(self.show_about_dialog)
+        help_menu.addAction(about_action)
 
         layout = QVBoxLayout()
+        layout.addWidget(self.menu_bar)
         layout.addWidget(self.tab_widget)
         self.setLayout(layout)
 
@@ -156,6 +167,8 @@ class ClockAppQT5(QWidget):
 
     def stop_timer(self):
         self.timer_running = False
+
+    def reset_timer(self):
         self.timer_timer.stop()
         self.timer_edit.setTime(QTime(0, 0))
 
@@ -163,22 +176,24 @@ class ClockAppQT5(QWidget):
         current_time = QDateTime.currentDateTime().time()
         if current_time >= self.timer_end_time or not self.timer_running:
             self.stop_timer()
+            self.reset_timer()
         else:
             remaining_time = current_time.secsTo(self.timer_end_time)
             display_time = QTime(0, 0).addSecs(remaining_time)
             self.timer_edit.setTime(display_time)
 
+    def exit_app(self):
+        sys.exit()
+
     def show_about_dialog(self):
-        about_message = QMessageBox()
-        about_message.setWindowTitle('O aplikacji')
-        about_message.setText('Clock, Stopwatch, and Timer App\n\n'
-                              'This application allows you to:\n'
-                              '- View the current time in different timezones.\n'
-                              '- Use a stopwatch to measure time intervals.\n'
-                              '- Set a timer for countdown.\n\n'
-                              'Created using PyQt5 by [Your Name]')
-        about_message.setIcon(QMessageBox.Information)
-        about_message.exec_()
+        about_text = "Zegar\n\n" \
+                     "Aplikacja pozwala na:\n" \
+                     "- Wyświetlenie aktualnego czasu w różnych strefach czasowych.\n" \
+                     "- Skorzystać ze stopera celem zmierzenia czasu.\n" \
+                     "- Użyć minutnika do odmierzenia czasu. \n\n" \
+                     "Stworzono używając PyQT5. \n\n"\
+                     "184657 Panfil Wojciech"
+        QMessageBox.about(self, 'O aplikacji', about_text)
 
 
 def launch_qt():
