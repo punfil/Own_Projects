@@ -23,6 +23,19 @@ class Alarm:
         self.days = days
         self.enabled = enabled
 
+class Stopwatch:
+    def __init__(self):
+        self.stopwatch_start_time = datetime.now()
+        self.stopwatch_timer_id = GLib.timeout_add_seconds(1, self.update_stopwatch)
+
+    def update_stopwatch(self):
+        elapsed_time = datetime.now() - self.stopwatch_start_time
+        stopwatch_time = str(elapsed_time).split(".")[0]
+        self.stopwatch_label.set_text(stopwatch_time)
+
+        
+g_stopwatch = None
+
 
 class AddAlarmDialog(Gtk.Dialog):
     def __init__(self, parent):
@@ -177,28 +190,22 @@ class ClockAppGTK3(Gtk.Window):
         self.current_time_label.set_markup('<span size="large">{}</span>'.format(local_time_str))
         return True
 
-    def start_stopwatch(self, button):
-        if hasattr(self, 'stopwatch_timer_id'):
+    def start_stopwatch(self, _):
+        global g_stopwatch
+        if g_stopwatch is not None:
             return
 
-        def update_stopwatch():
-            elapsed_time = datetime.now() - self.stopwatch_start_time
-            stopwatch_time = str(elapsed_time).split(".")[0]
-            self.stopwatch_label.set_text(stopwatch_time)
+        g_stopwatch = Stopwatch()
 
-        self.stopwatch_start_time = datetime.now()
-        self.stopwatch_timer_id = GLib.timeout_add_seconds(1, update_stopwatch)
-
-    def stop_stopwatch(self, button):
-        if hasattr(self, 'stopwatch_timer_id'):
-            GLib.source_remove(self.stopwatch_timer_id)
-            del self.stopwatch_timer_id
+    def stop_stopwatch(self, _):
+        global g_stopwatch
+        if g_stopwatch is not None:
+            del g_stopwatch
+            g_stopwatch = None
 
 
-    def reset_stopwatch(self, button):
-        if hasattr(self, 'stopwatch_timer_id'):
-            GLib.source_remove(self.stopwatch_timer_id)
-            del self.stopwatch_timer_id
+    def reset_stopwatch(self, _):
+        self.stop_stopwatch(None)
 
         self.stopwatch_label.set_text("00:00:00")
 

@@ -82,13 +82,11 @@ class ClockAppQT5(QWidget):
         self.setWindowTitle('184657 Panfil Wojciech - Języki skryptowe 3 - Zegar')
         self.setGeometry(100, 100, 800, 600)
 
-        # Tab Widget
         self.tab_widget = QTabWidget()
         self.clock_tab = QWidget()
         self.stopwatch_tab = QWidget()
         self.timer_tab = QWidget()
 
-        # Clock Tab
         self.clock_layout = QVBoxLayout()
         self.current_time_label = QLabel()
         self.current_time_label.setAlignment(Qt.AlignCenter)
@@ -107,7 +105,6 @@ class ClockAppQT5(QWidget):
         self.clock_tab.setLayout(self.clock_layout)
         self.tab_widget.addTab(self.clock_tab, "Zegar")
 
-        # Stopwatch Tab
         self.stopwatch_layout = QVBoxLayout()
         self.stopwatch_label = QLabel("00:00:00")
         self.stopwatch_label.setAlignment(Qt.AlignCenter)
@@ -135,7 +132,6 @@ class ClockAppQT5(QWidget):
         self.stopwatch_tab.setLayout(self.stopwatch_layout)
         self.tab_widget.addTab(self.stopwatch_tab, "Stoper")
 
-        # Timer Tab
         self.timer_layout = QVBoxLayout()
         self.timer_edit = QTimeEdit()
         self.timer_edit.setDisplayFormat("hh:mm:ss")
@@ -165,17 +161,15 @@ class ClockAppQT5(QWidget):
         self.timer_tab.setLayout(self.timer_layout)
         self.tab_widget.addTab(self.timer_tab, "Minutnik")
 
-        # Alarm Tab
         self.alarm_tab = QWidget()
         self.alarm_layout = QVBoxLayout()
 
-        # Alarm List
         self.alarms = []
         self.alarm_list = QListWidget()
         self.alarm_list.itemDoubleClicked.connect(self.edit_selected_alarm)
         self.alarm_layout.addWidget(self.alarm_list)
 
-        alarm_buttons_layout = QHBoxLayout()
+        alarm_buttons_layout = QVBoxLayout()
         self.add_alarm_button = QPushButton("Dodaj nowy alarm")
         self.remove_alarm_button = QPushButton("Usuń alarm")
 
@@ -191,13 +185,11 @@ class ClockAppQT5(QWidget):
 
         self.menu_bar = QMenuBar(self)
 
-        # File menu
         file_menu = self.menu_bar.addMenu('Plik')
         exit_action = QAction('Wyjdź', self)
         exit_action.triggered.connect(self.exit_app)
         file_menu.addAction(exit_action)
 
-        # Help menu
         help_menu = self.menu_bar.addMenu('Pomoc')
         about_action = QAction('O aplikacji', self)
         about_action.triggered.connect(self.show_about_dialog)
@@ -208,28 +200,24 @@ class ClockAppQT5(QWidget):
         layout.addWidget(self.tab_widget)
         self.setLayout(layout)
 
-        # Clock
         self.timer = QTimer()
         self.timer.timeout.connect(self.update_time)
         self.timer.start(1000)
         self.update_time()
 
-        # Stopwatch
         self.stopwatch_timer = QTimer()
         self.stopwatch_timer.timeout.connect(self.tick_stopwatch)
         self.stopwatch_running = False
         self.stopwatch_seconds = 0
 
-        # Timer
         self.timer_timer = QTimer()
         self.timer_timer.timeout.connect(self.update_timer)
         self.timer_running = False
         self.timer_end_time = QDateTime.currentDateTime().time()
 
-        # Alarm
         self.check_alarm_timer = QTimer()
         self.check_alarm_timer.timeout.connect(self.check_alarms)
-        self.check_alarm_timer.start(1000)  # Check every second
+        self.check_alarm_timer.start(1000)
 
     def update_time(self):
         current_timezone = pytz.timezone(self.timezone_combo.currentText())
@@ -237,7 +225,6 @@ class ClockAppQT5(QWidget):
         local_time = current_time.astimezone(current_timezone)
         local_time_str = local_time.strftime('%Y-%m-%d %H:%M:%S %Z%z')
 
-        # Display the local time
         self.current_time_label.setText(local_time_str)
 
     def start_stopwatch(self):
