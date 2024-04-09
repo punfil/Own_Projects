@@ -26,19 +26,20 @@ class Alarm:
 class Stopwatch:
     def __init__(self, window):
         self.stopwatch_start_time = datetime.now()
-        print(self.stopwatch_start_time)
         self.stopwatch_timer_id = GLib.timeout_add_seconds(1, self.update_stopwatch)
         self.window = window
+        self.enabled = True
 
     def update_stopwatch(self):
+        if self.enabled == False:
+            return False
         elapsed_time = datetime.now() - self.stopwatch_start_time
-        print(elapsed_time)
-        stopwatch_time = str(elapsed_time).split(".")[0]
+        stopwatch_time = "0" + str(elapsed_time).split(".")[0]
         self.window.stopwatch_label.set_text(stopwatch_time)
 
         return True
 
-        
+
 g_stopwatch = None
 
 
@@ -206,7 +207,8 @@ class ClockAppGTK3(Gtk.Window):
     def stop_stopwatch(self, _):
         global g_stopwatch
         if g_stopwatch is not None:
-            del g_stopwatch
+            self.stopwatch_label.set_text("00:00:00")
+            g_stopwatch.enabled = False
             g_stopwatch = None
 
 
