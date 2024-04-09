@@ -264,6 +264,7 @@ class ClockAppQT5(QWidget):
 
     def reset_timer(self):
         self.timer_timer.stop()
+        self.stop_timer()
         self.timer_edit.setTime(QTime(0, 0))
 
     def update_timer(self):
