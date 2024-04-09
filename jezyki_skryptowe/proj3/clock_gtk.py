@@ -222,6 +222,7 @@ class ClockAppGTK3(Gtk.Window):
 
         self.alarms = []
         self.number_of_clicks = 0
+        GLib.timeout_add_seconds(1, self.check_alarms)
 
     def update_time(self, combo):
         timezone_index = self.timezone_combo.get_active()
@@ -299,10 +300,15 @@ class ClockAppGTK3(Gtk.Window):
         current_time = datetime.now().time()
         current_day = datetime.now().strftime("%a")
         for alarm in self.alarms:
-            if alarm.enabled and current_time >= alarm.time and ENGLISH_TO_POLISH_DAYS[current_day] in alarm.days:
+            time = datetime.strptime(alarm.time, "%H:%M:%S").time()
+            if alarm.enabled and current_time.hour == time.hour and \
+                    current_time.minute == time.minute and \
+                    current_time.second == time.second and ENGLISH_TO_POLISH_DAYS[current_day] in alarm.days:
                 self.show_alarm_message(alarm)
                 alarm.enabled = False
                 self.update_alarm_list()
+        
+        return True
 
 
     def edit_alarm_dialog(self, alarm):
@@ -393,8 +399,9 @@ class ClockAppGTK3(Gtk.Window):
             flags=0,
             message_type=Gtk.MessageType.INFO,
             buttons=Gtk.ButtonsType.OK,
-            text=f"Alarm {alarm.time.strftime('%H:%M:%S')}!"
+            text=f"Alarm {alarm.time}!"
         )
+
         dialog.run()
         dialog.destroy()
 
