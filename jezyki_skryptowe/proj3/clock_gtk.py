@@ -221,6 +221,7 @@ class ClockAppGTK3(Gtk.Window):
         self.add(self.main_box)
 
         self.alarms = []
+        self.number_of_clicks = 0
 
     def update_time(self, combo):
         timezone_index = self.timezone_combo.get_active()
@@ -289,7 +290,7 @@ class ClockAppGTK3(Gtk.Window):
     def remove_selected_alarm(self, button):
         selected_row = self.alarm_list.get_selected_row()
         if selected_row is not None:
-            selected_alarm = self.alarms[selected_row]
+            selected_alarm = self.alarms[selected_row.get_index()]
             self.alarms.remove(selected_alarm)
             self.update_alarm_list()
 
@@ -310,7 +311,7 @@ class ClockAppGTK3(Gtk.Window):
             self,
             Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT,
             (
-                Gtk.STOCK_CANCEL,
+                "Anuluj",
                 Gtk.ResponseType.CANCEL,
                 Gtk.STOCK_OK,
                 Gtk.ResponseType.OK,
@@ -326,7 +327,7 @@ class ClockAppGTK3(Gtk.Window):
         vbox.pack_start(time_label, False, False, 0)
 
         time_entry = Gtk.Entry()
-        time_entry.set_text(alarm.time.strftime("%H:%M:%S"))
+        time_entry.set_text(alarm.time)
         vbox.pack_start(time_entry, False, False, 0)
 
         days_label = Gtk.Label(label="Dni tygodnia:")
@@ -363,9 +364,13 @@ class ClockAppGTK3(Gtk.Window):
 
         dialog.destroy()
 
-
     def on_alarm_activated(self, widget, row):
-        alarm = self.alarms[row]
+        self.number_of_clicks += 1
+        if self.number_of_clicks == 1:
+            return
+        
+        self.number_of_clicks = 0
+        alarm = self.alarms[row.get_index()]
         self.edit_alarm_dialog(alarm)
 
 
