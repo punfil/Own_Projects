@@ -66,22 +66,22 @@ class Timer:
 
 g_stopwatch = None
 g_timer = None
+g_alarms = []
 
 
 class AddAlarmDialog(Gtk.Dialog):
     def __init__(self, parent):
-        Gtk.Dialog.__init__(self, "Dodaj nowy alarm", parent, 0,
-                            (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
-                             Gtk.STOCK_OK, Gtk.ResponseType.OK))
-
-        self.set_modal(True)
+        Gtk.Dialog.__init__(self, "Dodaj nowy alarm", parent, 0, None)
+        self.add_button(Gtk.STOCK_OK, Gtk.ResponseType.OK)
+        self.add_button("Anuluj", Gtk.ResponseType.CANCEL)
 
         box = self.get_content_area()
         grid = Gtk.Grid()
         box.add(grid)
 
         self.time_edit = Gtk.Entry()
-        self.time_entry.set_placeholder_text("00:00:00")
+        self.time_edit.set_placeholder_text("00:00:00")
+        self.time_edit.set_text("00:00:00")
         grid.attach(Gtk.Label("Czas alarmu:"), 0, 0, 1, 1)
         grid.attach(self.time_edit, 1, 0, 1, 1)
 
@@ -92,9 +92,13 @@ class AddAlarmDialog(Gtk.Dialog):
             grid.attach(checkbox, 1, i + 1, 1, 1)
             self.day_checkboxes.append(checkbox)
 
+        empty_label = Gtk.Label()
+        empty_label.set_hexpand(True)
+        grid.attach(empty_label, 1, len(days_of_week) + 1, 1, 1)
+
         self.enabled_checkbox = Gtk.CheckButton("Włączony")
         self.enabled_checkbox.set_active(True)
-        grid.attach(self.enabled_checkbox, 1, len(days_of_week) + 1, 1, 1)
+        grid.attach(self.enabled_checkbox, 1, len(days_of_week) + 2, 1, 1)
 
         self.show_all()
 
@@ -175,6 +179,7 @@ class ClockAppGTK3(Gtk.Window):
         # Alarm Tab
         self.alarm_tab = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
         self.alarm_list = Gtk.ListBox()
+        self.alarm_list.connect("row-activated", self.on_alarm_activated)
         self.alarm_tab.pack_start(self.alarm_list, True, True, 0)
 
         self.add_alarm_button = Gtk.Button(label="Dodaj nowy alarm")
@@ -214,6 +219,8 @@ class ClockAppGTK3(Gtk.Window):
         self.main_box.pack_start(vbox, False, False, 0)
         self.main_box.pack_start(self.notebook, False, False, 0)
         self.add(self.main_box)
+
+        self.alarms = []
 
     def update_time(self, combo):
         timezone_index = self.timezone_combo.get_active()
@@ -296,6 +303,84 @@ class ClockAppGTK3(Gtk.Window):
                 alarm.enabled = False
                 self.update_alarm_list()
 
+
+    def edit_alarm_dialog(self, alarm):
+        dialog = Gtk.Dialog(
+            "Edytuj alarm",
+            self,
+            Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT,
+            (
+                Gtk.STOCK_CANCEL,
+                Gtk.ResponseType.CANCEL,
+                Gtk.STOCK_OK,
+                Gtk.ResponseType.OK,
+            ),
+        )
+        dialog.set_default_size(200, 200)
+
+        content_area = dialog.get_content_area()
+        vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
+        content_area.add(vbox)
+
+        time_label = Gtk.Label(label="Czas alarmu:")
+        vbox.pack_start(time_label, False, False, 0)
+
+        time_entry = Gtk.Entry()
+        time_entry.set_text(alarm.time.strftime("%H:%M:%S"))
+        vbox.pack_start(time_entry, False, False, 0)
+
+        days_label = Gtk.Label(label="Dni tygodnia:")
+        vbox.pack_start(days_label, False, False, 0)
+
+        days_checkboxes = []
+        days_of_week = ["Pon", "Wt", "Śr", "Czw", "Pt", "Sob", "Niedz"]
+        for day in days_of_week:
+            checkbox = Gtk.CheckButton(label=day)
+            if day in alarm.days:
+                checkbox.set_active(True)
+            vbox.pack_start(checkbox, False, False, 0)
+            days_checkboxes.append(checkbox)
+
+        enabled_checkbox = Gtk.CheckButton(label="Włączony" if alarm.enabled else "Wyłączony")
+        vbox.pack_start(enabled_checkbox, False, False, 0)
+
+        dialog.show_all()
+
+        response = dialog.run()
+
+        if response == Gtk.ResponseType.OK:
+            # Update alarm with new settings
+            new_time = datetime.strptime(time_entry.get_text(), "%H:%M:%S").time()
+            new_days = [day for day, checkbox in zip(days_of_week, days_checkboxes) if checkbox.get_active()]
+            new_enabled = enabled_checkbox.get_active()
+
+            alarm.time = new_time
+            alarm.days = new_days
+            alarm.enabled = new_enabled
+
+            # Update alarm list
+            self.update_alarm_list()
+
+        dialog.destroy()
+
+
+    def on_alarm_activated(self, widget, row):
+        alarm = self.alarms[row]
+        self.edit_alarm_dialog(alarm)
+
+
+    def update_alarm_list(self):
+        for row in self.alarm_list.get_children():
+            self.alarm_list.remove(row)
+        for alarm in self.alarms:
+            alarm_text = f"{alarm.time} - {', '.join(alarm.days)} ({'Włączony' if alarm.enabled else 'Wyłączony'})"
+            alarm_row = Gtk.ListBoxRow()
+            alarm_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=10)
+            alarm_label = Gtk.Label(label=alarm_text)
+            alarm_box.pack_start(alarm_label, True, True, 0)
+            alarm_row.add(alarm_box)
+            self.alarm_list.add(alarm_row)
+        self.alarm_list.show_all()
 
     def show_alarm_message(self, alarm):
         dialog = Gtk.MessageDialog(
