@@ -192,20 +192,20 @@ class ClockAppGTK3(Gtk.Window):
         vbox.pack_start(self.menu_bar, False, False, 0)
 
         file_menu = Gtk.Menu()
-        file_menu_exit = Gtk.MenuItem(label="Exit")
+        file_menu_exit = Gtk.MenuItem(label="Wyjdź")
         file_menu_exit.connect("activate", self.on_menu_file_exit)
         file_menu.append(file_menu_exit)
 
-        file_menu_item = Gtk.MenuItem(label="File")
+        file_menu_item = Gtk.MenuItem(label="Plik")
         file_menu_item.set_submenu(file_menu)
         self.menu_bar.append(file_menu_item)
 
         help_menu = Gtk.Menu()
-        help_menu_about = Gtk.MenuItem(label="About")
+        help_menu_about = Gtk.MenuItem(label="O aplikacji")
         help_menu_about.connect("activate", self.on_menu_help_about)
         help_menu.append(help_menu_about)
 
-        help_menu_item = Gtk.MenuItem(label="Help")
+        help_menu_item = Gtk.MenuItem(label="Pomoc")
         help_menu_item.set_submenu(help_menu)
         self.menu_bar.append(help_menu_item)
 
@@ -312,10 +312,14 @@ class ClockAppGTK3(Gtk.Window):
         Gtk.main_quit()
 
     def on_menu_help_about(self, widget):
-        about_dialog = Gtk.AboutDialog()
-        about_dialog.set_program_name("Zegar")
-        about_dialog.set_version("1.0")
-        about_dialog.set_authors(["Wojciech Panfil"])
+        about_dialog = Gtk.Dialog("O aplikacji",
+                              None,
+                              0,
+                              None)
+        # Customize the About dialog
+        about_dialog.set_default_size(300, 200)
+        about_dialog.set_border_width(10)
+
         about_text = "Zegar\n\n" \
                         "Aplikacja pozwala na:\n" \
                         "- Wyświetlenie aktualnego czasu w różnych strefach czasowych.\n" \
@@ -325,7 +329,12 @@ class ClockAppGTK3(Gtk.Window):
                         "Stworzono używając PyGTK3. \n\n"\
                         "184657 Panfil Wojciech"
 
-        about_dialog.set_comments(about_text)
+        label = Gtk.Label(about_text)
+        label.set_line_wrap(True)
+        about_dialog.vbox.pack_start(label, True, True, 0)
+
+        # Show the About dialog
+        about_dialog.show_all()
 
         about_dialog.run()
         about_dialog.destroy()
