@@ -436,7 +436,7 @@ class ClockAppGTK3(Gtk.Window):
                         "Aplikacja pozwala na:\n" \
                         "- Wyświetlenie aktualnego czasu w różnych strefach czasowych.\n" \
                         "- Skorzystanie ze stopera celem zmierzenia czasu.\n" \
-                        "- Użycie minutnika do odmierzenia czasu. \n\n" \
+                        "- Użycie minutnika do odmierzenia czasu. \n" \
                         "- Ustawienie budzika. \n\n" \
                         "Stworzono używając PyGTK3. \n\n"\
                         "184657 Panfil Wojciech"
