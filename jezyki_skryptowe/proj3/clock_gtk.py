@@ -40,7 +40,32 @@ class Stopwatch:
         return True
 
 
+class Timer:
+    def __init__(self, window, timer_end_time):
+        self.enabled = True
+        self.window = window
+        self.time_counted = None
+        self.timer_end_time = timer_end_time
+        self.timer = GLib.timeout_add_seconds(1, self.update_timer)
+
+    def update_timer(self):
+        if self.enabled :
+            self.time_counted += 1
+        if g_timer is None:
+            return False
+        
+        if self.time_counted >= self.timer_end_time:
+            self.window.reset_timer(None)
+        else:
+            total_seconds = self.timer_end_time - self.time_counted
+            hours, remainder = divmod(total_seconds, 3600)
+            minutes, seconds = divmod(remainder, 60)
+            time_str = "{:02}:{:02}:{:02}".format(int(hours), int(minutes), int(seconds))
+            self.window.timer_edit.set_text(time_str)
+        return True
+
 g_stopwatch = None
+g_timer = None
 
 
 class AddAlarmDialog(Gtk.Dialog):
@@ -56,6 +81,7 @@ class AddAlarmDialog(Gtk.Dialog):
         box.add(grid)
 
         self.time_edit = Gtk.Entry()
+        self.time_entry.set_placeholder_text("00:00:00")
         grid.attach(Gtk.Label("Czas alarmu:"), 0, 0, 1, 1)
         grid.attach(self.time_edit, 1, 0, 1, 1)
 
@@ -129,7 +155,7 @@ class ClockAppGTK3(Gtk.Window):
         # Timer Tab
         self.timer_tab = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
         self.timer_edit = Gtk.Entry()
-        self.timer_edit.set_placeholder_text("hh:mm:ss")
+        self.timer_edit.set_placeholder_text("00:00:00")
         self.timer_tab.pack_start(self.timer_edit, True, True, 0)
 
         self.start_timer_button = Gtk.Button(label="Rozpocznij")
@@ -218,39 +244,30 @@ class ClockAppGTK3(Gtk.Window):
 
 
     def start_timer(self, button):
-        if hasattr(self, 'timer_id'):
+        global g_timer
+
+        if g_timer:
+            g_timer.enabled = True
             return
 
-        def update_timer():
-            current_time = datetime.now().time()
-            if current_time >= self.timer_end_time:
-                self.stop_timer(None)
-                self.reset_timer(None)
-            else:
-                remaining_time = (self.timer_end_time.hour * 3600 +
-                                self.timer_end_time.minute * 60 +
-                                self.timer_end_time.second) - \
-                                (current_time.hour * 3600 +
-                                current_time.minute * 60 +
-                                current_time.second)
-                display_time = str(datetime.timedelta(seconds=remaining_time))
-                self.timer_edit.set_text(display_time)
+        g_timer = Timer(self, self.get_time(self.timer_edit.get_text()))
+        g_timer.enabled = True
+        g_timer.time_counted = self.get_time("00:00:00")
 
-        self.timer_end_time = self.timer_edit.get_time()
-        self.timer_id = GLib.timeout_add_seconds(1, update_timer)
-
+    def get_time(self, time_str):
+        t = datetime.strptime(time_str, "%H:%M:%S").time()
+        return t.hour * 3600 + t.minute * 60 + t.second
 
     def stop_timer(self, button):
-        if hasattr(self, 'timer_id'):
-            GLib.source_remove(self.timer_id)
-            del self.timer_id
+        global g_timer
+        g_timer.enabled = False
 
 
     def reset_timer(self, button):
-        if hasattr(self, 'timer_id'):
-            GLib.source_remove(self.timer_id)
-            del self.timer_id
-        self.timer_edit.set_text("00:00:00")
+        global g_timer
+        g_timer.enabled = False
+        g_timer = None
+        self.timer_edit.set_text("")
 
 
     def add_new_alarm_dialog(self, button):
