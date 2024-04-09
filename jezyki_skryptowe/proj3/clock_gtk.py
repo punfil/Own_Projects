@@ -24,14 +24,19 @@ class Alarm:
         self.enabled = enabled
 
 class Stopwatch:
-    def __init__(self):
+    def __init__(self, window):
         self.stopwatch_start_time = datetime.now()
+        print(self.stopwatch_start_time)
         self.stopwatch_timer_id = GLib.timeout_add_seconds(1, self.update_stopwatch)
+        self.window = window
 
     def update_stopwatch(self):
         elapsed_time = datetime.now() - self.stopwatch_start_time
+        print(elapsed_time)
         stopwatch_time = str(elapsed_time).split(".")[0]
-        self.stopwatch_label.set_text(stopwatch_time)
+        self.window.stopwatch_label.set_text(stopwatch_time)
+
+        return True
 
         
 g_stopwatch = None
@@ -95,7 +100,7 @@ class ClockAppGTK3(Gtk.Window):
         for timezone in self.timezones:
             self.timezone_combo.append_text(timezone)
         self.timezone_combo.connect("changed", self.update_time)
-        self.timezone_combo.set_active(0)
+        self.timezone_combo.set_active(11)
         self.clock_tab.pack_start(self.timezone_combo, False, False, 0)
 
         self.notebook.append_page(self.clock_tab, Gtk.Label(label="Zegar"))
@@ -177,7 +182,6 @@ class ClockAppGTK3(Gtk.Window):
         help_menu_item.set_submenu(help_menu)
         self.menu_bar.append(help_menu_item)
 
-
         self.time_update_id = GLib.timeout_add_seconds(1, self.update_time, None)
 
         self.main_box.pack_start(vbox, False, False, 0)
@@ -197,7 +201,7 @@ class ClockAppGTK3(Gtk.Window):
         if g_stopwatch is not None:
             return
 
-        g_stopwatch = Stopwatch()
+        g_stopwatch = Stopwatch(self)
 
     def stop_stopwatch(self, _):
         global g_stopwatch
@@ -208,7 +212,6 @@ class ClockAppGTK3(Gtk.Window):
 
     def reset_stopwatch(self, _):
         self.stop_stopwatch(None)
-
         self.stopwatch_label.set_text("00:00:00")
 
 
