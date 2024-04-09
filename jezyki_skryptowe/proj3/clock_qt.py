@@ -63,9 +63,9 @@ class AddAlarmDialog(QDialog):
 
     def set_alarm(self, alarm):
         self.time_edit.setTime(alarm.time)
-        for checkbox, day in zip(self.day_checkboxes, alarm.days):
-            if day in checkbox.text():
-                checkbox.setChecked(True)
+        for idx, day in enumerate(self.day_checkboxes):
+            if day.text() in alarm.days:
+                day.setChecked(True)
         self.enabled_checkbox.setChecked(alarm.enabled)
 
     def get_alarm(self):
