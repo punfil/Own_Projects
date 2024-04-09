@@ -100,6 +100,7 @@ class ClockAppQT5(QWidget):
         self.timezone_combo = QComboBox()
         self.timezone_combo.addItems(self.timezones)
         self.timezone_combo.currentIndexChanged.connect(self.update_time)
+        self.timezone_combo.view().setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
 
         self.clock_layout.addWidget(self.timezone_combo)
         self.clock_tab.setLayout(self.clock_layout)
@@ -283,7 +284,7 @@ class ClockAppQT5(QWidget):
                      "Aplikacja pozwala na:\n" \
                      "- Wyświetlenie aktualnego czasu w różnych strefach czasowych.\n" \
                      "- Skorzystać ze stopera celem zmierzenia czasu.\n" \
-                     "- Użyć minutnika do odmierzenia czasu. \n\n" \
+                     "- Użyć minutnika do odmierzenia czasu. \n" \
                      "- Ustawić budzik. \n\n" \
                      "Stworzono używając PyQT5. \n\n"\
                      "184657 Panfil Wojciech"

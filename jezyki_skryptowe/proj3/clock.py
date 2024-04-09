@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import argparse
 
 from clock_qt import launch_qt
@@ -14,8 +16,8 @@ def main():
         launch_qt()
     elif args.gtk:
         launch_gtk()
-
-    launch_qt()
+    else:
+        launch_qt()
 
 
 if __name__ == '__main__':
