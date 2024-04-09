@@ -25,17 +25,19 @@ class Alarm:
 
 class Stopwatch:
     def __init__(self, window):
-        self.stopwatch_start_time = datetime.now()
+        self.stopwatch_start_time = 0
         self.stopwatch_timer_id = GLib.timeout_add_seconds(1, self.update_stopwatch)
         self.window = window
         self.enabled = True
 
     def update_stopwatch(self):
         if self.enabled == False:
-            return False
-        elapsed_time = datetime.now() - self.stopwatch_start_time
-        stopwatch_time = "0" + str(elapsed_time).split(".")[0]
-        self.window.stopwatch_label.set_text(stopwatch_time)
+            return True
+        self.stopwatch_start_time += 1
+        hours, remainder = divmod(self.stopwatch_start_time, 3600)
+        minutes, seconds = divmod(remainder, 60)
+        time_str = "{:02}:{:02}:{:02}".format(int(hours), int(minutes), int(seconds))
+        self.window.stopwatch_label.set_text(time_str)
 
         return True
 
@@ -46,12 +48,16 @@ class Timer:
         self.window = window
         self.time_counted = None
         self.timer_end_time = timer_end_time
+        if not self.timer_end_time:
+            self.window.timer_edit.set_text("BŁĘDNA WARTOŚĆ. WYCZYŚĆ I SPRÓBUJ PONOWNIE.")
         self.timer = GLib.timeout_add_seconds(1, self.update_timer)
 
     def update_timer(self):
         if self.enabled :
             self.time_counted += 1
         if g_timer is None:
+            return False
+        if self.timer_end_time is None:
             return False
         
         if self.time_counted >= self.timer_end_time:
@@ -235,6 +241,7 @@ class ClockAppGTK3(Gtk.Window):
     def start_stopwatch(self, _):
         global g_stopwatch
         if g_stopwatch is not None:
+            g_stopwatch.enabled = True
             return
 
         g_stopwatch = Stopwatch(self)
@@ -242,13 +249,12 @@ class ClockAppGTK3(Gtk.Window):
     def stop_stopwatch(self, _):
         global g_stopwatch
         if g_stopwatch is not None:
-            self.stopwatch_label.set_text("00:00:00")
             g_stopwatch.enabled = False
-            g_stopwatch = None
-
 
     def reset_stopwatch(self, _):
         self.stop_stopwatch(None)
+        global g_stopwatch
+        g_stopwatch = None
         self.stopwatch_label.set_text("00:00:00")
 
 
@@ -259,24 +265,33 @@ class ClockAppGTK3(Gtk.Window):
             g_timer.enabled = True
             return
 
-        g_timer = Timer(self, self.get_time(self.timer_edit.get_text()))
+        end_time = self.get_time(self.timer_edit.get_text())
+        g_timer = Timer(self, end_time)
+        if not end_time:
+            return
         g_timer.enabled = True
         g_timer.time_counted = self.get_time("00:00:00")
 
     def get_time(self, time_str):
-        t = datetime.strptime(time_str, "%H:%M:%S").time()
+        try:
+            t = datetime.strptime(time_str, "%H:%M:%S").time()
+        except ValueError:
+            return None
+
         return t.hour * 3600 + t.minute * 60 + t.second
 
     def stop_timer(self, button):
         global g_timer
-        g_timer.enabled = False
+        if g_timer:
+            g_timer.enabled = False
 
 
     def reset_timer(self, button):
         global g_timer
-        g_timer.enabled = False
-        g_timer = None
-        self.timer_edit.set_text("")
+        if g_timer:
+            g_timer.enabled = False
+            g_timer = None
+            self.timer_edit.set_text("")
 
 
     def add_new_alarm_dialog(self, button):
