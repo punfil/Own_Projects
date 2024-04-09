@@ -420,9 +420,9 @@ class ClockAppGTK3(Gtk.Window):
         about_text = "Zegar\n\n" \
                         "Aplikacja pozwala na:\n" \
                         "- Wyświetlenie aktualnego czasu w różnych strefach czasowych.\n" \
-                        "- Skorzystać ze stopera celem zmierzenia czasu.\n" \
-                        "- Użyć minutnika do odmierzenia czasu. \n\n" \
-                        "- Ustawić budzik. \n\n" \
+                        "- Skorzystanie ze stopera celem zmierzenia czasu.\n" \
+                        "- Użycie minutnika do odmierzenia czasu. \n\n" \
+                        "- Ustawienie budzika. \n\n" \
                         "Stworzono używając PyGTK3. \n\n"\
                         "184657 Panfil Wojciech"
 

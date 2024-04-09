@@ -268,7 +268,9 @@ class ClockAppQT5(QWidget):
 
     def update_timer(self):
         current_time = QDateTime.currentDateTime().time()
-        if current_time >= self.timer_end_time or not self.timer_running:
+        if not self.timer_running:
+            return
+        if current_time >= self.timer_end_time:
             self.stop_timer()
             self.reset_timer()
         else:
@@ -283,9 +285,9 @@ class ClockAppQT5(QWidget):
         about_text = "Zegar\n\n" \
                      "Aplikacja pozwala na:\n" \
                      "- Wyświetlenie aktualnego czasu w różnych strefach czasowych.\n" \
-                     "- Skorzystać ze stopera celem zmierzenia czasu.\n" \
-                     "- Użyć minutnika do odmierzenia czasu. \n" \
-                     "- Ustawić budzik. \n\n" \
+                     "- Skorzystanie ze stopera celem zmierzenia czasu.\n" \
+                     "- Użycie minutnika do odmierzenia czasu. \n" \
+                     "- Ustawienie budzika. \n\n" \
                      "Stworzono używając PyQT5. \n\n"\
                      "184657 Panfil Wojciech"
         QMessageBox.about(self, 'O aplikacji', about_text)
