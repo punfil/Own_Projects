@@ -80,8 +80,8 @@ class ClockAppGTK3(Gtk.Window):
         self.set_border_width(10)
         self.set_default_size(800, 600)
 
+        self.main_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
         self.notebook = Gtk.Notebook()
-        self.add(self.notebook)
 
         # Clock Tab
         self.clock_tab = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
@@ -159,8 +159,6 @@ class ClockAppGTK3(Gtk.Window):
         vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=0)
         vbox.pack_start(self.menu_bar, False, False, 0)
 
-        self.add(vbox)
-
         file_menu = Gtk.Menu()
         file_menu_exit = Gtk.MenuItem(label="Exit")
         file_menu_exit.connect("activate", self.on_menu_file_exit)
@@ -181,6 +179,10 @@ class ClockAppGTK3(Gtk.Window):
 
 
         self.time_update_id = GLib.timeout_add_seconds(1, self.update_time, None)
+
+        self.main_box.pack_start(vbox, False, False, 0)
+        self.main_box.pack_start(self.notebook, False, False, 0)
+        self.add(self.main_box)
 
     def update_time(self, combo):
         timezone_index = self.timezone_combo.get_active()
