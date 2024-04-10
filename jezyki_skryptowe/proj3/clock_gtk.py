@@ -315,7 +315,12 @@ class ClockAppGTK3(Gtk.Window):
         current_time = datetime.now().time()
         current_day = datetime.now().strftime("%a")
         for alarm in self.alarms:
-            time = datetime.strptime(alarm.time, "%H:%M:%S").time()
+            try:
+                time = datetime.strptime(alarm.time, "%H:%M:%S").time()
+            except ValueError:
+                self.alarms.remove(alarm)
+                self.update_alarm_list()
+                continue
             if alarm.enabled and current_time.hour == time.hour and \
                     current_time.minute == time.minute and \
                     current_time.second == time.second and ENGLISH_TO_POLISH_DAYS[current_day] in alarm.days:
@@ -363,7 +368,9 @@ class ClockAppGTK3(Gtk.Window):
             vbox.pack_start(checkbox, False, False, 0)
             days_checkboxes.append(checkbox)
 
-        enabled_checkbox = Gtk.CheckButton(label="Włączony" if alarm.enabled else "Wyłączony")
+        enabled_checkbox = Gtk.CheckButton(label="Włączony")
+        if alarm.enabled:
+            enabled_checkbox.set_active(True)
         vbox.pack_start(enabled_checkbox, False, False, 0)
 
         dialog.show_all()
@@ -372,7 +379,7 @@ class ClockAppGTK3(Gtk.Window):
 
         if response == Gtk.ResponseType.OK:
             # Update alarm with new settings
-            new_time = datetime.strptime(time_entry.get_text(), "%H:%M:%S").time()
+            new_time = time_entry.get_text()
             new_days = [day for day, checkbox in zip(days_of_week, days_checkboxes) if checkbox.get_active()]
             new_enabled = enabled_checkbox.get_active()
 
