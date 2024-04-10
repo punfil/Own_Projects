@@ -46,7 +46,7 @@ class Timer:
     def __init__(self, window, timer_end_time):
         self.enabled = True
         self.window = window
-        self.time_counted = None
+        self.time_counted = window.get_time("00:00:00")
         self.timer_end_time = timer_end_time
         if not self.timer_end_time:
             self.window.timer_edit.set_text("BŁĘDNA WARTOŚĆ. WYCZYŚĆ I SPRÓBUJ PONOWNIE.")
