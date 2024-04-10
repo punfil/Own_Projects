@@ -423,7 +423,7 @@ class ClockAppGTK3(Gtk.Window):
             buttons=Gtk.ButtonsType.OK,
             text=f"Alarm {alarm.time}!"
         )
-
+        dialog.set_title("Alarm")
         dialog.run()
         dialog.destroy()
 
