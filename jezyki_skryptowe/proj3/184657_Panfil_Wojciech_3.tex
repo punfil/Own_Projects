@@ -1,0 +1,150 @@
+\documentclass[11pt]{article}
+\usepackage[a4paper, margin=2.5cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{polski}
+\usepackage{babel}
+\usepackage{indentfirst}
+\usepackage{listings}
+\usepackage[colorlinks=true, urlcolor=blue, linkcolor=red]{hyperref}
+\usepackage[document]{ragged2e}
+\lstset{
+	frame=l,
+	basicstyle=\ttfamily,
+	numbers=left,
+	texcl=false,
+	tabsize=1,
+	breaklines=true,
+	postbreak=\mbox{{$\hookrightarrow$}\space}
+}
+\sloppy
+
+\title{
+	\textbf{Języki skryptowe i ich zastosowania}\\
+	Zadanie nr 3: Aplikacja z GUI - zegar}
+
+\author{Wojciech Panfil, 184657}
+
+\date{3 kwietnia 2024}
+
+\begin{document}
+	\maketitle
+	
+    \section{Opis programu}
+	\justify
+	Celem niniejszego projektu jest implementacja własnego zegara w formie
+    aplikacji z graficznym interfejsem użytkownika w języku \texttt{Python}. Aplikacja powinna posiadać
+    dwa interfejsy graficzne: jeden oparty o bibliotekę \texttt{PyQt}, drugi o bibliotekę \texttt{PyGTK}.
+    W związku z lepszą dostępnością materiałów w internecie (poradniki, dokumentacja, itp.) zdecydowano użyć \texttt{PyQt} w wersji \texttt{5} 
+    oraz \texttt{PyGTK} w wersji \texttt{3}.
+
+    \section{Uruchomienie programu}
+    W zależności od wartości parametru linii poleceń, program będzie uruchamiać wybrany przez użytkownika interfejs graficzny:
+    \begin{lstlisting}[language=bash, caption={Uruchomienie programu z GUI opartym o bibliotekę \texttt{PyQT5}},captionpos=b]
+    python3 ./clock.py -qt
+    \end{lstlisting}
+    \begin{lstlisting}[language=bash, caption={Uruchomienie programu z GUI opartym o bibliotekę \texttt{PyGTK3}},captionpos=b]
+    python3 ./clock.py -gtk
+    \end{lstlisting}
+    W przypadku braku wyboru, uruchomione zostanie GUI napisane z użyciem biblioteki \texttt{PyQT5}.
+    Program będzie wspierał jeden język interfejsu użytkownika - polski.
+
+    \section{Funkcjonalność}
+    Jako wzór do określenia funkcjonalności programu posłużył program "zegar" wbudowany
+    w system Android (com.google.android.deskclock).
+
+    Implementacja autora niniejszego sprawozdania posiadać będzie cztery zakładki:
+    \begin{enumerate}
+        \item Zegar (domyślna) - wyświetla aktualny czas z dokładnością do sekundy,
+        umożliwia również wybór strefy czasowej z listy.
+        Lista stref czasowych pochodzić będzie z biblioteki \texttt{pytz}.
+        \item Stoper - umożliwiać będzie pomiar czasu z dokładnością do sekundy.
+        Na głównym planie znajdować się będzie upłynięty czas, natomiast pod spodem
+        trzy przyciski - Rozpocznij, Zatrzymaj, Wyczyść, służące odpowiednio do 
+        rozpoczęcia pracy stopera, zatrzymania i wyczyszczenia zmierzonej wartości.
+        \item Minutnik - umożliwiać będzie odmierzenie czasu z dokładnością do sekundy.
+        Na głównym planie znajdować się będzie pole tekstowe z możliwością wprowadzenia czasu
+        do odmierzenia w formacie HH:MM:SS.
+        Jednocześnie pole to będzie wyświetlać upływający czas w przypadku włączenia minutnika.
+        Dolny fragment okna przeznaczony zostanie na przyciski rozpoczęcia i zatrzymania odliczania.
+        \item Budzik - umożliwiać będzie włączenie alarmu o określonej przez użytkownika godzinie.
+        Na głównym planie znajdować się będzie lista włączonych alarmów. Na dole okna, poniżej listy znajdować
+        się będą przyciski umożliwiające dodanie nowego lub usunięcie istniejącego alarmu. 
+        Po wybraniu alarmu z listy i dwukrotnym kliknięciu na niego (lub dodaniu nowego) otworzy się nowe okno dialogowe, w którym
+        użytkownik będzie mógł określić czas alarmu z dokładnością do sekundy, a także dni tygodnia, w których
+        budzik ma być aktywny. Dodatkowo na dole znajdować się będzie przełącznik, który określać będzie,
+        czy dany budzik jest włączony. W przypadku włączenia się alarmu,
+        użytkownik zostanie powiadomiony o tym fakcie poprzez wyświetlenie powiadomienia (okna dialogowego), a budzik zostanie dezaktywowany.
+    \end{enumerate}
+
+    \section{Projekt interfejsu graficznego - \texttt{PyQT5}}
+    Implementacja z użyciem biblioteki \texttt{PyQT5} oparta będzie o klasę \texttt{QWidget}.
+    Na górze okna stworzony zostanie \texttt{QTabWidget}, w którym umieszczane będą kolejne zakładki.
+    Przełączenie pomiędzy zakładkami następować będzie przez naciśnięcie wybranej zakładki. Aktualnie wybrana
+    zakładka będzie wyróżniona.
+
+    Pierwszą z nich będzie wspomniany wcześniej zegar. Na środku okna znajdować się będzie obiekt \texttt{QLabel},
+    który wyświetlać będzie czas. Na dole okna umieszczona zostanie lista rozwijana z dostępnymi strefami czasowymi 
+    \texttt{pytz\.common\_timezones} w formie \texttt{QComboBox}. Wszystkie obiekty tej zakładki zostaną zamknięte
+    w \texttt{QVBoxLayout}.
+
+    \texttt{QWidget} stoper wyświetlać będzie czas w formie \texttt{QLabel}. Przyciski sterujące
+    pomiarem umieszczone poniżej będą instancjami klasy \texttt{QPushButton}. Przyciski "Rozpocznij", "Zatrzymaj" oraz "Wyczyść", celem
+    zgrupowania ich na dole okna będą znajdować się w osobnym kontenerze \texttt{QVBoxLayout}. Wszystkie
+    elementy będą dodane do wspólnego dla tej zakładki obiektu \texttt{QVBoxLayout}.
+
+    Trzecia funkcjonalność - minutnik - będzie zrealizowana identycznie jak stoper, z wyjątkiem
+    zastąpienia \texttt{QLabel} obiektem klasy \texttt{QTimeEdit}. Dzięki temu użytkownik będzie mógł
+    w łatwy sposób wprowadzić żądaną wartość czasu do odmierzenia.
+
+    Ostatni element programu - budzik - będzie składał się z centralnie umieszczonej listy alarmów
+    \texttt{QListWidget}. Pod nią, na dole okna, znajdować się będą przyciski dodania ("Dodaj nowy alarm") i usunięcia ("Usuń alarm") zgrupowane przez
+    \texttt{QVBoxLayout}. Całość zamknięta będzie w \texttt{QVBoxLayout}. Warto wspomnieć, że do wyświetlania komunikatu o włączeniu się alarmu wykorzystywany będzie
+    \texttt{QMessageBox}. Zawierać on będzie przycisk \texttt{QPushButton} "Zamknij" oraz obiekt \texttt{QLabel} wyświetlający godzinę alarmu.
+    Do edycji oraz dodania nowego budzika posłuży obiekt \texttt{QDialog}. W nim, znajdować się będzie pole \texttt{QTimeEdit} umożliwiające zmianę godziny budzika,
+    pola \texttt{QCheckBox} służące aktywacji alarmu w określone dni tygodnia oraz włączenie alarmu, na samym dole będą natomiast przyciski \texttt{QPushButton} "Zapisz"
+    oraz "Anuluj". Przyciski zgrupowane zostaną z użyciem \texttt{QHBoxLayout}, natomiast wszystkie obiekty z użyciem \texttt{QVBoxLayout}.
+
+    Za odliczanie czasu, zarówno dla budzika jak i stopera oraz minutnika odpowiedzialny będzie \texttt{QTimer}.
+
+    Na samej górze okna, powyżej paska zakładek, znajdować się będzie pasek \texttt{QMenuBar}. 
+    Będzie on oferował dwie aktywności \texttt{QAction}: Przycisk "Plik" z przyciskiem "Wyjdź" znajdującym się na wysuniętej liście lub
+    wyświetlenie krótkiego opisu aplikacji (przycisk "O aplikacji") w formie nowego okna z jednym przyciskiem "Ok".
+
+    \section{Projekt interfejsu graficznego - \texttt{PyGTK3}}
+    Implementacja z użyciem biblioteki \texttt{PyGTK3} oparta będzie o klasę \texttt{Gtk.Window}.
+    Na górze okna stworzony zostanie \texttt{Gtk.Notebook}, w którym umieszczane będą kolejne zakładki.
+    Przełączenie pomiędzy zakładkami następować będzie przez naciśnięcie wybranej zakładki. Aktualnie wybrana
+    zakładka będzie wyróżniona.
+
+    Pierwszą z nich będzie wspomniany wcześniej zegar. Na środku okna znajdować się będzie obiekt \texttt{Gtk.Label},
+    który wyświetlać będzie czas. Na dole okna umieszczona zostanie lista rozwijana z dostępnymi strefami czasowymi 
+    \texttt{pytz.common\_timezones} w formie \texttt{Gtk.ComboBoxText}. Wszystkie obiekty tej zakładki zostaną zamknięte
+    w \texttt{Gtk.Box(orientation=Gtk.Orientation.VERTICAL)}
+
+    \texttt{Gtk\.box} stoper będzie wyświetlać czas w formie \texttt{Gtk.Label}. Przyciski sterujące
+    pomiarem umieszczone poniżej będą instancjami klasy \texttt{Gtk.Button}. Przyciski "Rozpocznij", "Zatrzymaj" oraz "Wyczyść",
+    celem zgrupowania ich na dole okna będą znajdować się w osobnym kontenerze
+    \texttt{Gtk.Box(orientation=Gtk.Orientation.VERTICAL)}. Wszystkie
+    elementy będą dodane do wspólnego dla tej zakładki obiektu
+    \texttt{Gtk.Box(orientation=Gtk.Orientation.VERTICAL)}.
+
+    Trzecia funkcjonalność - minutnik - będzie zrealizowana identycznie jak stoper, z wyjątkiem
+    zastąpienia \texttt{Gtk.Label} obiektem klasy \texttt{Gtk.Entry}. Dzięki temu użytkownik będzie mógł
+    w łatwy sposób wprowadzić żądaną wartość czasu do odmierzenia.
+
+    Ostatni element programu - budzik - będzie składał się z centralnie umieszczonej listy alarmów
+    \texttt{Gtk.ListBox}. Pod nią, na dole okna, znajdować się będą przyciski dodania ("Dodaj nowy alarm") i usunięcia ("Usuń alarm") zgrupowane przez
+    \texttt{Gtk.Box(orientation=Gtk.Orientation.VERTICAL)}. Całość zamknięta będzie w
+    \texttt{Gtk.Box(orientation=Gtk.Orientation.VERTICAL)}. Warto wspomnieć, że do wyświetlania komunikatu o włączeniu się alarmu wykorzystywany będzie
+    \texttt{Gtk.MessageDialog}. Zawierać on będzie przycisk \texttt{Gtk.Button} "Zamknij" oraz obiekt \texttt{Gtk.Label} wyświetlający godzinę alarmu.
+    Do edycji oraz dodania nowego budzika posłuży obiekt \texttt{Gtk.Dialog}. W nim, znajdować się będzie pole \texttt{Gtk.Entry} umożliwiające zmianę godziny budzika,
+    pola \texttt{Gtk.CheckButton} służące aktywacji alarmu w określone dni tygodnia oraz włączenie alarmu, na samym dole będą natomiast przyciski \texttt{Gtk.Button} "Zapisz"
+    oraz "Anuluj". Wszystkie obiekty zostaną zgrupowane z użyciem \texttt{Gtk.Grid}.
+
+    Za odliczanie czasu, zarówno dla budzika jak i stopera oraz minutnika odpowiedzialna będzie funkcja \texttt{GLib.timeout\_add\_seconds}.
+
+    Na samej górze okna znajdować się będzie pasek \texttt{Gtk.Menu}. Będzie on oferował dwa elementy \texttt{Gtk.MenuItem}:
+    Przycisk "Plik" z przyciskiem "Wyjdź" znajdującym się na wysuniętej liście lub wyświetlenie krótkiego opisu aplikacji (przycisk "O aplikacji")
+    w formie nowego okna z jednym przyciskiem "Ok"..
+
+\end{document}
