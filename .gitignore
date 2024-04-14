@@ -20,3 +20,6 @@ jezyki_skryptowe/proj2/cpython
 *.a
 *.so
 build/
+
+# Code editors
+.vscode
