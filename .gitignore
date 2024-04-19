@@ -14,6 +14,7 @@
 # Python
 __pycache__
 jezyki_skryptowe/proj2/cpython
+*.h5
 
 # C
 *.out
