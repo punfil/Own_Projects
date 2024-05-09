@@ -15,6 +15,7 @@
 __pycache__
 jezyki_skryptowe/proj2/cpython
 *.h5
+flowers-recognition
 
 # C
 *.out
