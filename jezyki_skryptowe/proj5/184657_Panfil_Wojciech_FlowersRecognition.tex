@@ -1,0 +1,165 @@
+\documentclass[11pt]{article}
+\usepackage[a4paper, margin=2.5cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{polski}
+\usepackage{babel}
+\usepackage{indentfirst}
+\usepackage{listings}
+\usepackage[colorlinks=true, urlcolor=blue, linkcolor=red]{hyperref}
+\usepackage[document]{ragged2e}
+\lstset{
+	frame=l,
+	basicstyle=\ttfamily,
+	numbers=left,
+	texcl=false,
+	tabsize=1,
+	breaklines=true,
+	postbreak=\mbox{{$\hookrightarrow$}\space}
+}
+\sloppy
+
+\title{
+	\textbf{Języki skryptowe i ich zastosowania}\\
+	Zadanie nr 5: Sieci neuronowe - rozpoznawanie kwiatów}
+
+\author{Wojciech Panfil, 184657}
+
+\date{15 maja 2024}
+
+\begin{document}
+	\maketitle
+
+	\section{Problem}
+	Niniejszy projekt podejmuje problem rozpoznawania kwiatów. Polega on na określeniu
+	gatunku kwiata, który widnieje na zdjęciu. Jego realizację można podzielić na następujące etapy:
+	\begin{itemize}
+		\item Pobranie gotowego zbioru 4242 oznakowanych zdjęć kwiatów oraz podział na zbiory treningowe, walidacyjne oraz testowe.
+		\item Stworzenie konwolucyjnej sieci neuronowej.
+		\item Trening sieci neuronowej.
+		\item Ocena jakości uzyskanej sieci używając przygotowanego wcześniej zbioru testowego.
+	\end{itemize}
+
+	W kolejnych częściach sprawozdania szerzej omawiane będą poszczególne części projektu.
+
+	\section{Generowanie danych}
+	Niniejszy projekt wykorzystuje do trenowania, walidowania oraz oceny jakości sieci gotowego
+	zbioru danych \href{https://www.kaggle.com/datasets/alxmamaev/flowers-recognition}{flowers-recognition dostępnego na platformie Kaggle},
+	który zawiera 4242 oznakowane zdjęcia kwiatów:
+	\begin{itemize}
+		\item 764 zdjęcia stokrotek,
+		\item 1052 zdjęcia mniszków,
+		\item 784 zdjęcia róż,
+		\item 733 zdjęcia słoneczników,
+		\item 984 zdjęcia tulipanów.
+	\end{itemize}
+	Podział na zbiory treningowe, walidacyjne oraz testowe został wykonany samodzielnie w proporcji 8:1:1 w sposób losowy
+	(używając funkcji randomsplit())
+
+	\section{Przekształcenia danych wejściowych}
+	Opracowany w ramach projektu program samodzielnie pobiera wymagane zdjęcia z platformy Kaggle używając modułu
+	opendatasets. Mając pobrane zdjęcia dokonuje podziału ich na dane treningowe, walidacyjne oraz testowe zgodnie z 
+	przedstawioną powyżej proporcją.
+	Następnie, każde zdjęcie otwierane jest za pomocą funkcji open() z biblioteki narzędzi do obrazów Python'a (PIL).
+	Otwarte zdjęcie jest najpierw konwertowane do modelu kolorów RGB. Następnie, wykorzystując bibliotekę torchvision
+	tworzona jest sekwencja (T.Compose()) przekształceń, które są wykonywane na obrazie:
+	\begin{itemize}
+		\item T.Resize() - rozmiar obrazu jest zmieniany do 64x64 pikseli.
+			Transformacja pozwala na dostosowanie rozmiaru obrazów wejściowych do formatu oczekiwanego
+			przez sieć neuronową. Domyślnie zdjęcia mają różną wielkość i różny format.
+		\item T.RandomCrop() - obraz jest losowo przycinany do rozmiaru 64x64 z dodatkowym dopełnieniem o wartości czterech pikseli w trybie odbicia lustrzanego.
+			Krok ten pozwala na zwiększenie różnorodności danych (sieć uczy się obiekty w różnych kontekstach) oraz zmniejszenie wrażliwości na położenie obiektu na obrazie.
+		\item T.RandomHorizontalFlip() - obraz jest odbijany w poziomie, co zwiększa różnorodność danych treningowych,
+			zwiększa odporność na symetrię oraz poprawia generalizację (zdolność sieci do generalizacji nowych danych o różnych orientacjach).
+		\item T.ColorJitter() - losowo zmieniana jest wartość jasności, kontrastu, nasycenia oraz odcienia w zakresie [-0.1;+0.1]. Dla trzech pierwszych wartości oznacza to
+			zwiększenie lub zmniejszenie wartości piksela o do 10\%, natomiast dla tej ostatniej o do 10 stopni. W ten sposób tworzymy zróżnicowane warianty obrazów treningowych,
+			co pomaga w lepszym uczeniu sieci neuronowej na różnych wariantach danych. Jest to przydatne, ponieważ obiekty mogą występować w różnych warunkach oświetleniowych,
+			tła i innych czynników, które mogą wpływać na wygląd obrazu. Ta augmentacja danych pomaga sieci neuronowej nauczyć się rozpoznawania obiektów w różnych warunkach,
+			co przekłada się na lepszą generalizację do nowych danych testowych.
+		\item T.ToTensor() - Konwersja obrazu na tensor 
+		\item T.Normalize() - Normalizacja wartości pikseli obrazu na podstawie średnich i odchyleń standardowych. W tym przypadku są to krotki (0.485, 0.456, 0.406), (0.229, 0.224, 0.225).
+			Pierwsza krotka zawiera średnie wartości dla każdego kanału kolorów (czerwony, zielony, niebieski), natomiast druga zawiera odchylenia standardowe dla każdego kanału kolorów w zbiorze danych.
+			Wartości te pochodzą z \href{https://pytorch.org/vision/stable/models.html}{dokumentacji framework'a PyTorch dla modeli przetrenowanych}.
+	\end{itemize}
+
+	\section{Architektura sieci}
+	Architektura sieci wygląda następująco:
+
+	\begin{lstlisting}[language=Python, caption={Implementacja w języku Python},captionpos=b]
+	import torch.nn as nn
+	import torch.nn.functional as F
+
+	def accuracy(outputs, labels):
+		_, preds = torch.max(outputs, dim=1)
+		return torch.tensor(torch.sum(preds == labels).item() / len(preds))
+
+	def conv_block(in_channels, out_channels, pool=False):
+		layers = [nn.Conv2d(in_channels, out_channels, kernel_size=3, padding=1), 
+				nn.BatchNorm2d(out_channels), 
+				nn.ReLU(inplace=True)]
+		if pool: layers.append(nn.MaxPool2d(2))
+		return nn.Sequential(*layers)
+
+	class ImageClassification(nn.Module):
+		def __init__(self, in_channels, num_classes):
+			super().__init__()
+			
+			self.conv1 = conv_block(in_channels, 64)
+			self.conv2 = conv_block(64, 128, pool=True)   
+			self.res1 = nn.Sequential(conv_block(128, 128), conv_block(128, 128))
+			
+			self.conv3 = conv_block(128, 256, pool=True)
+			self.conv4 = conv_block(256, 512, pool=True)    
+			self.res2 = nn.Sequential(conv_block(512, 512), conv_block(512, 512))   
+			
+			self.classifier = nn.Sequential(nn.AdaptiveMaxPool2d(1),
+											nn.Flatten(),     
+											nn.Dropout(0.2),
+											nn.Linear(512, num_classes))    
+			
+		def training_step(self, batch):
+			images, labels = batch
+			out = self(images)
+			loss = F.cross_entropy(out, labels)
+			return loss
+
+		def validation_step(self, batch):
+			images, labels = batch
+			out = self(images)
+			loss = F.cross_entropy(out, labels)
+			acc = accuracy(out, labels)
+			return {'val_loss': loss.detach(), 'val_acc': acc}
+
+		def validation_epoch_end(self, outputs):
+			batch_losses = [x['val_loss'] for x in outputs]
+			epoch_loss = torch.stack(batch_losses).mean()
+			batch_accs = [x['val_acc'] for x in outputs]
+			epoch_acc = torch.stack(batch_accs).mean()
+			return {'val_loss': epoch_loss.item(), 'val_acc': epoch_acc.item()}
+
+		def epoch_end(self, epoch, result):
+			print("Epoch [{}],{} train_loss: {:.4f}, val_loss: {:.4f}, val_acc: {:.4f}".format(
+				epoch, "last_lr: {:.5f},".format(result['lrs'][-1]) if 'lrs' in result else '', 
+				result['train_loss'], result['val_loss'], result['val_acc']))
+			
+		def forward(self, xb):
+			out = self.conv1(xb)
+			out = self.conv2(out)
+			out = self.res1(out) + out
+			out = self.conv3(out)
+			out = self.conv4(out)
+			out = self.res2(out) + out
+			out = self.classifier(out)
+			return out
+	\end{lstlisting}
+
+	Jak widać na powyższym listingu, sieć składa się z:
+
+
+	
+
+	\section{Hiperparametry}
+
+	\section {Jakość uzyskanej sieci}
+	Uzyskana sieć została poddana ocenie na wydzielonym wcześniej zbiorze danych testowych.
+	Na tym zbiorze sieć uzyskała dokładność 77\%.
+\end{document}
