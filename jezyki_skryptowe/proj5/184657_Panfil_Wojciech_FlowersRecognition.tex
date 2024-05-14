@@ -52,7 +52,7 @@
 		\item 733 zdjęcia słoneczników,
 		\item 984 zdjęcia tulipanów.
 	\end{itemize}
-	Podział na zbiory treningowe, walidacyjne oraz testowe został wykonany ręcznie w proporcji 8:1:1 w sposób losowy
+	Podział na zbiory treningowe, walidacyjne oraz testowe został wykonany ręcznie w proporcji $8$:$1$:$1$ w sposób losowy
 	(używając funkcji \texttt{random\_split()}) biblioteki \texttt{PyTorch}.
 
 	\section{Przekształcenia danych wejściowych}
@@ -81,8 +81,10 @@
 			Wartości te pochodzą z \href{https://pytorch.org/vision/stable/models.html}{dokumentacji framework'a \texttt{PyTorch} dla modeli przetrenowanych}.
 	\end{itemize}
 
+	Każdy obraz był reprezentowany jako krotka zawierająca tensor reprezentujący obraz oraz etykietę określającą numer klasy, do której on należy.
+
 	\section{Architektura sieci}
-	Architektura sieci wygląda następująco:
+	Na potrzeby zadania zaimplementowana została sieć konwolucyjna. Jej architektura sieci wygląda następująco:
 
 	\begin{lstlisting}[language=Python, caption={Implementacja sieci},captionpos=b]
 	import torch.nn as nn
