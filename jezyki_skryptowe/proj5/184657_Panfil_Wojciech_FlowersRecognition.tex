@@ -53,7 +53,7 @@
 		\item 984 zdjęcia tulipanów.
 	\end{itemize}
 	Podział na zbiory treningowe, walidacyjne oraz testowe został wykonany ręcznie w proporcji 8:1:1 w sposób losowy
-	(używając funkcji \texttt{randomsplit()})
+	(używając funkcji \texttt{random\_split()}) biblioteki \texttt{PyTorch}.
 
 	\section{Przekształcenia danych wejściowych}
 	Opracowany w ramach projektu program samodzielnie pobiera wymagane zdjęcia z platformy Kaggle używając modułu
@@ -63,20 +63,20 @@
 	Otwarte zdjęcie jest najpierw konwertowane do modelu barw RGB. Następnie, wykorzystując bibliotekę \texttt{torchvision}
 	tworzona jest sekwencja (\texttt{T.Compose()}) przekształceń, które są wykonywane na obrazie:
 	\begin{itemize}
-		\item \texttt{T.Resize()} - rozmiar obrazu jest zmieniany do 64x64 pikseli.
+		\item \texttt{T.Resize()} - rozmiar obrazu jest zmieniany do $64$x$64$ pikseli.
 			Transformacja pozwala na dostosowanie rozmiaru obrazów wejściowych do formatu oczekiwanego
 			przez sieć neuronową. Domyślnie zdjęcia mają różną wielkość i różny format.
 		\item \texttt{T.RandomCrop()} - obraz jest losowo przycinany do rozmiaru 64x64 z dodatkowym dopełnieniem o wartości czterech pikseli w trybie odbicia lustrzanego.
-			Krok ten pozwala na zwiększenie różnorodności danych (sieć uczy się obiekty w różnych kontekstach) oraz zmniejszenie wrażliwości na położenie obiektu na obrazie.
+			Krok ten pozwala na zwiększenie różnorodności danych (sieć uczy się rozpoznawać obiekty w różnych kontekstach) oraz zmniejszenie wrażliwości na położenie obiektu na obrazie.
 		\item \texttt{T.RandomHorizontalFlip()} - obraz jest odbijany w poziomie, co zwiększa różnorodność danych treningowych,
 			zwiększa odporność na symetrię oraz poprawia generalizację (zdolność sieci do generalizacji nowych danych o różnych orientacjach).
-		\item \texttt{T.ColorJitter()} - losowo zmieniana jest wartość jasności, kontrastu, nasycenia oraz odcienia w zakresie [-0.1;+0.1]. Dla trzech pierwszych wartości oznacza to
-			zwiększenie lub zmniejszenie wartości piksela o do 10\%, natomiast dla tej ostatniej o do 10 stopni. W ten sposób tworzymy zróżnicowane warianty obrazów treningowych,
+		\item \texttt{T.ColorJitter()} - losowo zmieniana jest wartość jasności, kontrastu, nasycenia oraz odcienia w zakresie \([-0.1, 0.1]\). Dla trzech pierwszych wartości oznacza to
+			zwiększenie lub zmniejszenie wartości piksela o do $10\%$, natomiast dla tej ostatniej o do 10 stopni. W ten sposób tworzymy zróżnicowane warianty obrazów treningowych,
 			co pomaga w lepszym uczeniu sieci neuronowej na różnych wariantach danych. Jest to przydatne, ponieważ obiekty mogą występować w różnych warunkach oświetleniowych,
 			tła i innych czynników, które mogą wpływać na wygląd obrazu. Ta augmentacja danych pomaga sieci neuronowej nauczyć się rozpoznawania obiektów w różnych warunkach,
 			co przekłada się na lepszą generalizację do nowych danych testowych.
-		\item \texttt{T.ToTensor()} - Konwersja obrazu na tensor 
-		\item \texttt{T.Normalize()} - Normalizacja wartości pikseli obrazu na podstawie średnich i odchyleń standardowych. W tym przypadku są to krotki (0.485, 0.456, 0.406), (0.229, 0.224, 0.225).
+		\item \texttt{T.ToTensor()} - Konwersja obrazu na tensor.
+		\item \texttt{T.Normalize()} - Normalizacja wartości pikseli obrazu na podstawie średnich i odchyleń standardowych. W tym przypadku są to krotki ($0.485$, $0.456$, $0.406$), ($0.229$, $0.224$, $0.225$).
 			Pierwsza krotka zawiera średnie wartości dla każdego kanału kolorów (czerwony, zielony, niebieski), natomiast druga zawiera odchylenia standardowe dla każdego kanału kolorów w zbiorze danych.
 			Wartości te pochodzą z \href{https://pytorch.org/vision/stable/models.html}{dokumentacji framework'a \texttt{PyTorch} dla modeli przetrenowanych}.
 	\end{itemize}
@@ -161,34 +161,34 @@
 		\item Pomiędzy drugim a trzecim, a także po czwartym bloku konwolucyjnym znajdują się bloki rezydualne. Każdy
 			z nich składa się z dwóch kolejnych bloków konwolucyjnych.
 		\item Po przetworzeniu danych przez bloki konwolycjne i rezydualne, dane są podawane do warstwy klasyfikacji.
-			Składa się ona z warstwy adaptacyjnego max-poolingu, warstwy spłaszczającej (Flatten), warstwy dropoutu z prawdopodobieństwem 0.2
-			oraz warstwy liniowej, która przekształca cechy obrazu w logity klasyfikacyjne.
+			Składa się ona z warstwy adaptacyjnego max-poolingu, warstwy spłaszczającej, warstwy dropoutu z prawdopodobieństwem 0.2
+			oraz warstwy liniowej, która przekształca cechy obrazu w wektor o długości odpowiadającej liczbie klas. Pozwala ona na łatwą interpretację stopnia przynależności.
 		\item Oprócz warstw modelu, klasa \texttt{ImageClassification} zawiera również metody pomocnicze do obliczania funkcji straty podczas treningu,
-			oceny wyników walidacji oraz wypisywania podsumowania epoki.
+			oceny wyników walidacji oraz wypisania podsumowania epoki.
 	\end{enumerate}
 
 	\section{Hiperparametry}
 	\begin{enumerate}
-		\item Współczynnik dropoutu wynoszący 0.2 jest zastosowany przed warstwą liniową w warstwie klasyfikacji.
+		\item Współczynnik dropoutu wynoszący $0.2$ jest zastosowany przed warstwą liniową w warstwie klasyfikacji.
 			Wartość ta określa prawdopodobieństwo wyzerowania aktywacji podczas treningu, co pomaga w regularyzacji modelu, zapobiegając przeuczeniu.
 		\item Funkcja kosztu/błędu to entropia krzyżowa, używana do obliczania straty między predykcjami modelu, a etykietami
 			rzeczywistymi podczas treningu. Jest to standardowa funkcja kosztu stosowana w problemach klasyfikacji.
-		\item Rozmiar wsadu wynosi 64. Jest to liczba przykładów treningowych przetwarzanych jednocześnie podczas jednej iteracji treningu.
+		\item Rozmiar wsadu wynosi $64$. Jest to liczba przykładów treningowych przetwarzanych jednocześnie podczas jednej iteracji treningu.
 		\item Współczynnik uczenia się nie jest stały. Z uwagi na wykorzystanie optymalizatora Adam, współczynnik ten jest zmienny między iteracjami. 
 			Optymalizator Adam dostosowuje współczynnik uczenia się dla każdego parametru w modelu na podstawie obliczonych gradientów, co pomaga w osiągnięciu lepszej konwergencji podczas treningu.
-			Początkowa wartość współczynnika wynosi domyślne 0.001.
-		\item Eksperymentalnie dobrana liczba epok wynosi 10. Wartość ta pozwala na wytrenowanie modelu do osiągnięcia satysfakcjonujących wyników, jednocześnie z uwagi na wykorzystanie CPU, pozwoliła na 
+			Początkowa wartość współczynnika wynosi domyślne $0.001$.
+		\item Eksperymentalnie dobrana liczba epok wynosi $10$. Wartość ta pozwala na wytrenowanie modelu do osiągnięcia satysfakcjonujących wyników, jednocześnie z uwagi na wykorzystanie CPU, pozwoliła na 
 			krótki czas wykonania programu. Dodanie kolejnych epok powodowało spadek jakości sieci wskutek przetrenowania.
 	\end{enumerate}
 
 	Strojenie parametrów odbywało się na zasadzie Grid Search. Przeprowadzone zostały próbne treningi modelu na różnych kombinacjach hiperparametrów, a następnie nastąpił wybór kombinacji,
-	która osiągnęła najlepsze wyniki. Wartości te były dodatkowo porównywane z ogólno dostępnymi implementacjami CNN do rozpoznawania obiektów.
+	która osiągnęła najlepsze wyniki. Wartości te były dodatkowo porównywane z ogólno dostępnymi implementacjami \texttt{CNN} do rozpoznawania obiektów.
 
 	\section {Jakość uzyskanej sieci}
 	Jakość uzyskanej sieci została zmierzona jako wartość dokładności rozpoznawania po ostatniej epoce. Uzyskano dokładność:
 	\begin{itemize}
-		\item 76\% dla zbioru danych treningowych
-		\item 74\% dla zbioru danych walidacyjnych
-		\item 77\% dla zbioru danych testowych
+		\item $76\%$ dla zbioru danych treningowych
+		\item $74\%$ dla zbioru danych walidacyjnych
+		\item $77\%$ dla zbioru danych testowych
 	\end{itemize}
 \end{document}
