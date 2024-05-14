@@ -22,7 +22,7 @@
 	\textbf{Języki skryptowe i ich zastosowania}\\
 	Zadanie nr 5: Sieci neuronowe - rozpoznawanie kwiatów}
 
-\author{Wojciech Panfil, 184657}
+\author{Wojciech Panfil, $184657$}
 
 \date{15 maja 2024}
 
@@ -33,7 +33,7 @@
 	Niniejszy projekt podejmuje problem rozpoznawania kwiatów. Polega on na określeniu
 	gatunku kwiata, który widnieje na zdjęciu. Jego realizację można podzielić na następujące etapy:
 	\begin{itemize}
-		\item Pobranie gotowego zbioru 4242 oznakowanych zdjęć kwiatów oraz podział na zbiory treningowe, walidacyjne oraz testowe.
+		\item Pobranie gotowego zbioru $4242$ oznakowanych zdjęć kwiatów oraz podział na zbiory treningowe, walidacyjne oraz testowe.
 		\item Stworzenie konwolucyjnej sieci neuronowej.
 		\item Trening sieci neuronowej.
 		\item Ocena jakości uzyskanej sieci używając przygotowanego wcześniej zbioru testowego.
@@ -44,13 +44,13 @@
 	\section{Generowanie danych}
 	Niniejszy projekt wykorzystuje do trenowania, walidacji oraz testowania sieci gotowy
 	zbiór danych \href{https://www.kaggle.com/datasets/alxmamaev/flowers-recognition}{flowers-recognition dostępny na platformie Kaggle},
-	który zawiera 4242 oznakowane zdjęcia kwiatów, w tym:
+	który zawiera $4242$ oznakowane zdjęcia kwiatów, w tym:
 	\begin{itemize}
-		\item 764 zdjęcia stokrotek,
-		\item 1052 zdjęcia mniszków,
-		\item 784 zdjęcia róż,
-		\item 733 zdjęcia słoneczników,
-		\item 984 zdjęcia tulipanów.
+		\item $764$ zdjęcia stokrotek,
+		\item $1052$ zdjęcia mniszków,
+		\item $784$ zdjęcia róż,
+		\item $733$ zdjęcia słoneczników,
+		\item $984$ zdjęcia tulipanów.
 	\end{itemize}
 	Podział na zbiory treningowe, walidacyjne oraz testowe został wykonany ręcznie w proporcji $8$:$1$:$1$ w sposób losowy
 	(używając funkcji \texttt{random\_split()}) biblioteki \texttt{PyTorch}.
@@ -155,19 +155,14 @@
 			return out
 	\end{lstlisting}
 
-	Jak widać na powyższym listingu, sieć składa się z:
-	\begin{enumerate}
-		\item Czterech bloków konwolucyjnych, z których każdy zawiera warstwę konwolucyjną, warstwę normalizacji
-			wsadowej oraz funkcję aktywacji \texttt{ReLU}. Bloki te wykorzystują jądro o rozmiarze 3x3 z dopełnieniem o wartości 1
-			co zapewnia zachowanie wymiarów obrazu po każdej konwolucji.
-		\item Pomiędzy drugim a trzecim, a także po czwartym bloku konwolucyjnym znajdują się bloki rezydualne. Każdy
-			z nich składa się z dwóch kolejnych bloków konwolucyjnych.
-		\item Po przetworzeniu danych przez bloki konwolycjne i rezydualne, dane są podawane do warstwy klasyfikacji.
-			Składa się ona z warstwy adaptacyjnego max-poolingu, warstwy spłaszczającej, warstwy dropoutu z prawdopodobieństwem 0.2
-			oraz warstwy liniowej, która przekształca cechy obrazu w wektor o długości odpowiadającej liczbie klas. Pozwala ona na łatwą interpretację stopnia przynależności.
-		\item Oprócz warstw modelu, klasa \texttt{ImageClassification} zawiera również metody pomocnicze do obliczania funkcji straty podczas treningu,
-			oceny wyników walidacji oraz wypisania podsumowania epoki.
-	\end{enumerate}
+	Jak widać na powyższym listingu, sieć składa się z czterech bloków konwolucyjnych, z których każdy zawiera warstwę konwolucyjną, warstwę normalizacji
+	wsadowej oraz funkcję aktywacji \texttt{ReLU}. Bloki te wykorzystują jądro o rozmiarze $3$x$3$ z dopełnieniem o wartości $1$
+	co zapewnia zachowanie wymiarów obrazu po każdej konwolucji. Pomiędzy drugim a trzecim, a także po czwartym bloku konwolucyjnym znajdują się bloki rezydualne. Każdy
+	z nich składa się z dwóch kolejnych bloków konwolucyjnych. Po przetworzeniu danych przez bloki konwolucjne i rezydualne, dane są przekazywane do warstwy klasyfikacji.
+	Składa się ona z warstwy adaptacyjnego max-poolingu, warstwy spłaszczającej, warstwy dropoutu z prawdopodobieństwem $0.2$
+	oraz warstwy liniowej, która przekształca cechy obrazu w wektor o długości odpowiadającej liczbie klas. Pozwala ona na łatwą interpretację stopnia przynależności.
+	Oprócz warstw modelu, klasa \texttt{ImageClassification} zawiera również metody pomocnicze do obliczania funkcji straty podczas treningu,
+	oceny wyników walidacji oraz wypisania podsumowania epoki.
 
 	\section{Hiperparametry}
 	\begin{enumerate}
@@ -179,7 +174,7 @@
 		\item Współczynnik uczenia się nie jest stały. Z uwagi na wykorzystanie optymalizatora Adam, współczynnik ten jest zmienny między iteracjami. 
 			Optymalizator Adam dostosowuje współczynnik uczenia się dla każdego parametru w modelu na podstawie obliczonych gradientów, co pomaga w osiągnięciu lepszej konwergencji podczas treningu.
 			Początkowa wartość współczynnika wynosi domyślne $0.001$.
-		\item Eksperymentalnie dobrana liczba epok wynosi $10$. Wartość ta pozwala na wytrenowanie modelu do osiągnięcia satysfakcjonujących wyników, jednocześnie z uwagi na wykorzystanie CPU, pozwoliła na 
+		\item Eksperymentalnie dobrana liczba epok wynosi $10$. Wartość ta pozwala na wytrenowanie modelu do osiągnięcia satysfakcjonujących wyników, jednocześnie, z uwagi na wykorzystanie, CPU, pozwoliła na 
 			krótki czas wykonania programu. Dodanie kolejnych epok powodowało spadek jakości sieci wskutek przetrenowania.
 	\end{enumerate}
 
@@ -187,7 +182,7 @@
 	która osiągnęła najlepsze wyniki. Wartości te były dodatkowo porównywane z ogólno dostępnymi implementacjami \texttt{CNN} do rozpoznawania obiektów.
 
 	\section {Jakość uzyskanej sieci}
-	Jakość uzyskanej sieci została zmierzona jako wartość dokładności rozpoznawania po ostatniej epoce. Uzyskano dokładność:
+	Jakość uzyskanej sieci została zmierzona jako dokładność rozpoznawania po ostatniej epoce, która wyniosła:
 	\begin{itemize}
 		\item $76\%$ dla zbioru danych treningowych
 		\item $74\%$ dla zbioru danych walidacyjnych
