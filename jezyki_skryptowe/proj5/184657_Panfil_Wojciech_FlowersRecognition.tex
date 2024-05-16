@@ -1,0 +1,191 @@
+\documentclass[11pt]{article}
+\usepackage[a4paper, margin=2.5cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{polski}
+\usepackage{babel}
+\usepackage{indentfirst}
+\usepackage{listings}
+\usepackage[colorlinks=true, urlcolor=blue, linkcolor=red]{hyperref}
+\usepackage[document]{ragged2e}
+\lstset{
+	frame=l,
+	basicstyle=\ttfamily,
+	numbers=left,
+	texcl=false,
+	tabsize=1,
+	breaklines=true,
+	postbreak=\mbox{{$\hookrightarrow$}\space}
+}
+\sloppy
+
+\title{
+	\textbf{Języki skryptowe i ich zastosowania}\\
+	Zadanie nr 5: Sieci neuronowe - rozpoznawanie kwiatów}
+
+\author{Wojciech Panfil, $184657$}
+
+\date{15 maja 2024}
+
+\begin{document}
+	\maketitle
+
+	\section{Problem}
+	Niniejszy projekt podejmuje problem rozpoznawania kwiatów. Polega on na określeniu
+	gatunku kwiata, który widnieje na zdjęciu. Jego realizację można podzielić na następujące etapy:
+	\begin{itemize}
+		\item Pobranie gotowego zbioru $4242$ oznakowanych zdjęć kwiatów oraz podział na zbiory treningowe, walidacyjne oraz testowe.
+		\item Stworzenie konwolucyjnej sieci neuronowej.
+		\item Trening sieci neuronowej.
+		\item Ocena jakości uzyskanej sieci używając przygotowanego wcześniej zbioru testowego.
+	\end{itemize}
+
+	W kolejnych częściach sprawozdania szerzej omawiane będą poszczególne części projektu.
+
+	\section{Generowanie danych}
+	Niniejszy projekt wykorzystuje do trenowania, walidacji oraz testowania sieci gotowy
+	zbiór danych \href{https://www.kaggle.com/datasets/alxmamaev/flowers-recognition}{flowers-recognition dostępny na platformie Kaggle},
+	który zawiera $4242$ oznakowane zdjęcia kwiatów, w tym:
+	\begin{itemize}
+		\item $764$ zdjęcia stokrotek,
+		\item $1052$ zdjęcia mniszków,
+		\item $784$ zdjęcia róż,
+		\item $733$ zdjęcia słoneczników,
+		\item $984$ zdjęcia tulipanów.
+	\end{itemize}
+	Podział na zbiory treningowe, walidacyjne oraz testowe został wykonany ręcznie w proporcji $8$:$1$:$1$ w sposób losowy
+	(używając funkcji \texttt{random\_split()}) biblioteki \texttt{PyTorch}.
+
+	\section{Przekształcenia danych wejściowych}
+	Opracowany w ramach projektu program samodzielnie pobiera wymagane zdjęcia z platformy Kaggle używając modułu
+	opendatasets. Mając pobrane zdjęcia dokonuje podziału ich na dane treningowe, walidacyjne oraz testowe zgodnie z 
+	przedstawioną powyżej proporcją.
+	Następnie, każde zdjęcie otwierane jest za pomocą funkcji \texttt{open()} z biblioteki narzędzi do obrazów Python'a \texttt{PIL}.
+	Otwarte zdjęcie jest najpierw konwertowane do modelu barw RGB. Następnie, wykorzystując bibliotekę \texttt{torchvision}
+	tworzona jest sekwencja (\texttt{T.Compose()}) przekształceń, które są wykonywane na obrazie:
+	\begin{itemize}
+		\item \texttt{T.Resize()} - rozmiar obrazu jest zmieniany do $64$x$64$ pikseli.
+			Transformacja pozwala na dostosowanie rozmiaru obrazów wejściowych do formatu oczekiwanego
+			przez sieć neuronową. Domyślnie zdjęcia mają różną wielkość i różny format.
+		\item \texttt{T.RandomCrop()} - obraz jest losowo przycinany do rozmiaru 64x64 z dodatkowym dopełnieniem o wartości czterech pikseli w trybie odbicia lustrzanego.
+			Krok ten pozwala na zwiększenie różnorodności danych (sieć uczy się rozpoznawać obiekty w różnych kontekstach) oraz zmniejszenie wrażliwości na położenie obiektu na obrazie.
+		\item \texttt{T.RandomHorizontalFlip()} - obraz jest odbijany w poziomie, co zwiększa różnorodność danych treningowych,
+			zwiększa odporność na symetrię oraz poprawia generalizację (zdolność sieci do generalizacji nowych danych o różnych orientacjach).
+		\item \texttt{T.ColorJitter()} - losowo zmieniana jest wartość jasności, kontrastu, nasycenia oraz odcienia w zakresie \([-0.1, 0.1]\). Dla trzech pierwszych wartości oznacza to
+			zwiększenie lub zmniejszenie wartości piksela o do $10\%$, natomiast dla tej ostatniej o do 10 stopni. W ten sposób tworzymy zróżnicowane warianty obrazów treningowych,
+			co pomaga w lepszym uczeniu sieci neuronowej na różnych wariantach danych. Jest to przydatne, ponieważ obiekty mogą występować w różnych warunkach oświetleniowych,
+			tła i innych czynników, które mogą wpływać na wygląd obrazu. Ta augmentacja danych pomaga sieci neuronowej nauczyć się rozpoznawania obiektów w różnych warunkach,
+			co przekłada się na lepszą generalizację do nowych danych testowych.
+		\item \texttt{T.ToTensor()} - Konwersja obrazu na tensor.
+		\item \texttt{T.Normalize()} - Normalizacja wartości pikseli obrazu na podstawie średnich i odchyleń standardowych. W tym przypadku są to krotki ($0.485$, $0.456$, $0.406$), ($0.229$, $0.224$, $0.225$).
+			Pierwsza krotka zawiera średnie wartości dla każdego kanału kolorów (czerwony, zielony, niebieski), natomiast druga zawiera odchylenia standardowe dla każdego kanału kolorów w zbiorze danych.
+			Wartości te pochodzą z \href{https://pytorch.org/vision/stable/models.html}{dokumentacji framework'a \texttt{PyTorch} dla modeli przetrenowanych}.
+	\end{itemize}
+
+	Każdy obraz był reprezentowany jako krotka zawierająca tensor reprezentujący obraz oraz etykietę określającą numer klasy, do której on należy.
+
+	\section{Architektura sieci}
+	Na potrzeby zadania zaimplementowana została sieć konwolucyjna. Jej architektura sieci wygląda następująco:
+
+	\begin{lstlisting}[language=Python, caption={Implementacja sieci},captionpos=b]
+	import torch.nn as nn
+	import torch.nn.functional as F
+
+	def accuracy(outputs, labels):
+		_, preds = torch.max(outputs, dim=1)
+		return torch.tensor(torch.sum(preds == labels).item() / len(preds))
+
+	def conv_block(in_channels, out_channels, pool=False):
+		layers = [nn.Conv2d(in_channels, out_channels, kernel_size=3, padding=1), 
+				nn.BatchNorm2d(out_channels), 
+				nn.ReLU(inplace=True)]
+		if pool: layers.append(nn.MaxPool2d(2))
+		return nn.Sequential(*layers)
+
+	class ImageClassification(nn.Module):
+		def __init__(self, in_channels, num_classes):
+			super().__init__()
+			
+			self.conv1 = conv_block(in_channels, 64)
+			self.conv2 = conv_block(64, 128, pool=True)   
+			self.res1 = nn.Sequential(conv_block(128, 128), conv_block(128, 128))
+			
+			self.conv3 = conv_block(128, 256, pool=True)
+			self.conv4 = conv_block(256, 512, pool=True)    
+			self.res2 = nn.Sequential(conv_block(512, 512), conv_block(512, 512))   
+			
+			self.classifier = nn.Sequential(nn.AdaptiveMaxPool2d(1),
+											nn.Flatten(),     
+											nn.Dropout(0.2),
+											nn.Linear(512, num_classes))    
+			
+		def training_step(self, batch):
+        	images, labels = batch
+        	out = self(images)
+        	loss = F.cross_entropy(out, labels)
+        	acc = accuracy(out, labels)
+        	return loss, acc
+
+		def validation_step(self, batch):
+			images, labels = batch
+			out = self(images)
+			loss = F.cross_entropy(out, labels)
+			acc = accuracy(out, labels)
+			return {'val_loss': loss.detach(), 'val_acc': acc}
+
+		def validation_epoch_end(self, outputs):
+			batch_losses = [x['val_loss'] for x in outputs]
+			epoch_loss = torch.stack(batch_losses).mean()
+			batch_accs = [x['val_acc'] for x in outputs]
+			epoch_acc = torch.stack(batch_accs).mean()
+			return {'val_loss': epoch_loss.item(), 'val_acc': epoch_acc.item()}
+
+		def epoch_end(self, epoch, result):
+			print("Epoch [{}],{} train_loss: {:.4f}, train_acc: {:.4f}, val_loss: {:.4f}, val_acc: {:.4f}".format(
+				epoch, "last_lr: {:.5f},".format(result['lrs'][-1]) if 'lrs' in result else '', 
+				result['train_loss'], result['train_acc'], result['val_loss'], result['val_acc']))
+			
+		def forward(self, xb):
+			out = self.conv1(xb)
+			out = self.conv2(out)
+			out = self.res1(out) + out
+			out = self.conv3(out)
+			out = self.conv4(out)
+			out = self.res2(out) + out
+			out = self.classifier(out)
+			return out
+	\end{lstlisting}
+
+	Jak widać na powyższym listingu, sieć składa się z czterech bloków konwolucyjnych, z których każdy zawiera warstwę konwolucyjną, warstwę normalizacji
+	wsadowej oraz funkcję aktywacji \texttt{ReLU}. Bloki te wykorzystują jądro o rozmiarze $3$x$3$ z dopełnieniem o wartości $1$
+	co zapewnia zachowanie wymiarów obrazu po każdej konwolucji. Pomiędzy drugim a trzecim, a także po czwartym bloku konwolucyjnym znajdują się bloki rezydualne. Każdy
+	z nich składa się z dwóch kolejnych bloków konwolucyjnych. Po przetworzeniu danych przez bloki konwolucjne i rezydualne, dane są przekazywane do warstwy klasyfikacji.
+	Składa się ona z warstwy adaptacyjnego max-poolingu, warstwy spłaszczającej, warstwy dropoutu z prawdopodobieństwem $0.2$
+	oraz warstwy liniowej, która przekształca cechy obrazu w wektor o długości odpowiadającej liczbie klas. Pozwala ona na łatwą interpretację stopnia przynależności.
+	Oprócz warstw modelu, klasa \texttt{ImageClassification} zawiera również metody pomocnicze do obliczania funkcji straty podczas treningu,
+	oceny wyników walidacji oraz wypisania podsumowania epoki.
+
+	\section{Hiperparametry}
+	\begin{enumerate}
+		\item Współczynnik dropoutu wynoszący $0.2$ jest zastosowany przed warstwą liniową w warstwie klasyfikacji.
+			Wartość ta określa prawdopodobieństwo wyzerowania aktywacji podczas treningu, co pomaga w regularyzacji modelu, zapobiegając przeuczeniu.
+		\item Funkcja kosztu/błędu to entropia krzyżowa, używana do obliczania straty między predykcjami modelu, a etykietami
+			rzeczywistymi podczas treningu. Jest to standardowa funkcja kosztu stosowana w problemach klasyfikacji.
+		\item Rozmiar wsadu wynosi $64$. Jest to liczba przykładów treningowych przetwarzanych jednocześnie podczas jednej iteracji treningu.
+		\item Współczynnik uczenia się nie jest stały. Z uwagi na wykorzystanie optymalizatora Adam, współczynnik ten jest zmienny między iteracjami. 
+			Optymalizator Adam dostosowuje współczynnik uczenia się dla każdego parametru w modelu na podstawie obliczonych gradientów, co pomaga w osiągnięciu lepszej konwergencji podczas treningu.
+			Początkowa wartość współczynnika wynosi domyślne $0.001$.
+		\item Eksperymentalnie dobrana liczba epok wynosi $10$. Wartość ta pozwala na wytrenowanie modelu do osiągnięcia satysfakcjonujących wyników, jednocześnie, z uwagi na wykorzystanie, CPU, pozwoliła na 
+			krótki czas wykonania programu. Dodanie kolejnych epok powodowało spadek jakości sieci wskutek przetrenowania.
+	\end{enumerate}
+
+	Strojenie parametrów odbywało się na zasadzie Grid Search. Przeprowadzone zostały próbne treningi modelu na różnych kombinacjach hiperparametrów, a następnie nastąpił wybór kombinacji,
+	która osiągnęła najlepsze wyniki. Wartości te były dodatkowo porównywane z ogólno dostępnymi implementacjami \texttt{CNN} do rozpoznawania obiektów.
+
+	\section {Jakość uzyskanej sieci}
+	Jakość uzyskanej sieci została zmierzona jako dokładność rozpoznawania po ostatniej epoce, która wyniosła:
+	\begin{itemize}
+		\item $76\%$ dla zbioru danych treningowych
+		\item $74\%$ dla zbioru danych walidacyjnych
+		\item $77\%$ dla zbioru danych testowych
+	\end{itemize}
+\end{document}
