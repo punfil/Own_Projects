@@ -1,0 +1,107 @@
+\documentclass[11pt]{article}
+\usepackage[a4paper, margin=2.5cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{polski}
+\usepackage{babel}
+\usepackage{indentfirst}
+\usepackage{listings}
+\usepackage[colorlinks=true, urlcolor=blue, linkcolor=red]{hyperref}
+\usepackage[document]{ragged2e}
+\lstset{
+	frame=l,
+	basicstyle=\ttfamily,
+	numbers=left,
+	texcl=false,
+	tabsize=1,
+	breaklines=true,
+	postbreak=\mbox{{$\hookrightarrow$}\space}
+}
+\sloppy
+
+
+\title{
+	\textbf{Architektury głębokiego uczenia}\\
+	Analiza użycia \texttt{FaceNet} do rozpoznawania ras psów}
+
+    \author{
+        Bartosz Leśniewski, 184783
+        \and
+        Jakub Kuczys, 184***
+        \and
+        Wojciech Panfil, 184657
+      }
+
+\date{5 czerwca 2024}
+
+\begin{document}
+	\maketitle
+
+    \justify
+
+    \section{Wprowadzenie i analiza problemu badawczego}
+    Autorzy niniejszego sprawozdania postanowili podjąć się analizy systemu \texttt{FaceNet} opisanego w artykule
+    \href{https://arxiv.org/abs/1503.03832}{\texttt{FaceNet}: A Unified  Embedding for Face Recognition and Clustering}
+    w którym autorzy - Florian Schroff, Dmitry Kalenichenko oraz James Philbin podjęli się próby wykonania postępu
+    w dziedzinie rozpoznawania twarzy. Jak wspominają sami autorzy, pomimo znaczących ostatnich postępów w tej dziedzienie
+    skuteczne wdrażanie weryfikacji i rozpoznawania twarzy na dużą skalę stanowi poważne wyzwanie. Zaproponowany w artykule
+    system FaceNet pozwala na unifikację podejścia do rozpoznawania, grupowania, weryfikacji. \texttt{FaceNet} uczy się mapowania
+    obrazów twarzy do kompaktowej przestrzeni euklidesowej, w której odległości pomiędzy wektorami bezpośrednio odpowiadają
+    miarom podobieństwa twarzy.
+    Wewnętrznie, system ten wykorzystuje głęboką sieć konwolucyjną, wyszkoloną do bezpośredniej optymalizacji
+    osadzenia w przestrzeni, co stanowi różnicę w porównaniu do uprzednich podejść do tego problemu. Do trenowania, wykorzystywana jest
+    funkcja trójek składająca się z trzech twarzy, dwóch pasujących (kotwica i pozytyw) oraz jednej nie pasującej (negatywna).
+    Celem treningu jest zatem minimalizowanie odległości pomiędzy wektorami pasujących do siebie twarzy, a maksymalizacja odległości
+    do wektora odpowiadającemu niepasującej twarzy.
+
+    Zaletą takiego podejścia jest znacznie większa wydajność pamięciowa - na twarz potrzeba jedynie $128$ bajtów (FaceNet uczy się przekładać
+    twarz (embedding) na wektor w $128$ wymiarowej przestrzeni euklidesowej).
+
+    Autorom tego systemu, na popularnym zbiorze danych "Labeled Faces in The Wild" udało się uzyskać wynik $99.64\%$ dokładności,
+    co wyznaczało nowy rekord. Oznaczało to, że system obniżył poziom błędu w porównaniu do najlepszego wówczas opublikowanego wyniku o $30\%$.
+
+    Celem niniejszego projektu była próba odtworzenia eksperymentu przeprowadzonego przez inżynierów Google'a, a następnie przetestowanie
+    jego możliwości na znalezionym zestawie danych - \href{https://www.kaggle.com/datasets/wutheringwang/dog-face-recognition}{dog-face-recognition}
+    udostępnionym w serwisie Kaggle. Dodatkowo, autorzy zdecydowali się spróbować dotrenować model na mordach psów, celem sprawdzenia skuteczności
+    w rozpoznawaniu po kilkunastu epokach treningowych.
+
+    Warto wspomnieć, że istnieje wiele implementacji FaceNet dostępnych w internecie. Najbardziej popularną jest \href{https://github.com/davidsandberg/facenet}{napisana przez David'a Sandberg'a}
+    w Tensorflow, natomiast nie jest ona aktualizowana od ponad 6 lat. Do naszych eksperymentów zdecydowaliśmy się wykorzystać \href{https://github.com/timesler/facenet-pytorch}{gotową implementację FaceNet stworzoną przez Tim'a Esler'a},
+    która opiera się na framework'u \texttt{PyTorch}, ponadto jest bieżąco utrzymywana.
+    Zawiera ona nie tylko samą implementację, ale także dwa przetrenowane modele - jeden na zbiorze \href{https://paperswithcode.com/dataset/vggface2-1}{vggface2}, 
+    a drugi na zbiorze \href{https://www.kaggle.com/datasets/debarghamitraroy/casia-webface}{CasiaWebface}. Dodatkowo, zawiera ona implementację MCTCNN, który pomocny jest w wykrywaniu
+    twarzy, a następnie umożliwia docięcie zdjęcia do określonych wymiarów, tak aby była na nim wykryta twarz.
+
+    \section{Szczegółowa architektura FaceNet}
+
+    \section{Metodologia}
+
+
+    \section{Wyniki eksperymentów, dyskusja i przyszła praca}
+
+    \subsection{Reprodukcja eksperymentu zawartego w artykule - baseline}
+    Pierwszy elementem eksperymentu było uruchomienie gotowego modelu \texttt{vggface2} na wspominanym wcześniej zbiorze \texttt{LFW}.
+    W tym celu wykorzystany został \href{https://github.com/timesler/facenet-pytorch/blob/master/examples/lfw_evaluate.ipynb}{gotowy przykład dostępny w używanym repozytorium}.
+    Do ewaluacji wymagany był dodatkowo plik z parami obrazów zwany dalej \texttt{pairs.txt}, który zawierał wygenerowane pary obrazów pasujących oraz niepasujących na podstawie zdjęć zawartych
+    w zbiorze danych. Do jego wygenerowania została wykorzystana \href{https://github.com/VictorZhang2014/facenet/blob/master/mydata/generate_pairs.py}{gotowa implementacja generatora}.
+    Poprawność przytoczonego narzędzia została sprawdzona z \href{vis-www.cs.umass.edu/lfw/pairs.txt}{plikiem udostępnianym ze zbiorem LFW}.
+
+    Lokalne uruchomienie eksperymentu dało rezultat $99.28\%$ dokładności, co jest znacząco bliskie uzyskanej przez autorów artykułu wartości $99.64$\%.
+    Dzięki temu autorzy potwierdzili, że ich środowisko jest działające, w związku z czym przeszli do kolejnej części eksperymentu.
+
+    \subsection{Ewaluacja na zbiorze \texttt{dog-face-recognition}}
+
+    \subsection{Trening na zbiorze \texttt{dog-face-recognition}}
+
+    \subsection{Ponowna ewaluacja po treningu}
+
+    \subsection{Przyszła praca}
+    
+    \section{Bibliografia}
+    \begin{enumerate}
+        \item \href{https://arxiv.org/abs/1503.03832}{FaceNet: A Unified Embedding for Face Recognition and Clustering}
+        \item \href{https://en.wikipedia.org/wiki/FaceNet}{FaceNet basic information}
+        \item \href{https://arxiv.org/abs/1604.02878}{Joint Face Detection and Alignment using Multi-task Cascaded Convolutional Networks}
+        \item \href{https://medium.com/@culuma/face-recognition-with-facenet-and-mtcnn-11e77240adb6}{Face Recognition with FaceNet and MTCNN}
+        \item \href{https://www.researchgate.net/profile/De-Rosal-Ignatius-Moses-Setiadi/publication/346417651_Study_Analysis_of_Human_Face_Recognition_using_Principal_Component_Analysis/links/605a0218458515e83467c633/Study-Analysis-of-Human-Face-Recognition-using-Principal-Component-Analysis.pdf}{Face Recognition using FaceNet Survey, Performance Test, and Comparison}
+    \end{enumerate}
+\end{document}
