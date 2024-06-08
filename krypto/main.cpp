@@ -7,12 +7,12 @@ using namespace std;
 
 string n_variation(uint64_t &n, string letters, int m)
 {
-    int baseSize = static_cast<int>(letters.size());
+    int size = static_cast<int>(letters.size());
     string variation = "";
     for (int i = 0; i < m; i++)
     {
-        variation.push_back(letters[n % baseSize]);
-        n /= baseSize;
+        variation.push_back(letters[n % size]);
+        n /= size;
     }
 
     return variation;
