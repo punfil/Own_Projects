@@ -39,14 +39,37 @@ void test_hash_function() {
     BlockHashFunction bhf = BlockHashFunction(0, w, string_to_uint16t_vector(inputs[1])[0]);
     auto out = bhf.calculate_hash();
     for (const auto a: out) {
-           printf("%x ", a);
-        }
-        printf("\n");
+        printf("%x ", a);
+    }
+
+    printf("\n");
+}
+
+void test_hash_function_cin() {
+    string input;
+    getline(cin, input);
+
+    array<uint16_t, 8> w = {0};
+    auto elements = string_to_uint16t_vector(input);
+    BlockHashFunction bhf = BlockHashFunction(0, w, elements[0]);
+    auto out = bhf.calculate_hash();
+    for (unsigned long i = 1; i < elements.size(); i++) {
+        bhf = BlockHashFunction(i, out, elements[i]);
+        out = bhf.calculate_hash();
+    }
+
+    for (const auto a: out) {
+        printf("%x ", a);
+    }
+
+    printf("\n");
 }
 
 int main() {
     //initial_test();
     //cout << "Test 1 passed!" << endl;
-    test_hash_function();
+    //test_hash_function();
+    //cout << "Test 2 passed!" << endl;
+    test_hash_function_cin();
     return 0;
 }

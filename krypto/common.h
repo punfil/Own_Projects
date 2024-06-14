@@ -36,7 +36,7 @@ vector<array<uint16_t, 16>> string_to_uint16t_vector(const string str) {
 
     if (result.size() % 16 || !result.size()) {
         while (result.size() % 16) {
-            result.push_back(0x0);
+            result.push_back(0x0000);
         }
     }
 

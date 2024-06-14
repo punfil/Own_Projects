@@ -26,6 +26,7 @@ DLAA2.3.pkl
 *.a
 *.so
 build/
+*.orig
 
 # Code editors
 .vscode
