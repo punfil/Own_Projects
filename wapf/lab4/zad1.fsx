@@ -7,11 +7,11 @@ let min_server_response_time: int = 10
 [<Literal>]
 let server_down: bool = false
 [<Literal>]
-let wrong_timeout: bool = true
+let wrong_timeout: bool = false
 
-let (>>=) switch1 switch2 x =
-    match switch1 x with
-    | Ok s -> switch2 s
+let (>>=) result switch =
+    match result with
+    | Ok s -> switch s
     | Error f -> Error f
 
 type TransferBuffer = {
@@ -31,14 +31,29 @@ type Syn = {
     data: validatedTransferBuffer
 }
 
+type SynWithoutdata = {
+    syn_id: int
+    time_initiate: System.DateTime
+    response_timeout: int
+}
+
 type ReceivedSynAck = {
     syn_id: int
     data: validatedTransferBuffer
     syn_ack_received: bool
 }
 
+type ReceivedSynAckWithoutData = {
+    syn_id: int
+    syn_ack_received: bool
+}
+
 type SentACK = {
     data: validatedTransferBuffer
+    sent_ack: bool
+}
+
+type SentACKWithoutData = {
     sent_ack: bool
 }
 
@@ -83,16 +98,41 @@ let sendSyn (validatedBuffer: validatedTransferBuffer) =
     | InvalidTimeout errorMsg -> 
         Error errorMsg
 
-let (|SynAckReceived|SynAckNotReceived|) (serverDown: bool) =
-    if serverDown then
-        SynAckNotReceived "SYN-ACK has not been received."
-    else
+let sendSynWithoutData =
+    let syn: SynWithoutdata = {
+            syn_id = 1
+            time_initiate = System.DateTime.Now
+            response_timeout = if wrong_timeout then 0 else min_server_response_time
+    }
+
+    match syn.response_timeout with
+    | ValidTimeout validTimeout -> 
+        Ok syn
+    | InvalidTimeout errorMsg -> 
+        Error errorMsg
+
+let (|SynAckReceived|SynAckNotReceived|) (receivedsynAck: bool) =
+    if receivedsynAck then
         SynAckReceived
+    else
+        SynAckNotReceived "SYN-ACK has not been received."
 
 let receiveSynAck (syn: Syn) : Result<ReceivedSynAck, string> =
     let receivedSynAck: ReceivedSynAck = {
         syn_id = syn.syn_id
         data = syn.data
+        syn_ack_received = not server_down
+    }
+
+    match receivedSynAck.syn_ack_received with
+    | SynAckReceived ->
+        Ok receivedSynAck
+    | SynAckNotReceived errorMsg ->
+        Error errorMsg
+
+let receiveSynAckWithoutData (syn: SynWithoutdata) : Result<ReceivedSynAckWithoutData, string> =
+    let receivedSynAck: ReceivedSynAckWithoutData = {
+        syn_id = syn.syn_id
         syn_ack_received = not server_down
     }
 
@@ -111,8 +151,19 @@ let sendAck (received: ReceivedSynAck) : Result<SentACK, string> =
 
     Ok sentAck
 
+let sendAckWithoutData (received: ReceivedSynAckWithoutData) : Result<SentACKWithoutData, string> =
+    let sentAck: SentACKWithoutData = {
+        sent_ack = true
+    }
+
+    Ok sentAck
+
 let sendData (sent: SentACK) : Result<SentData, string> =
     let sentData: SentData = { data = sent.data }
+    Ok sentData
+
+let sendDataBufferSeparate (sent: SentACKWithoutData) (buffer: validatedTransferBuffer) =
+    let sentData: SentData = { data = buffer }
     Ok sentData
 
 let processTransferBind data =
@@ -123,8 +174,8 @@ let processTransferBind data =
     |> Result.bind sendAck
     |> Result.bind sendData
 
-let processTransferOperator =
-    validateTransferBuffer
+let processTransferOperator data =
+    validateTransferBuffer data
     >>= sendSyn
     >>= receiveSynAck
     >>= sendAck
@@ -150,8 +201,28 @@ let resultBuilderExpression (data: TransferBuffer) =
         return sendData sentAck
     }
 
+let processTransferBindOOO (buffer: TransferBuffer) =
+    buffer
+    |> validateTransferBuffer
+    |> Result.bind (fun validatedBuffer ->
+            sendSynWithoutData
+            |> Result.bind receiveSynAckWithoutData
+            |> Result.bind sendAckWithoutData // Opcjonalnie można by tutaj zrobić Result.map fun (ackResult -> (ackResult, validatedBuffer)), dłuższe o linijkę.
+            |> Result.bind (fun ackResult -> sendDataBufferSeparate ackResult validatedBuffer))
+
+let resultBuilderExpressionOOO (data: TransferBuffer) =
+    resultBuilder {
+        let! validatedTransferBuffer = data |> validateTransferBuffer
+        let! validatedSyn = sendSynWithoutData
+        let! validatedReceivedSyncAck = receiveSynAckWithoutData validatedSyn
+        let! sentAck = sendAckWithoutData validatedReceivedSyncAck
+        return sendDataBufferSeparate sentAck validatedTransferBuffer
+    }
+
 let buffer: TransferBuffer = { data = "Some data"; buffer_size = 5 }
 
 printfn "Transfer status for bind: %A" (processTransferBind buffer)
 printfn "Transfer status for operator: %A" (processTransferOperator buffer)
 printfn "Transfer status for builder: %A" (resultBuilderExpression buffer)
+printfn "Transfer status for out of order bind: %A" (processTransferBindOOO buffer)
+printfn "Transfer status for out of order builder: %A" (resultBuilderExpression buffer)
