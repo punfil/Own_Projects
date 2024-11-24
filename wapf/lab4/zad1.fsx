@@ -14,12 +14,12 @@ let (>>=) result switch =
     | Ok s -> switch s
     | Error f -> Error f
 
-type TransferBuffer = {
+type validatedTransferBuffer = {
     data: string
     buffer_size: int
 }
 
-type validatedTransferBuffer = {
+type TransferBuffer = {
     data: string
     buffer_size: int
 }
@@ -61,6 +61,18 @@ type SentData = {
     data: validatedTransferBuffer
 }
 
+let (|TransferBuffer|_|) (data: string, buffer_size: int) =
+    if data <> "" && buffer_size > 0 && buffer_size <= max_buffer_size then
+        Some { data = data; buffer_size = buffer_size }
+    else
+        None
+
+let createTransferBuffer (data: string) (buffer_size: int) =
+    match (data, buffer_size) with
+    | TransferBuffer buffer -> Ok buffer  // Valid case.
+    | _ -> Error "Invalid TransferBuffer: data cannot be empty, and buffer_size must be between 1 and 1500."
+
+
 let (|ValidBuffer|InvalidBuffer|) (buffer: TransferBuffer) =
     if buffer.data = "" then InvalidBuffer "Transfer buffer cannot be empty"
     elif buffer.buffer_size > max_buffer_size then InvalidBuffer "More data than buffer size."
@@ -79,10 +91,10 @@ let validateTransferBuffer (buffer: TransferBuffer) : Result<validatedTransferBu
     | InvalidBuffer errorMsg -> Error errorMsg
 
 let (|ValidTimeout|InvalidTimeout|) (timeout: int) =
-    if timeout < min_server_response_time then
-        InvalidTimeout "Expected smaller timeout than minimal server response time."
-    else
-        ValidTimeout timeout
+   match timeout with
+    | timeout when timeout < min_server_response_time -> InvalidTimeout "Expected smaller timeout than minimal server response time."
+    | timeout when timeout >= min_server_response_time -> ValidTimeout timeout
+    | _ -> InvalidTimeout "Internal system error"
 
 let sendSyn (validatedBuffer: validatedTransferBuffer) =
     let syn: Syn = {
@@ -130,18 +142,18 @@ let receiveSynAck (syn: Syn) : Result<ReceivedSynAck, string> =
     | SynAckNotReceived errorMsg ->
         Error errorMsg
 
-let receiveSynAckWithoutData (syn: SynWithoutdata) : Result<ReceivedSynAckWithoutData, string> =
+let (|ReceivedSynAckWithoutData|) (syn: SynWithoutdata) =
     let receivedSynAck: ReceivedSynAckWithoutData = {
         syn_id = syn.syn_id
         syn_ack_received = not server_down
     }
 
-    match receivedSynAck.syn_ack_received with
-    | SynAckReceived ->
-        Ok receivedSynAck
-    | SynAckNotReceived errorMsg ->
-        Error errorMsg
+    receivedSynAck
 
+let receiveSynAckWithoutData (syn: SynWithoutdata) : Result<ReceivedSynAckWithoutData, string> =
+    match syn with
+    |  ReceivedSynAckWithoutData(receivedSynAck) ->
+        Ok receivedSynAck
 
 let sendAck (received: ReceivedSynAck) : Result<SentACK, string> =
     let sentAck: SentACK = {
@@ -219,10 +231,14 @@ let resultBuilderExpressionOOO (data: TransferBuffer) =
         return sendDataBufferSeparate sentAck validatedTransferBuffer
     }
 
-let buffer: TransferBuffer = { data = "Some data"; buffer_size = 5 }
 
-printfn "Transfer status for bind: %A" (processTransferBind buffer)
-printfn "Transfer status for operator: %A" (processTransferOperator buffer)
-printfn "Transfer status for builder: %A" (resultBuilderExpression buffer)
-printfn "Transfer status for out of order bind: %A" (processTransferBindOOO buffer)
-printfn "Transfer status for out of order builder: %A" (resultBuilderExpression buffer)
+// let buffer: TransferBuffer = { data = "Some data"; buffer_size = 5 } // Uzasadnienie podwójnej walidacji
+let result = createTransferBuffer "Some data" 5
+match result with
+| Ok buffer -> 
+    printfn "Transfer status for bind: %A" (processTransferBind buffer)
+    printfn "Transfer status for operator: %A" (processTransferOperator buffer)
+    printfn "Transfer status for builder: %A" (resultBuilderExpression buffer)
+    printfn "Transfer status for out of order bind: %A" (processTransferBindOOO buffer)
+    printfn "Transfer status for out of order builder: %A" (resultBuilderExpression buffer)
+| Error msg -> printfn "Error: %s" msg
