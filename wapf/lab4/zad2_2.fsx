@@ -1,17 +1,8 @@
 // Validation
 [<Literal>]
-let server_down: bool = true
+let server_down: bool = false
 [<Literal>]
 let wrong_timeout: bool = false
-
-type ResultWithState<'T, 'State> =
-    | Ok of 'T * 'State
-    | Error of string
-
-let bind f result =
-    match result with
-    | Ok (value, state) -> f value state
-    | Error err -> Error err
 
 let max_buffer_size: int = 1500
 let min_server_response_time: int = 10
@@ -45,18 +36,20 @@ type SentData = {
     data: validatedTransferBuffer
 }
 
-let validateTransferBuffer (buffer: TransferBuffer) : ResultWithState<validatedTransferBuffer, string> =
+let validateTransferBuffer (buffer: TransferBuffer) =
     match buffer.data with
     | "" -> Error "Transfer buffer cannot be empty"
     | _ when buffer.buffer_size > max_buffer_size -> Error "More data than buffer size."
     | _ when buffer.buffer_size = 0 -> Error "Buffer size cannot be 0."
     | _ ->
-        let vBuffer: validatedTransferBuffer = { data = buffer.data; buffer_size = buffer.buffer_size }
-        Ok (vBuffer, "Buffer validated")
+        Ok {
+            data = buffer.data
+            buffer_size = buffer.buffer_size
+        }
 
-let sendSyn : ResultWithState<Syn, string> =
+let sendSyn =
     let syn: Syn = {
-        syn_id = 1
+        syn_id = System.Random().Next()
         time_initiate = System.DateTime.Now
         response_timeout = if wrong_timeout then 0 else min_server_response_time
     }
@@ -64,9 +57,9 @@ let sendSyn : ResultWithState<Syn, string> =
     if syn.response_timeout < min_server_response_time then
         Error "Expected smaller timeout than minimal server response time."
     else
-        Ok (syn, "SYN sent")
+        Ok syn
 
-let receiveSynAck (syn: Syn) : ResultWithState<ReceivedSynAck, string> =
+let receiveSynAck (syn: Syn) =
     let receivedSynAck: ReceivedSynAck = {
         syn_id = syn.syn_id
         syn_ack_received = if server_down = true then false else true
@@ -75,34 +68,30 @@ let receiveSynAck (syn: Syn) : ResultWithState<ReceivedSynAck, string> =
     if not receivedSynAck.syn_ack_received then
         Error "SYN-ACK has not been received."
     else
-        Ok (receivedSynAck, "SYN-ACK received")
+        Ok receivedSynAck
 
-let sendAck (received: ReceivedSynAck) : ResultWithState<SentACK, string> =
-    let sentAck: SentACK = { sent_ack = true }
-    Ok (sentAck, "ACK sent")
+let sendAck (received: ReceivedSynAck)=
+    Ok {
+        sent_ack = true
+    }
 
-let sendData (sentAck: SentACK) (buffer: validatedTransferBuffer) : ResultWithState<SentData, string> =
+let sendData (sentAck: SentACK) (buffer: validatedTransferBuffer) =
     if sentAck.sent_ack then
-        let sentData: SentData = { data = buffer }
-        Ok (sentData, "Data sent")
+        Ok {
+            data = buffer
+        }
     else
         Error "ACK not sent"
 
 let processTransferBind (buffer: TransferBuffer) =
-    let initialResult = validateTransferBuffer buffer
-    bind (fun validatedBuffer state1 ->
-        let synResult = sendSyn
-        bind (fun syn state2 ->
-            let receiveResult = receiveSynAck syn
-            bind (fun receivedSynAck state3 ->
-                let ackResult = sendAck receivedSynAck
-                bind (fun sentAck state4 ->
-                    sendData sentAck validatedBuffer
-                ) ackResult
-            ) receiveResult
-        ) synResult
-    ) initialResult
+    buffer
+    |> validateTransferBuffer
+    |> Result.bind (fun validatedBuffer ->
+            sendSyn
+            |> Result.bind receiveSynAck
+            |> Result.bind sendAck
+            |> Result.bind (fun ackResult -> sendData ackResult validatedBuffer))
 
 let buffer: TransferBuffer = { data = "Some data"; buffer_size = 5 }
 
-printfn "Transfer status for builder: %A" (processTransferBind buffer)
+printfn "Transfer status for out of order bind: %A" (processTransferBind buffer)

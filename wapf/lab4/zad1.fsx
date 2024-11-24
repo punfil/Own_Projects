@@ -143,10 +143,10 @@ let resultBuilder: ResultBuilder = new ResultBuilder()
 
 let resultBuilderExpression (data: TransferBuffer) =
     resultBuilder {
-        let! (validatedTransferBuffer) = data |> validateTransferBuffer
-        let! (validatedSyn) = sendSyn validatedTransferBuffer
-        let! (validatedReceivedSyncAck) = receiveSynAck validatedSyn
-        let! (sentAck) = sendAck validatedReceivedSyncAck
+        let! validatedTransferBuffer = data |> validateTransferBuffer
+        let! validatedSyn = sendSyn validatedTransferBuffer
+        let! validatedReceivedSyncAck = receiveSynAck validatedSyn
+        let! sentAck = sendAck validatedReceivedSyncAck
         return sendData sentAck
     }
 

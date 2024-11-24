@@ -98,13 +98,13 @@ let resultBuilder: ResultBuilder = new ResultBuilder()
 
 let resultBuilderExpression (data: TransferBuffer) =
     resultBuilder {
-        let! (validatedTransferBuffer) = data |> validateTransferBuffer
-        let! (validatedSyn) = sendSyn
-        let! (validatedReceivedSyncAck) = receiveSynAck validatedSyn
-        let! (sentAck) = sendAck validatedReceivedSyncAck
+        let! validatedTransferBuffer = data |> validateTransferBuffer
+        let! validatedSyn = sendSyn
+        let! validatedReceivedSyncAck = receiveSynAck validatedSyn
+        let! sentAck = sendAck validatedReceivedSyncAck
         return sendData sentAck validatedTransferBuffer
     }
 
 let buffer: TransferBuffer = { data = "Some data"; buffer_size = 5 }
 
-printfn "Transfer status for builder: %A" (resultBuilderExpression buffer)
+printfn "Transfer status for out of order builder: %A" (resultBuilderExpression buffer)
