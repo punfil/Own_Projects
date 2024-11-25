@@ -7,7 +7,7 @@ let min_server_response_time: int = 10
 [<Literal>]
 let server_down: bool = false
 [<Literal>]
-let wrong_timeout: bool = false
+let wrong_timeout: bool = true
 
 let (>>=) result switch =
     match result with
@@ -164,11 +164,14 @@ let sendAck (received: ReceivedSynAck) : Result<SentACK, string> =
     Ok sentAck
 
 let sendAckWithoutData (received: ReceivedSynAckWithoutData) : Result<SentACKWithoutData, string> =
-    let sentAck: SentACKWithoutData = {
-        sent_ack = true
-    }
+    if not received.syn_ack_received then
+        Error "SYN-ACK has not been received."
+    else
+        let sentAck: SentACKWithoutData = {
+            sent_ack = true
+        }
 
-    Ok sentAck
+        Ok sentAck
 
 let sendData (sent: SentACK) : Result<SentData, string> =
     let sentData: SentData = { data = sent.data }
@@ -240,5 +243,5 @@ match result with
     printfn "Transfer status for operator: %A" (processTransferOperator buffer)
     printfn "Transfer status for builder: %A" (resultBuilderExpression buffer)
     printfn "Transfer status for out of order bind: %A" (processTransferBindOOO buffer)
-    printfn "Transfer status for out of order builder: %A" (resultBuilderExpression buffer)
+    printfn "Transfer status for out of order builder: %A" (resultBuilderExpressionOOO buffer)
 | Error msg -> printfn "Error: %s" msg
